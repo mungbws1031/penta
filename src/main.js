@@ -4,6 +4,20 @@ import { analyzeCompat } from './compat.js';
 import { renderCompat } from './compatReport.js';
 import { drawThree } from './tarot.js';
 import { renderTarotIntro, renderTarotBoard, revealedCard, renderTarotResult } from './tarotView.js';
+import { buildProfileCardSVG, buildCompatCardSVG } from './shareCard.js';
+import { downloadSVGAsPNG } from './share.js';
+
+function bindShare(btnId, svgString, filename) {
+  const btn = document.getElementById(btnId);
+  if (!btn) return;
+  btn.addEventListener('click', async () => {
+    const orig = btn.textContent;
+    btn.disabled = true; btn.textContent = '이미지 만드는 중…';
+    try { await downloadSVGAsPNG(svgString, filename); btn.textContent = '저장 완료 ✓'; }
+    catch (e) { console.error(e); btn.textContent = '저장 실패'; }
+    finally { setTimeout(() => { btn.disabled = false; btn.textContent = orig; }, 1500); }
+  });
+}
 
 const MBTIS = ['INTJ','INTP','ENTJ','ENTP','INFJ','INFP','ENFJ','ENFP',
   'ISTJ','ISFJ','ESTJ','ESFJ','ISTP','ISFP','ESTP','ESFP'];
@@ -67,7 +81,9 @@ document.getElementById('penta-form').addEventListener('submit', (e) => {
     mbti: mbtiSel.value, blood: document.getElementById('blood').value, selectedStrengths: selected,
   };
   try {
-    resultEl.innerHTML = renderReport(runEngine(input));
+    const result = runEngine(input);
+    resultEl.innerHTML = renderReport(result);
+    bindShare('share-btn', buildProfileCardSVG(result), 'penta-profile.png');
     const r = document.getElementById('restart-btn');
     if (r) r.addEventListener('click', () => { resultEl.innerHTML = ''; window.scrollTo({ top: 0, behavior: 'smooth' }); });
     document.getElementById('report')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -96,6 +112,7 @@ document.getElementById('compat-form').addEventListener('submit', (e) => {
   try {
     const result = analyzeCompat(readPerson(blocks[0]), readPerson(blocks[1]));
     compatResultEl.innerHTML = renderCompat(result);
+    bindShare('compat-share-btn', buildCompatCardSVG(result), 'penta-compat.png');
     const rb = document.getElementById('compat-restart');
     if (rb) rb.addEventListener('click', () => { compatResultEl.innerHTML = ''; window.scrollTo({ top: 0, behavior: 'smooth' }); });
     document.getElementById('compat-report')?.scrollIntoView({ behavior: 'smooth', block: 'start' });

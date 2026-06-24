@@ -112,7 +112,8 @@ export function renderReport(result) {
     <p class="disclaimer">이 결과는 <b>재미용 셀프 분석</b>입니다. 과학적·확정적 예측이 아닙니다.</p>
 
     <div class="actions">
-      <button type="button" id="restart-btn" class="ghost">다시 하기</button>
+      <button type="button" id="share-btn" class="submit" style="max-width:320px">📸 결과 이미지로 저장</button>
+      <div style="margin-top:10px"><button type="button" id="restart-btn" class="ghost">다시 하기</button></div>
     </div>
   </section>`;
 }
