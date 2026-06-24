@@ -1,4 +1,5 @@
 import { renderRadarSVG } from './radar.js';
+import { zodiacDetail } from './zodiacInfo.js';
 
 const stars = n => '★'.repeat(n) + '☆'.repeat(Math.max(0, 3 - n));
 
@@ -54,6 +55,20 @@ function gapColumn(title, arr, cls, hint) {
   </div>`;
 }
 
+function zodiacBlock(sunSign) {
+  const z = zodiacDetail(sunSign);
+  if (!z) return '';
+  return `<div class="card zodiac-card">
+    <h3>별자리 <small>${z.sign}</small></h3>
+    <div class="z-meta">
+      <span class="z-pill">${z.elementLabel}</span>
+      <span class="z-pill">${z.modalityLabel}</span>
+      <span class="z-pill">${z.polarity}(陰陽)</span>
+    </div>
+    <p class="z-blurb">${z.blurb}</p>
+  </div>`;
+}
+
 export function renderReport(result) {
   const { axes, strengths, gap, sajuTimeUnknown, sunSign } = result;
   const timeNote = sajuTimeUnknown
@@ -71,6 +86,8 @@ export function renderReport(result) {
       <h3>일치도 레이더</h3>
       <div class="radar-wrap">${renderRadarSVG(axes)}</div>
     </div>
+
+    ${zodiacBlock(sunSign)}
 
     <div class="card">
       <h3>성격 5축</h3>

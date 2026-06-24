@@ -6,110 +6,117 @@
   <title>PENTA — 5중 셀프 프로파일러</title>
   <style>
     :root {
-      --gold: #f0c75e;
-      --ink: #ece9ff;
-      --muted: #a39fc8;
-      --card: rgba(255,255,255,0.055);
-      --border: rgba(255,255,255,0.12);
-      --confirm: #6ee7a8;
-      --hidden: #7cc0ff;
-      --nurtured: #c79bff;
+      --gold: #f0c75e; --ink: #ece9ff; --muted: #a39fc8;
+      --card: rgba(255,255,255,0.055); --border: rgba(255,255,255,0.12);
+      --confirm: #6ee7a8; --hidden: #7cc0ff; --nurtured: #c79bff;
+      --good: #6ee7a8; --bad: #ff8a8a; --mid: #c7c2e8;
     }
     * { box-sizing: border-box; }
     body {
-      margin: 0;
-      font-family: "Pretendard", system-ui, -apple-system, "Apple SD Gothic Neo", sans-serif;
-      color: var(--ink);
-      line-height: 1.65;
+      margin: 0; font-family: "Pretendard", system-ui, -apple-system, "Apple SD Gothic Neo", sans-serif;
+      color: var(--ink); line-height: 1.65;
       background: radial-gradient(1200px 600px at 50% -10%, #3a2f6b 0%, transparent 60%),
                   linear-gradient(160deg, #0f0c29 0%, #241f47 50%, #15132e 100%);
-      background-attachment: fixed;
-      min-height: 100vh;
+      background-attachment: fixed; min-height: 100vh;
     }
-    .wrap { max-width: 760px; margin: 0 auto; padding: 32px 20px 80px; }
-    header.top { text-align: center; margin-bottom: 28px; }
-    .logo {
-      font-size: 2.6rem; font-weight: 800; letter-spacing: .15em; margin: 0;
-      background: linear-gradient(90deg, #fff, var(--gold)); -webkit-background-clip: text;
-      background-clip: text; color: transparent;
-    }
-    .tagline { color: var(--muted); margin: 4px 0 0; font-size: .92rem; }
+    .wrap { max-width: 760px; margin: 0 auto; padding: 28px 20px 80px; }
+    header.top { text-align: center; margin-bottom: 16px; }
+    .logo { font-size: 2.4rem; font-weight: 800; letter-spacing: .15em; margin: 0;
+      background: linear-gradient(90deg, #fff, var(--gold)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .tagline { color: var(--muted); margin: 4px 0 0; font-size: .9rem; }
 
-    .card {
-      background: var(--card); border: 1px solid var(--border); border-radius: 18px;
-      padding: 20px 22px; margin: 16px 0;
-      backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
-    }
-    .card h3 { margin: 0 0 14px; font-size: 1.1rem; }
-    .card h3 small { color: var(--muted); font-weight: 500; font-size: .8rem; }
+    .nav { display: flex; gap: 8px; justify-content: center; margin: 18px 0 22px; }
+    .nav button { flex: 1; max-width: 160px; padding: 11px 8px; border-radius: 12px; cursor: pointer; font-size: .98rem; font-weight: 700;
+      background: var(--card); border: 1px solid var(--border); color: var(--muted); transition: .15s; }
+    .nav button.active { color: #1a1530; background: linear-gradient(90deg, var(--gold), #ffd98a); border-color: transparent; }
+    .view { display: none; } .view.active { display: block; }
+
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 20px 22px; margin: 16px 0;
+      backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); box-shadow: 0 10px 30px rgba(0,0,0,0.25); }
+    .card h3 { margin: 0 0 14px; font-size: 1.1rem; } .card h3 small { color: var(--muted); font-weight: 500; font-size: .82rem; }
     legend { font-weight: 700; padding: 0 6px; }
     fieldset { border: 1px solid var(--border); border-radius: 14px; margin: 0 0 14px; padding: 14px 16px; }
-
-    label { display: inline-flex; align-items: center; gap: 5px; margin: 4px 10px 4px 0; color: var(--ink); }
-    input[type=number], select {
-      background: rgba(0,0,0,0.25); color: var(--ink); border: 1px solid var(--border);
-      border-radius: 10px; padding: 9px 11px; font-size: .95rem; margin: 4px 6px 4px 0; outline: none;
-    }
-    input[type=number] { width: 92px; }
-    input[type=number]:focus, select:focus { border-color: var(--gold); }
-    input[type=number]:disabled { opacity: .4; }
-    select { min-width: 120px; }
+    label { display: inline-flex; align-items: center; gap: 5px; margin: 4px 10px 4px 0; }
+    input[type=number], select { background: rgba(0,0,0,0.25); color: var(--ink); border: 1px solid var(--border);
+      border-radius: 10px; padding: 9px 11px; font-size: .95rem; margin: 4px 6px 4px 0; outline: none; }
+    input[type=number] { width: 86px; } input[type=number]:focus, select:focus { border-color: var(--gold); }
+    input[type=number]:disabled { opacity: .4; } select { min-width: 116px; }
     input[type=checkbox], input[type=radio] { accent-color: var(--gold); width: 16px; height: 16px; }
-
     #strengths .s-options { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px 10px; }
-    #strengths .s-options label { margin: 0; }
-    #strengths .count-hint { color: var(--muted); font-size: .85rem; margin: 8px 0 0; }
+    #strengths .s-options label { margin: 0; } #strengths .count-hint { color: var(--muted); font-size: .85rem; margin: 8px 0 0; }
+    .submit { width: 100%; padding: 15px; font-size: 1.05rem; font-weight: 800; letter-spacing: .04em; border: none; border-radius: 14px;
+      cursor: pointer; margin-top: 6px; color: #1a1530; background: linear-gradient(90deg, var(--gold), #ffd98a);
+      box-shadow: 0 8px 24px rgba(240,199,94,0.3); transition: transform .08s ease; }
+    .submit:hover { transform: translateY(-1px); } .submit:disabled { filter: grayscale(.6) brightness(.8); cursor: not-allowed; transform: none; }
 
-    .submit {
-      width: 100%; padding: 15px; font-size: 1.05rem; font-weight: 800; letter-spacing: .04em;
-      border: none; border-radius: 14px; cursor: pointer; margin-top: 6px;
-      color: #1a1530; background: linear-gradient(90deg, var(--gold), #ffd98a);
-      box-shadow: 0 8px 24px rgba(240,199,94,0.3); transition: transform .08s ease;
-    }
-    .submit:hover { transform: translateY(-1px); }
-    .submit:disabled { filter: grayscale(.6) brightness(.8); cursor: not-allowed; transform: none; }
-
-    /* ===== Report ===== */
-    .report { animation: fade .5s ease; }
+    .report, .tarot { animation: fade .5s ease; }
     @keyframes fade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
-    .hero { text-align: center; padding: 18px 0 6px; }
-    .hero-sub { color: var(--gold); letter-spacing: .12em; font-size: .78rem; margin: 0 0 6px; }
-    .catch { font-size: 1.7rem; font-weight: 800; margin: 4px 0 8px; line-height: 1.35; }
-    .catch .hl { color: var(--gold); }
+    .hero { text-align: center; padding: 14px 0 6px; }
+    .hero-sub { color: var(--gold); letter-spacing: .1em; font-size: .78rem; margin: 0 0 6px; }
+    .catch { font-size: 1.6rem; font-weight: 800; margin: 4px 0 8px; line-height: 1.35; } .catch .hl { color: var(--gold); }
     .sun { color: var(--muted); margin: 0; }
 
-    .radar-card { text-align: center; }
-    .radar-wrap { max-width: 360px; margin: 0 auto; }
-
+    .radar-card { text-align: center; } .radar-wrap { max-width: 360px; margin: 0 auto; }
     .axis-grid { display: grid; gap: 10px; }
     .axis-card { background: rgba(0,0,0,0.18); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; }
     .axis-head { display: flex; align-items: center; gap: 10px; }
-    .axis-label { color: var(--muted); font-size: .85rem; min-width: 48px; }
-    .axis-pole { font-weight: 700; font-size: 1.05rem; flex: 1; }
+    .axis-label { color: var(--muted); font-size: .85rem; min-width: 48px; } .axis-pole { font-weight: 700; font-size: 1.05rem; flex: 1; }
     .badge { color: var(--gold); letter-spacing: 2px; font-size: 1rem; }
     .axis-foot { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
-    .chip { font-size: .75rem; padding: 2px 9px; border-radius: 999px; background: rgba(255,255,255,0.08); border: 1px solid var(--border); color: var(--ink); }
+    .chip { font-size: .75rem; padding: 2px 9px; border-radius: 999px; background: rgba(255,255,255,0.08); border: 1px solid var(--border); }
     .chip.muted { color: var(--muted); }
     .tag.conflict { font-size: .72rem; padding: 2px 9px; border-radius: 999px; background: rgba(255,90,90,0.16); border: 1px solid rgba(255,120,120,0.4); color: #ff9d9d; }
 
+    /* 별자리 */
+    .zodiac-card .z-meta { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+    .z-pill { font-size: .82rem; padding: 4px 11px; border-radius: 999px; background: rgba(255,255,255,0.07); border: 1px solid var(--border); }
+    .z-blurb { margin: 0; color: var(--ink); }
+
     .s-grid { display: flex; flex-wrap: wrap; gap: 8px; }
-    .s-chip { position: relative; padding: 7px 12px; border-radius: 10px; font-size: .9rem; font-weight: 600;
-      background: rgba(255,255,255,0.06); border: 1px solid var(--border); display: inline-flex; align-items: center; gap: 6px; }
+    .s-chip { padding: 7px 12px; border-radius: 10px; font-size: .9rem; font-weight: 600; background: rgba(255,255,255,0.06);
+      border: 1px solid var(--border); display: inline-flex; align-items: center; gap: 6px; }
     .s-chip i { font-style: normal; font-size: .72rem; padding: 1px 6px; border-radius: 6px; background: rgba(0,0,0,0.3); }
     .s-chip.gold { border-color: var(--gold); color: var(--gold); box-shadow: 0 0 12px rgba(240,199,94,0.25); }
-    .s-chip.silver { border-color: #cfd6e6; color: #e8edf7; }
-    .s-chip.bronze { color: var(--ink); }
-    .s-chip.zero { opacity: .42; }
+    .s-chip.silver { border-color: #cfd6e6; color: #e8edf7; } .s-chip.bronze { color: var(--ink); } .s-chip.zero { opacity: .42; }
 
-    .gap-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-    .gap-col { background: rgba(0,0,0,0.18); border: 1px solid var(--border); border-radius: 12px; padding: 12px; }
-    .gap-col h4 { margin: 0 0 2px; font-size: .95rem; }
-    .gap-hint { color: var(--muted); font-size: .72rem; margin: 0 0 8px; }
-    .gap-col ul { margin: 0; padding-left: 16px; }
-    .gap-col li { font-size: .9rem; }
-    .gap-col li.empty { list-style: none; margin-left: -16px; color: var(--muted); }
+    .gap-grid, .pt-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .pt-grid { grid-template-columns: repeat(2, 1fr); }
+    .gap-col, .pt-col { background: rgba(0,0,0,0.18); border: 1px solid var(--border); border-radius: 12px; padding: 12px; }
+    .gap-col h4, .pt-col h4 { margin: 0 0 2px; font-size: .95rem; } .gap-hint { color: var(--muted); font-size: .72rem; margin: 0 0 8px; }
+    .gap-col ul, .pt-col ul { margin: 0; padding-left: 16px; } .gap-col li, .pt-col li { font-size: .9rem; }
+    .gap-col li.empty, .pt-col li.empty { list-style: none; margin-left: -16px; color: var(--muted); }
     .g-confirm h4 { color: var(--confirm); } .g-hidden h4 { color: var(--hidden); } .g-nurtured h4 { color: var(--nurtured); }
+    .pt-good h4 { color: var(--good); } .pt-bad h4 { color: var(--bad); }
+
+    /* 궁합 */
+    .person-block { margin-bottom: 10px; }
+    .person-block > legend { color: var(--gold); }
+    .big-percent { font-size: 3.6rem; font-weight: 800; color: var(--gold); line-height: 1; }
+    .big-percent span { font-size: 1.4rem; }
+    .compat-grid { display: grid; gap: 14px; }
+    .compat-row { display: grid; grid-template-columns: 56px 1fr 42px; align-items: center; gap: 10px; }
+    .cr-name { color: var(--muted); font-weight: 600; }
+    .cr-bar { grid-column: 2; height: 10px; background: rgba(0,0,0,0.3); border-radius: 6px; overflow: hidden; }
+    .cr-bar i { display: block; height: 100%; background: linear-gradient(90deg, var(--gold), #ffd98a); }
+    .cr-verdict { text-align: center; font-weight: 700; font-size: .9rem; }
+    .v-good { color: var(--good); } .v-bad { color: var(--bad); } .v-mid { color: var(--mid); }
+    .cr-note { grid-column: 1 / -1; margin: 2px 0 0; color: var(--muted); font-size: .82rem; }
+
+    /* 타로 */
+    .tboard { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; margin: 10px 0 16px; }
+    .tcard { border-radius: 12px; border: 1px solid var(--border); cursor: pointer; aspect-ratio: 2/3;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; padding: 6px; }
+    .tcard.back { background: repeating-linear-gradient(45deg, #2a2456, #2a2456 6px, #332c66 6px, #332c66 12px);
+      color: var(--gold); font-size: 1.4rem; transition: transform .12s; }
+    .tcard.back:hover { transform: translateY(-4px); border-color: var(--gold); }
+    .tcard.back:disabled { opacity: .35; cursor: default; transform: none; }
+    .tcard.face { background: rgba(255,255,255,0.06); cursor: default; text-align: center; }
+    .tcard.face.rev { outline: 1px solid rgba(255,140,140,0.5); }
+    .t-pos { font-size: .72rem; color: var(--gold); } .t-emoji { font-size: 1.8rem; } .t-name { font-weight: 700; font-size: .9rem; }
+    .t-orient { font-size: .72rem; color: var(--muted); } .t-mean { font-size: .72rem; color: var(--ink); }
+    .tresult { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 8px; }
+    .picked-slots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; min-height: 20px; }
+    .t-readings { margin: 0; padding-left: 18px; } .t-readings li { margin-bottom: 6px; }
 
     .note { color: #ffc98a; font-size: .85rem; }
     .disclaimer { color: var(--muted); font-size: .82rem; text-align: center; margin-top: 18px; }
@@ -118,9 +125,9 @@
     .ghost:hover { border-color: var(--gold); color: var(--gold); }
 
     @media (max-width: 560px) {
-      .catch { font-size: 1.35rem; }
-      .gap-grid { grid-template-columns: 1fr; }
+      .catch { font-size: 1.3rem; } .gap-grid { grid-template-columns: 1fr; }
       #strengths .s-options { grid-template-columns: repeat(2, 1fr); }
+      .tboard { grid-template-columns: repeat(4, 1fr); }
     }
   </style>
 </head>
@@ -128,46 +135,81 @@
   <div class="wrap">
     <header class="top">
       <h1 class="logo">PENTA</h1>
-      <p class="tagline">사주 · MBTI · 혈액형 · 별자리 — 5개 렌즈로 비춘 입체적인 나</p>
+      <p class="tagline">사주 · MBTI · 혈액형 · 별자리 · 타로 — 5개 렌즈로 비춘 나</p>
     </header>
 
-    <form id="penta-form" class="card">
-      <fieldset>
-        <legend>생년월일시</legend>
-        <div>
-          <input type="number" id="year" placeholder="년(1990)" required />
-          <input type="number" id="month" placeholder="월" min="1" max="12" required />
-          <input type="number" id="day" placeholder="일" min="1" max="31" required />
-          <input type="number" id="hour" placeholder="시(0-23)" min="0" max="23" />
-        </div>
-        <label><input type="checkbox" id="hourUnknown" /> 태어난 시간 모름</label>
-        <div style="margin-top:8px">
-          <label><input type="radio" name="cal" value="solar" checked /> 양력</label>
-          <label><input type="radio" name="cal" value="lunar" /> 음력</label>
-          &nbsp;
-          <label><input type="radio" name="gender" value="male" checked /> 남</label>
-          <label><input type="radio" name="gender" value="female" /> 여</label>
-        </div>
-      </fieldset>
+    <nav class="nav">
+      <button type="button" data-view="profile" class="active">🔮 프로파일</button>
+      <button type="button" data-view="compat">💞 궁합</button>
+      <button type="button" data-view="tarot">🎴 타로</button>
+    </nav>
 
-      <fieldset>
-        <legend>MBTI · 혈액형</legend>
-        <label>MBTI <select id="mbti" required></select></label>
-        <label>혈액형
-          <select id="blood"><option>A</option><option>B</option><option>O</option><option>AB</option></select>
-        </label>
-      </fieldset>
+    <!-- ===== 프로파일 ===== -->
+    <div class="view active" id="view-profile">
+      <form id="penta-form" class="card">
+        <fieldset>
+          <legend>생년월일시</legend>
+          <div>
+            <input type="number" id="year" placeholder="년(1990)" required />
+            <input type="number" id="month" placeholder="월" min="1" max="12" required />
+            <input type="number" id="day" placeholder="일" min="1" max="31" required />
+            <input type="number" id="hour" placeholder="시(0-23)" min="0" max="23" />
+          </div>
+          <label><input type="checkbox" id="hourUnknown" /> 태어난 시간 모름</label>
+          <div style="margin-top:8px">
+            <label><input type="radio" name="cal" value="solar" checked /> 양력</label>
+            <label><input type="radio" name="cal" value="lunar" /> 음력</label> &nbsp;
+            <label><input type="radio" name="gender" value="male" checked /> 남</label>
+            <label><input type="radio" name="gender" value="female" /> 여</label>
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend>MBTI · 혈액형</legend>
+          <label>MBTI <select id="mbti" required></select></label>
+          <label>혈액형 <select id="blood"><option>A</option><option>B</option><option>O</option><option>AB</option></select></label>
+        </fieldset>
+        <fieldset id="strengths">
+          <legend>강점 상위 3개</legend>
+          <div class="s-options"></div>
+          <p class="count-hint">0 / 3 선택</p>
+        </fieldset>
+        <button type="submit" class="submit" id="submit-btn">✦ 통합 분석하기</button>
+      </form>
+      <div id="result"></div>
+    </div>
 
-      <fieldset id="strengths">
-        <legend>강점 상위 3개</legend>
-        <div class="s-options"></div>
-        <p class="count-hint">0 / 3 선택</p>
-      </fieldset>
+    <!-- ===== 궁합 ===== -->
+    <div class="view" id="view-compat">
+      <form id="compat-form" class="card">
+        <fieldset class="person-block">
+          <legend>나 (A)</legend>
+          <div>
+            <input type="number" class="c-year" placeholder="년" required />
+            <input type="number" class="c-month" placeholder="월" min="1" max="12" required />
+            <input type="number" class="c-day" placeholder="일" min="1" max="31" required />
+          </div>
+          <label>MBTI <select class="c-mbti"></select></label>
+          <label>혈액형 <select class="c-blood"><option>A</option><option>B</option><option>O</option><option>AB</option></select></label>
+        </fieldset>
+        <fieldset class="person-block">
+          <legend>상대 (B)</legend>
+          <div>
+            <input type="number" class="c-year" placeholder="년" required />
+            <input type="number" class="c-month" placeholder="월" min="1" max="12" required />
+            <input type="number" class="c-day" placeholder="일" min="1" max="31" required />
+          </div>
+          <label>MBTI <select class="c-mbti"></select></label>
+          <label>혈액형 <select class="c-blood"><option>A</option><option>B</option><option>O</option><option>AB</option></select></label>
+        </fieldset>
+        <button type="submit" class="submit">💞 궁합 보기</button>
+      </form>
+      <div id="compat-result"></div>
+    </div>
 
-      <button type="submit" class="submit" id="submit-btn">✦ 통합 분석하기</button>
-    </form>
-
-    <div id="result"></div>
+    <!-- ===== 타로 ===== -->
+    <div class="view" id="view-tarot">
+      <div id="tarot-area"></div>
+    </div>
   </div>
   <script type="module" src="/src/main.js"></script>
 </body>

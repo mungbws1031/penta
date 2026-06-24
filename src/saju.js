@@ -62,3 +62,20 @@ export function sajuSignals(birth) {
   const { counts, timeUnknown } = tallyTenGods(birth);
   return { signals: clustersToSignals(counts), counts, timeUnknown };
 }
+
+// 천간 → 오행 (궁합용). 갑을=목, 병정=화, 무기=토, 경신=금, 임계=수.
+const GAN_ELEMENT = {
+  '甲':'목','乙':'목','丙':'화','丁':'화','戊':'토','己':'토',
+  '庚':'금','辛':'금','壬':'수','癸':'수',
+};
+
+// 일간(일주 천간)의 오행 — 日主. 궁합 오행 상생상극 계산에 사용.
+export function sajuDayElement(birth) {
+  const { year, month, day, hour, calendar } = birth;
+  const h = hour == null ? 12 : hour;
+  const solar = calendar === 'lunar'
+    ? Lunar.fromYmdHms(year, month, day, h, 0, 0).getSolar()
+    : Solar.fromYmdHms(year, month, day, h, 0, 0);
+  const gan = solar.getLunar().getEightChar().getDayGan();
+  return GAN_ELEMENT[gan] ?? null;
+}
