@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PENTA — 5중 셀프 프로파일러</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 720px; margin: 0 auto; padding: 24px; line-height: 1.6; }
+    fieldset { margin: 12px 0; }
+    .badge { color: #b8860b; } .conflict { color: #c0392b; font-size: .85em; }
+    .disclaimer { color: #777; font-size: .85em; } .note { color: #b35900; }
+    label { display: inline-block; margin: 2px 8px 2px 0; }
+    button { padding: 10px 18px; font-size: 1em; cursor: pointer; }
+    #strengths label { width: 30%; }
+  </style>
+</head>
+<body>
+  <h1>PENTA</h1>
+  <p class="disclaimer">재미용 셀프 분석 도구입니다. 과학적 예측이 아닙니다.</p>
+  <form id="penta-form">
+    <fieldset>
+      <legend>생년월일시</legend>
+      <input type="number" id="year" placeholder="년(예:1990)" required />
+      <input type="number" id="month" placeholder="월" min="1" max="12" required />
+      <input type="number" id="day" placeholder="일" min="1" max="31" required />
+      <input type="number" id="hour" placeholder="시(0-23)" min="0" max="23" />
+      <label><input type="checkbox" id="hourUnknown" /> 시간 모름</label><br>
+      <label><input type="radio" name="cal" value="solar" checked /> 양력</label>
+      <label><input type="radio" name="cal" value="lunar" /> 음력</label>
+      <label><input type="radio" name="gender" value="male" checked /> 남</label>
+      <label><input type="radio" name="gender" value="female" /> 여</label>
+    </fieldset>
+    <fieldset>
+      <legend>MBTI</legend>
+      <select id="mbti" required></select>
+    </fieldset>
+    <fieldset>
+      <legend>혈액형</legend>
+      <select id="blood"><option>A</option><option>B</option><option>O</option><option>AB</option></select>
+    </fieldset>
+    <fieldset id="strengths">
+      <legend>강점 상위 3개 선택</legend>
+    </fieldset>
+    <button type="submit">분석하기</button>
+  </form>
+  <div id="result"></div>
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
