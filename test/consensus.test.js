@@ -22,3 +22,36 @@ describe('AXES 메타', () => {
     expect(CONFLICT_RATIO).toBe(0.35);
   });
 });
+
+import { computeAxis } from '../src/consensus.js';
+
+describe('computeAxis', () => {
+  const W = { 사주:1.0, MBTI:1.0, 별자리:0.6, 혈액형:0.3 };
+  const entry = (system, signal) => ({
+    system, signal, weight: W[system], counted: system !== '혈액형',
+  });
+
+  it('3개 카운트 시스템이 같은 극 → ★★★, 충돌 없음', () => {
+    const r = computeAxis([entry('사주',1), entry('MBTI',1), entry('별자리',0.5), entry('혈액형',0.5)]);
+    expect(r.resultPole).toBe(1);
+    expect(r.stars).toBe(3);
+    expect(r.conflict).toBe(false);
+    expect(r.contributingSystems.sort()).toEqual(['MBTI','별자리','사주']);
+  });
+
+  it('혈액형은 카운트 투표 안 함 (별점에 미포함)', () => {
+    const r = computeAxis([entry('MBTI',1), entry('혈액형',1)]);
+    expect(r.stars).toBe(1);
+    expect(r.contributingSystems).toEqual(['MBTI']);
+  });
+
+  it('양극 분할 + 소수극 질량 35%↑ → 충돌', () => {
+    const r = computeAxis([entry('사주',1), entry('MBTI',-1), entry('별자리',0.5)]);
+    expect(r.conflict).toBe(true);
+  });
+
+  it('가중 lean이 ±EPSILON 이내 → balanced(0)', () => {
+    const r = computeAxis([entry('사주',0.5), entry('MBTI',-0.5)]);
+    expect(r.resultPole).toBe(0);
+  });
+});
