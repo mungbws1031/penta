@@ -22,4 +22,16 @@ describe('runEngine', () => {
     const r = runEngine({ ...input, birth: { ...input.birth, hour: null } });
     expect(r.sajuTimeUnknown).toBe(true);
   });
+
+  it('음력 입력(P0)도 정상 동작 — 5축/12강점 산출', () => {
+    const r = runEngine({ ...input, birth: { ...input.birth, calendar: 'lunar' } });
+    expect(r.axes).toHaveLength(5);
+    expect(r.strengths).toHaveLength(12);
+    expect(r.axes.every(a => Number.isFinite(a.weightedLean))).toBe(true);
+  });
+
+  it('잘못된 혈액형/MBTI여도 NaN 없이 동작(중립/기권 처리)', () => {
+    const r = runEngine({ ...input, mbti: 'BOGUS', blood: 'ZZ' });
+    expect(r.axes.every(a => Number.isFinite(a.weightedLean))).toBe(true);
+  });
 });

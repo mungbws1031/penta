@@ -6,6 +6,9 @@ const TABLE = {
   AB: { A1:0,    A2:0.5, A3:0.5,  A4:0,    A5:0 },
 };
 
+const NEUTRAL = { A1:0, A2:0, A3:0, A4:0, A5:0 };
+
 export function bloodSignals(type) {
-  return { ...TABLE[String(type).trim().toUpperCase()] };
+  // 알 수 없는 혈액형은 중립(전 축 0)으로 — 가중 합산에 NaN 유입 방지.
+  return { ...(TABLE[String(type).trim().toUpperCase()] ?? NEUTRAL) };
 }

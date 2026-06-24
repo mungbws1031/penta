@@ -60,5 +60,5 @@ export function tallyTenGods(birth) {
 
 export function sajuSignals(birth) {
   const { counts, timeUnknown } = tallyTenGods(birth);
-  return { signals: clustersToSignals(counts), timeUnknown };
+  return { signals: clustersToSignals(counts), counts, timeUnknown };
 }

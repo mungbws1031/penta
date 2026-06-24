@@ -54,4 +54,16 @@ describe('computeAxis', () => {
     const r = computeAxis([entry('사주',0.5), entry('MBTI',-0.5)]);
     expect(r.resultPole).toBe(0);
   });
+
+  it('balanced 축은 합의 없음 → stars 0, 기여 시스템 비움', () => {
+    const r = computeAxis([entry('사주',0.5), entry('MBTI',-0.5)]);
+    expect(r.stars).toBe(0);
+    expect(r.contributingSystems).toEqual([]);
+  });
+
+  it('balanced 축에서도 양극 분할이면 충돌 성립(spec B-4)', () => {
+    const r = computeAxis([entry('사주',0.5), entry('MBTI',-0.5)]);
+    expect(r.resultPole).toBe(0);
+    expect(r.conflict).toBe(true);
+  });
 });

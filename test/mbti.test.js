@@ -14,4 +14,9 @@ describe('mbtiSignals', () => {
   it('weak=true 면 ±0.5 (간이 12문항 약신호)', () => {
     expect(mbtiSignals('ENTJ', { weak: true })).toEqual({ A1:0.5, A2:0.5, A3:0.5, A4:0.5, A5:0 });
   });
+  it('형식에 안 맞는 입력 → 전 축 기권(0), 가짜 투표 없음', () => {
+    expect(mbtiSignals(undefined)).toEqual({ A1:0, A2:0, A3:0, A4:0, A5:0 });
+    expect(mbtiSignals('ZZZZ')).toEqual({ A1:0, A2:0, A3:0, A4:0, A5:0 });
+    expect(mbtiSignals('ENT')).toEqual({ A1:0, A2:0, A3:0, A4:0, A5:0 });
+  });
 });

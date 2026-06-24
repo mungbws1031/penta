@@ -3,7 +3,7 @@ import { computeAxis } from './consensus.js';
 import { mbtiSignals } from './mbti.js';
 import { sunSign, zodiacSignals } from './zodiac.js';
 import { bloodSignals } from './bloodtype.js';
-import { sajuSignals, tallyTenGods } from './saju.js';
+import { sajuSignals } from './saju.js';
 import { strengthCounts } from './strengths.js';
 import { analyzeGap } from './gap.js';
 
@@ -13,7 +13,7 @@ export function runEngine(input) {
   const { birth, mbti, blood, selectedStrengths } = input;
 
   const saju = sajuSignals(birth);
-  const { counts: sajuCounts } = tallyTenGods(birth);
+  const sajuCounts = saju.counts;
   const sign = sunSign(birth.month, birth.day);
   const sys = {
     사주: saju.signals,
