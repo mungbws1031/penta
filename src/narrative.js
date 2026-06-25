@@ -124,6 +124,16 @@ export function nameNarrative(n) {
   return html;
 }
 
+// ===== 손가락 비율(2D:4D) 서술 =====
+export function digitNarrative(d) {
+  if (!d) return '';
+  let html = `<p><b>${esc(d.category)}</b> 유형이다. 태내 테스토스테론 노출은 <b>${esc(d.testosterone)}</b>으로 추정된다.</p>`;
+  html += `<p>${esc(d.blurb)}</p>`;
+  html += `<p>느슨하게 연관되는 키워드: <b>${d.traits.map(esc).join(' · ')}</b></p>`;
+  html += `<p class="nv-foot">2D:4D는 상관 연구에 기반한 지표로 학계 논쟁이 있고 개인차가 큽니다. 재미로만 참고하세요.</p>`;
+  return html;
+}
+
 // ===== 타로 시간축 서술 (메이저 22 × 정/역) =====
 const TAROT_LONG = {
   0:  { up: '겁 없이 첫발을 내딛던 순수한 모험의 기운이 흐른다. 정해진 길이 없다는 건 곧 무엇이든 될 수 있다는 뜻이었다.', down: '준비 없이 뛰어들어 휘청였거나, 두려움에 발이 묶여 시작을 미뤘던 시간이다.' },

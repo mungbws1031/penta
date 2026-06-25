@@ -90,6 +90,7 @@ document.getElementById('penta-form').addEventListener('submit', (e) => {
       gender: document.querySelector('input[name=gender]:checked').value,
     },
     mbti: mbtiSel.value, blood: document.getElementById('blood').value, name: nameInput.value.trim(),
+    digit: document.getElementById('digit').value,
   };
   // 입력 확정 → 타로 3장 뽑기 → 통합 결과
   runTarotPick(resultEl, (spread) => showProfileResult(input, spread));

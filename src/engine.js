@@ -6,11 +6,12 @@ import { bloodSignals } from './bloodtype.js';
 import { sajuSignals, sajuDayElement } from './saju.js';
 import { strengthCounts } from './strengths.js';
 import { analyzeName } from './nameology.js';
+import { analyzeDigitRatio } from './digitRatio.js';
 
 const BASE_WEIGHT = { 사주:1.0, MBTI:1.0, 별자리:0.6, 혈액형:0.3 };
 
 export function runEngine(input) {
-  const { birth, mbti, blood, name } = input;
+  const { birth, mbti, blood, name, digit } = input;
 
   const saju = sajuSignals(birth);
   const sajuCounts = saju.counts;
@@ -38,6 +39,7 @@ export function runEngine(input) {
 
   const strengths = strengthCounts({ sajuCounts, mbti, sign });
   const nameAnalysis = name ? analyzeName(name, dayElement) : null;
+  const digitAnalysis = analyzeDigitRatio(digit);
 
-  return { axes, strengths, sajuTimeUnknown: saju.timeUnknown, sunSign: sign, dayElement, name: nameAnalysis };
+  return { axes, strengths, sajuTimeUnknown: saju.timeUnknown, sunSign: sign, dayElement, name: nameAnalysis, digit: digitAnalysis };
 }

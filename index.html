@@ -178,6 +178,18 @@
           <label>혈액형 <select id="blood"><option>A</option><option>B</option><option>O</option><option>AB</option></select></label>
           <p class="count-hint">이름을 한글로 적으면 성명학(소리오행) 풀이가 추가돼요.</p>
         </fieldset>
+        <fieldset>
+          <legend>손가락 비율 (2D:4D)</legend>
+          <label>검지 vs 약지
+            <select id="digit">
+              <option value="">선택 안 함</option>
+              <option value="ring">약지(넷째)가 더 길다</option>
+              <option value="similar">비슷하다</option>
+              <option value="index">검지(둘째)가 더 길다</option>
+            </select>
+          </label>
+          <p class="count-hint">손바닥을 펴고 검지(둘째)와 약지(넷째) 길이를 비교하세요. 태내 호르몬 노출 추정 지표예요.</p>
+        </fieldset>
         <button type="submit" class="submit" id="submit-btn">✦ 분석 시작 · 타로 뽑기</button>
       </form>
       <div id="result"></div>

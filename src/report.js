@@ -1,7 +1,7 @@
 import { renderRadarSVG } from './radar.js';
 import { zodiacDetail } from './zodiacInfo.js';
 import { revealedCard } from './tarotView.js';
-import { temperamentNarrative, strengthNarrative, timeNarrative, nameNarrative } from './narrative.js';
+import { temperamentNarrative, strengthNarrative, timeNarrative, nameNarrative, digitNarrative } from './narrative.js';
 
 const stars = n => '★'.repeat(n) + '☆'.repeat(Math.max(0, 3 - n));
 
@@ -44,6 +44,14 @@ function strengthChips(strengths) {
     const cls = s.count >= 3 ? 'gold' : s.count === 2 ? 'silver' : s.count === 1 ? 'bronze' : 'zero';
     return `<span class="s-chip ${cls}">${s.name}<i>${s.count}</i></span>`;
   }).join('');
+}
+
+function digitBlock(d) {
+  if (!d) return '';
+  return `<div class="card">
+    <h3>손가락 비율 <small>2D:4D · 태내 호르몬</small></h3>
+    <div class="narrative">${digitNarrative(d)}</div>
+  </div>`;
 }
 
 function nameBlock(nameAnalysis) {
@@ -106,6 +114,8 @@ export function renderReport(result, spread) {
       <h3>타고난 기질 풀이</h3>
       <div class="narrative">${temperamentNarrative(result, result.dayElement)}</div>
     </div>
+
+    ${digitBlock(result.digit)}
 
     <div class="card">
       <h3>강점 <small>(숫자 = 근거 시스템 수)</small></h3>
