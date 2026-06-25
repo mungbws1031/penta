@@ -134,6 +134,24 @@ export function digitNarrative(d) {
   return html;
 }
 
+// ===== 운세(재물·성공·연애·건강 + 인생 고비) 서술 =====
+export function fortuneNarrative(f) {
+  if (!f) return '';
+  const entries = Object.entries(f.natal).sort((a, b) => b[1] - a[1]);
+  const top = entries[0], low = entries[entries.length - 1];
+  let html = `<p>타고난 사주 십성으로 본 네 가지 운의 기본값이다. 가장 도드라지는 건 <b>${top[0]}운(${top[1]})</b>, 상대적으로 더 공들여야 할 건 <b>${low[0]}운(${low[1]})</b>이다.</p>`;
+  const tl = f.timeline;
+  if (tl && tl.periods && tl.periods.length > 1) {
+    html += `<p>아래 그래프는 10년 단위 <b>대운(大運)</b>의 흐름이다. `;
+    if (tl.peak != null) html += `<b>${tl.peak}세</b> 무렵 전성기의 기운이 들어오고, `;
+    if (tl.lows && tl.lows.length) html += `<b>${tl.lows.join('·')}세</b> 무렵은 인생의 고비로 읽힌다 — 이 시기엔 큰 결정을 서두르기보다 내실을 다지는 편이 낫다.`;
+    html += `</p>`;
+    html += `<p class="nv-period">` + tl.periods.map(p => `${p.startAge}세~ <b>${p.label}</b>`).join('　·　') + `</p>`;
+  }
+  html += `<p class="nv-foot">대운 흐름은 사주 십성에 기반한 재미용 해석입니다. 정밀 명리(용신·격국)는 반영하지 않았어요.</p>`;
+  return html;
+}
+
 // ===== 타로 시간축 서술 (메이저 22 × 정/역) =====
 const TAROT_LONG = {
   0:  { up: '겁 없이 첫발을 내딛던 순수한 모험의 기운이 흐른다. 정해진 길이 없다는 건 곧 무엇이든 될 수 있다는 뜻이었다.', down: '준비 없이 뛰어들어 휘청였거나, 두려움에 발이 묶여 시작을 미뤘던 시간이다.' },

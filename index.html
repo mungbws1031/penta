@@ -119,6 +119,15 @@
     .picked-slots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; min-height: 20px; }
     .t-readings { margin: 0; padding-left: 18px; } .t-readings li { margin-bottom: 6px; }
 
+    .f-bars { display: grid; gap: 10px; margin-bottom: 8px; }
+    .f-row { display: grid; grid-template-columns: 86px 1fr 34px; align-items: center; gap: 10px; }
+    .f-name { font-size: .9rem; color: var(--ink); font-weight: 600; }
+    .f-bar { height: 12px; background: rgba(0,0,0,0.3); border-radius: 7px; overflow: hidden; }
+    .f-bar i { display: block; height: 100%; background: linear-gradient(90deg, var(--gold), #ffd98a); }
+    .f-score { text-align: right; font-size: .88rem; color: var(--gold); font-weight: 700; }
+    .f-sub { margin: 18px 0 8px; font-size: 1rem; } .f-sub small { color: var(--muted); font-weight: 500; font-size: .78rem; }
+    .life-graph { margin: 0 0 6px; }
+    .narrative .nv-period { color: var(--muted); font-size: .86rem; }
     .narrative p { margin: 0 0 14px; font-size: .96rem; color: #e3e0f7; }
     .narrative p:last-child { margin-bottom: 0; }
     .narrative p b { color: var(--gold); }

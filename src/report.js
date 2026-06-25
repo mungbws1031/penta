@@ -1,7 +1,8 @@
 import { renderRadarSVG } from './radar.js';
 import { zodiacDetail } from './zodiacInfo.js';
 import { revealedCard } from './tarotView.js';
-import { temperamentNarrative, strengthNarrative, timeNarrative, nameNarrative, digitNarrative } from './narrative.js';
+import { temperamentNarrative, strengthNarrative, timeNarrative, nameNarrative, digitNarrative, fortuneNarrative } from './narrative.js';
+import { renderFortuneBars, renderLifeGraph } from './fortuneGraph.js';
 
 const stars = n => '★'.repeat(n) + '☆'.repeat(Math.max(0, 3 - n));
 
@@ -44,6 +45,17 @@ function strengthChips(strengths) {
     const cls = s.count >= 3 ? 'gold' : s.count === 2 ? 'silver' : s.count === 1 ? 'bronze' : 'zero';
     return `<span class="s-chip ${cls}">${s.name}<i>${s.count}</i></span>`;
   }).join('');
+}
+
+function fortuneBlock(f) {
+  if (!f) return '';
+  return `<div class="card">
+    <h3>재물 · 성공 · 연애운 <small>+ 인생의 고비</small></h3>
+    ${renderFortuneBars(f.natal)}
+    <h4 class="f-sub">인생 운세 흐름 <small>10년 단위 대운</small></h4>
+    <div class="life-graph">${renderLifeGraph(f.timeline)}</div>
+    <div class="narrative">${fortuneNarrative(f)}</div>
+  </div>`;
 }
 
 function digitBlock(d) {
@@ -122,6 +134,8 @@ export function renderReport(result, spread) {
       <div class="s-grid">${strengthChips(strengths)}</div>
       <div class="narrative" style="margin-top:14px">${strengthNarrative(result)}</div>
     </div>
+
+    ${fortuneBlock(result.fortune)}
 
     ${nameBlock(result.name)}
 
