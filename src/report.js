@@ -1,7 +1,7 @@
 import { renderRadarSVG } from './radar.js';
 import { zodiacDetail } from './zodiacInfo.js';
 import { revealedCard } from './tarotView.js';
-import { readingText } from './tarot.js';
+import { temperamentNarrative, strengthNarrative, timeNarrative } from './narrative.js';
 
 const stars = n => '★'.repeat(n) + '☆'.repeat(Math.max(0, 3 - n));
 
@@ -74,9 +74,9 @@ function zodiacBlock(sunSign) {
 function tarotBlock(spread) {
   if (!spread || !spread.length) return '';
   return `<div class="card">
-    <h3>타로 시간축 <small>과거 · 현재 · 미래</small></h3>
+    <h3>과거 · 현재 · 미래 <small>타로 시간축</small></h3>
     <div class="tresult">${spread.map(revealedCard).join('')}</div>
-    <ul class="t-readings">${spread.map(s => `<li>${readingText(s)}</li>`).join('')}</ul>
+    <div class="narrative">${timeNarrative(spread)}</div>
   </div>`;
 }
 
@@ -106,8 +106,14 @@ export function renderReport(result, spread) {
     </div>
 
     <div class="card">
+      <h3>타고난 기질 풀이</h3>
+      <div class="narrative">${temperamentNarrative(result, result.dayElement)}</div>
+    </div>
+
+    <div class="card">
       <h3>강점 <small>(숫자 = 근거 시스템 수)</small></h3>
       <div class="s-grid">${strengthChips(strengths)}</div>
+      <div class="narrative" style="margin-top:14px">${strengthNarrative(result)}</div>
     </div>
 
     <div class="card">

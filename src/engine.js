@@ -3,7 +3,7 @@ import { computeAxis } from './consensus.js';
 import { mbtiSignals } from './mbti.js';
 import { sunSign, zodiacSignals } from './zodiac.js';
 import { bloodSignals } from './bloodtype.js';
-import { sajuSignals } from './saju.js';
+import { sajuSignals, sajuDayElement } from './saju.js';
 import { strengthCounts } from './strengths.js';
 import { analyzeGap } from './gap.js';
 
@@ -38,5 +38,5 @@ export function runEngine(input) {
   const strengths = strengthCounts({ sajuCounts, mbti, sign });
   const gap = analyzeGap(selectedStrengths, strengths);
 
-  return { axes, strengths, gap, sajuTimeUnknown: saju.timeUnknown, sunSign: sign };
+  return { axes, strengths, gap, sajuTimeUnknown: saju.timeUnknown, sunSign: sign, dayElement: sajuDayElement(birth) };
 }
