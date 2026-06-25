@@ -3,7 +3,7 @@ import { renderReport } from './report.js';
 import { analyzeCompat } from './compat.js';
 import { renderCompat } from './compatReport.js';
 import { drawThree } from './tarot.js';
-import { renderTarotIntro, renderTarotBoard, revealedCard, renderTarotResult } from './tarotView.js';
+import { renderTarotBoard, revealedCard } from './tarotView.js';
 import { buildProfileCardSVG, buildCompatCardSVG } from './shareCard.js';
 import { downloadSVGAsPNG } from './share.js';
 
@@ -28,19 +28,35 @@ function fillMbti(sel, withPlaceholder) {
   MBTIS.forEach(m => sel.add(new Option(m, m)));
 }
 
+// 타로 보드를 container에 띄우고, 3장 선택이 끝나면 onComplete(spread) 호출.
+function runTarotPick(container, onComplete) {
+  const spread = drawThree(Math.random); // 3장 미리 결정(과거/현재/미래)
+  container.innerHTML = renderTarotBoard();
+  const pickCountEl = container.querySelector('#pick-count');
+  const slotsEl = container.querySelector('#picked-slots');
+  let picked = 0;
+  container.querySelectorAll('.tcard.back').forEach(btn => btn.addEventListener('click', () => {
+    if (btn.disabled || picked >= 3) return;
+    btn.disabled = true;
+    slotsEl.insertAdjacentHTML('beforeend', revealedCard(spread[picked]));
+    picked += 1;
+    pickCountEl.textContent = String(picked);
+    if (picked === 3) setTimeout(() => onComplete(spread), 700);
+  }));
+  container.querySelector('#tarot-board')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
 // ===== 탭 네비게이션 =====
 const navButtons = document.querySelectorAll('.nav button');
 const views = document.querySelectorAll('.view');
-let tarotInitialized = false;
 navButtons.forEach(btn => btn.addEventListener('click', () => {
   navButtons.forEach(b => b.classList.toggle('active', b === btn));
   const target = btn.dataset.view;
   views.forEach(v => v.classList.toggle('active', v.id === `view-${target}`));
-  if (target === 'tarot' && !tarotInitialized) { initTarot(); tarotInitialized = true; }
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }));
 
-// ===== 프로파일 =====
+// ===== 프로파일 (입력 → 타로 → 통합 결과) =====
 const mbtiSel = document.getElementById('mbti');
 fillMbti(mbtiSel, true);
 
@@ -65,6 +81,20 @@ const hourUnknown = document.getElementById('hourUnknown');
 hourUnknown.addEventListener('change', () => { document.getElementById('hour').disabled = hourUnknown.checked; });
 
 const resultEl = document.getElementById('result');
+
+function showProfileResult(input, spread) {
+  try {
+    const result = runEngine(input);
+    resultEl.innerHTML = renderReport(result, spread);
+    bindShare('share-btn', buildProfileCardSVG(result, spread), 'penta-profile.png');
+    const r = document.getElementById('restart-btn');
+    if (r) r.addEventListener('click', () => { resultEl.innerHTML = ''; window.scrollTo({ top: 0, behavior: 'smooth' }); });
+    document.getElementById('report')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  } catch (err) {
+    resultEl.innerHTML = `<p class="note">분석 오류: ${err.message}</p>`; console.error(err);
+  }
+}
+
 document.getElementById('penta-form').addEventListener('submit', (e) => {
   e.preventDefault();
   const selected = [...sOptions.querySelectorAll('input:checked')].map(b => b.value);
@@ -80,16 +110,8 @@ document.getElementById('penta-form').addEventListener('submit', (e) => {
     },
     mbti: mbtiSel.value, blood: document.getElementById('blood').value, selectedStrengths: selected,
   };
-  try {
-    const result = runEngine(input);
-    resultEl.innerHTML = renderReport(result);
-    bindShare('share-btn', buildProfileCardSVG(result), 'penta-profile.png');
-    const r = document.getElementById('restart-btn');
-    if (r) r.addEventListener('click', () => { resultEl.innerHTML = ''; window.scrollTo({ top: 0, behavior: 'smooth' }); });
-    document.getElementById('report')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  } catch (err) {
-    resultEl.innerHTML = `<p class="note">분석 오류: ${err.message}</p>`; console.error(err);
-  }
+  // 입력 확정 → 타로 3장 뽑기 → 통합 결과
+  runTarotPick(resultEl, (spread) => showProfileResult(input, spread));
 });
 
 // ===== 궁합 =====
@@ -120,32 +142,3 @@ document.getElementById('compat-form').addEventListener('submit', (e) => {
     compatResultEl.innerHTML = `<p class="note">궁합 분석 오류: ${err.message}</p>`; console.error(err);
   }
 });
-
-// ===== 타로 =====
-const tarotArea = document.getElementById('tarot-area');
-function initTarot() {
-  tarotArea.innerHTML = renderTarotIntro();
-  document.getElementById('tarot-shuffle').addEventListener('click', startTarotBoard);
-}
-function startTarotBoard() {
-  const spread = drawThree(Math.random); // 3장 미리 결정
-  tarotArea.innerHTML = renderTarotBoard();
-  const pickCountEl = document.getElementById('pick-count');
-  const slotsEl = document.getElementById('picked-slots');
-  let picked = 0;
-  tarotArea.querySelectorAll('.tcard.back').forEach(btn => btn.addEventListener('click', () => {
-    if (btn.disabled || picked >= 3) return;
-    btn.disabled = true;
-    const slot = spread[picked];
-    slotsEl.insertAdjacentHTML('beforeend', revealedCard(slot));
-    picked += 1;
-    pickCountEl.textContent = String(picked);
-    if (picked === 3) {
-      setTimeout(() => {
-        tarotArea.innerHTML = renderTarotResult(spread);
-        document.getElementById('tarot-again').addEventListener('click', initTarot);
-        document.getElementById('tarot-result')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }, 600);
-    }
-  }));
-}

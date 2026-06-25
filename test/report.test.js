@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { renderReport } from '../src/report.js';
 import { runEngine } from '../src/engine.js';
+import { drawThree } from '../src/tarot.js';
 
 const result = runEngine({
   birth: { year:1990, month:5, day:15, hour:10, calendar:'solar', gender:'male' },
@@ -24,5 +25,12 @@ describe('renderReport', () => {
     const html = renderReport(result);
     expect(html).toContain('별자리');
     expect(html).toContain('zodiac-card');
+  });
+  it('spread 전달 시 타로 시간축 섹션 포함, 없으면 미포함', () => {
+    const spread = drawThree(() => 0.3);
+    const withTarot = renderReport(result, spread);
+    expect(withTarot).toContain('타로 시간축');
+    expect(withTarot).toContain('과거');
+    expect(renderReport(result)).not.toContain('타로 시간축');
   });
 });

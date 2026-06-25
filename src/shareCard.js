@@ -30,7 +30,7 @@ function frame(inner) {
 
 const FF = `font-family="system-ui, 'Apple SD Gothic Neo', sans-serif"`;
 
-export function buildProfileCardSVG(result) {
+export function buildProfileCardSVG(result, spread) {
   const { axes, strengths, sunSign } = result;
   const strong = axes.filter(a => a.stars >= 3 && a.resultPole !== 0);
   const headline = strong.length
@@ -59,6 +59,14 @@ export function buildProfileCardSVG(result) {
   const top = strengths.filter(s => s.count >= 2).map(s => `${s.name}(${s.count})`);
   y += 56;
   out += `<text x="90" y="${y}" ${FF} font-size="32" fill="#f0c75e">${esc(top.join('  ·  ') || '뚜렷한 합의 없음')}</text>`;
+
+  if (spread && spread.length) {
+    y += 90;
+    out += `<text x="90" y="${y}" ${FF} font-size="34" font-weight="700" fill="#ece9ff">타로 시간축</text>`;
+    y += 52;
+    const line = spread.map(s => `${s.position} ${s.card.emoji}${s.card.name}${s.reversed ? '(역)' : ''}`).join('   ');
+    out += `<text x="90" y="${y}" ${FF} font-size="28" fill="#cdc7f0">${esc(line)}</text>`;
+  }
 
   return frame(out);
 }

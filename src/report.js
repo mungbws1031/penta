@@ -1,5 +1,7 @@
 import { renderRadarSVG } from './radar.js';
 import { zodiacDetail } from './zodiacInfo.js';
+import { revealedCard } from './tarotView.js';
+import { readingText } from './tarot.js';
 
 const stars = n => '★'.repeat(n) + '☆'.repeat(Math.max(0, 3 - n));
 
@@ -69,7 +71,16 @@ function zodiacBlock(sunSign) {
   </div>`;
 }
 
-export function renderReport(result) {
+function tarotBlock(spread) {
+  if (!spread || !spread.length) return '';
+  return `<div class="card">
+    <h3>타로 시간축 <small>과거 · 현재 · 미래</small></h3>
+    <div class="tresult">${spread.map(revealedCard).join('')}</div>
+    <ul class="t-readings">${spread.map(s => `<li>${readingText(s)}</li>`).join('')}</ul>
+  </div>`;
+}
+
+export function renderReport(result, spread) {
   const { axes, strengths, gap, sajuTimeUnknown, sunSign } = result;
   const timeNote = sajuTimeUnknown
     ? `<p class="note">※ 시주(출생시) 없이 추정 — 내면·말년 영역 정밀도가 낮습니다.</p>` : '';
@@ -107,6 +118,8 @@ export function renderReport(result) {
         ${gapColumn('키워온 강점', gap.nurtured, 'g-nurtured', '네가 만들어온 힘')}
       </div>
     </div>
+
+    ${tarotBlock(spread)}
 
     ${timeNote}
     <p class="disclaimer">이 결과는 <b>재미용 셀프 분석</b>입니다. 과학적·확정적 예측이 아닙니다.</p>
