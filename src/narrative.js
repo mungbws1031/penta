@@ -251,6 +251,75 @@ export function sajuNarrative(detail) {
   return html;
 }
 
+// ===== 가족 인연운 =====
+export function relationNarrative(fortune, sajuDetail) {
+  const { relation, gender } = fortune;
+  if (!relation) return '';
+  const isFemale = gender === 'female';
+  const tgs = sajuDetail?.tenGodGroups || {};
+  let html = '';
+
+  const spouseScore = relation.배우자;
+  html += `<p class="nv-head">💑 배우자운</p>`;
+  if (spouseScore >= 70) {
+    html += isFemale
+      ? `<p>관성(官星)이 충실해 배우자 인연이 강한 팔자다. 남편이 안정적인 울타리가 되고 사회적·경제적 지원을 준다. 가정 운이 탄탄하다.</p>`
+      : `<p>재성(財星)이 충실해 배우자 인연이 강한 팔자다. 아내가 현실적·경제적 도움을 주는 인연이 된다. 가정이 든든한 기반이 된다.</p>`;
+  } else if (spouseScore >= 55) {
+    html += `<p>배우자 인연은 있으나 노력이 더해질 때 빛나는 관계다. 서로를 이해하는 시간이 쌓일수록 더 단단해진다.</p>`;
+  } else if (spouseScore >= 44) {
+    html += `<p>배우자운이 평범한 편이다. 인연이 늦게 오거나, 결혼 후 서로의 독립적인 영역을 존중하는 관계가 잘 맞는다.</p>`;
+  } else {
+    html += `<p>배우자 인연이 약하거나 복잡한 팔자다. ${isFemale ? '상관(傷官)이 관성을 극하는 구조 — ' : '비겁이 재성을 침범하는 구조 — '}만혼·이별 가능성이 있으므로 인연을 억지로 붙잡기보다 자신의 세계를 먼저 완성하는 것이 현명하다.</p>`;
+  }
+
+  const childScore = relation.자식;
+  html += `<p class="nv-head">👶 자식운</p>`;
+  if (childScore >= 70) {
+    html += isFemale
+      ? `<p>식상(食傷)이 발달해 자식 복이 풍부한 팔자다. 자녀와 정서적 교감이 깊고, 자녀가 창의적·표현적으로 성장하는 인연이 된다.</p>`
+      : `<p>관성(官星)이 발달해 자식 복이 강한 팔자다. 자녀가 사회적으로 인정받고 부모의 이름을 빛내는 인연이 된다.</p>`;
+  } else if (childScore >= 55) {
+    html += `<p>자식과의 인연이 괜찮은 편이다. 자녀가 생기면 정이 깊게 쌓이고, 노년에 든든한 지지대가 된다.</p>`;
+  } else if (childScore >= 44) {
+    html += `<p>자식 인연이 평범하다. 자녀를 일찍 독립시키거나 적은 수의 자녀와 깊은 관계를 맺는 것이 자연스러운 형태다.</p>`;
+  } else {
+    html += `<p>자식 인연이 약한 팔자다. 늦게 자녀를 두거나, 정신적·사회적 자녀(제자·후배)를 키우는 역할로 채워지는 경우도 많다.</p>`;
+  }
+
+  const parentScore = relation.부모;
+  const insung = tgs.인성 || 0;
+  html += `<p class="nv-head">🏠 부모운</p>`;
+  if (parentScore >= 70) {
+    html += insung >= 2
+      ? `<p>인성(印星)이 발달해 어머니(또는 부모 전반)의 보살핌이 충분한 팔자다. 부모의 교육·정서적 지원이 삶의 기반이 된다.</p>`
+      : `<p>편재가 발달해 부친 쪽의 경제적 기반이나 사회적 배경이 도움이 되는 팔자다. 부모의 울타리 위에서 자신의 세계를 넓힐 수 있다.</p>`;
+  } else if (parentScore >= 55) {
+    html += `<p>부모와의 인연이 괜찮은 편이다. 어릴 때는 평범한 지원이지만 성인이 되면서 서로 동반자 관계로 발전한다.</p>`;
+  } else if (parentScore >= 44) {
+    html += `<p>부모 인연이 평범하다. 일찍 독립하거나 부모 도움 없이 스스로 기반을 쌓아야 하는 자수성가형에 가깝다.</p>`;
+  } else {
+    html += `<p>부모 인연이 약한 팔자다. 어릴 때 부재·이별·경제적 어려움이 있을 수 있다. 이 시련이 강한 독립심과 자생 능력을 키우는 밑거름이 되는 경우가 많다.</p>`;
+  }
+
+  const sibScore = relation.형제;
+  const bigeop = tgs.비겁 || 0;
+  html += `<p class="nv-head">🤝 형제운</p>`;
+  if (sibScore >= 70) {
+    html += bigeop >= 3
+      ? `<p>비겁(比劫)이 강해 형제자매·동료와의 유대가 깊은 팔자다. 함께할 때 더 큰 힘을 발휘하며, 집단 안에서 빛나는 유형이다.</p>`
+      : `<p>형제자매 인연이 강한 팔자다. 형제나 동료가 삶의 중요한 파트너이자 지원군이 된다.</p>`;
+  } else if (sibScore >= 55) {
+    html += `<p>형제자매와의 인연이 괜찮은 편이다. 경쟁과 협력이 공존하는 관계이며, 어릴 때보다 성인 후 사이가 더 가까워지는 경향이 있다.</p>`;
+  } else if (sibScore >= 44) {
+    html += `<p>형제 인연이 평범하다. 독자이거나, 형제자매가 있어도 각자의 길을 가는 관계가 많다.</p>`;
+  } else {
+    html += `<p>형제 인연이 약한 팔자다. 혈연보다 선택한 가족(친한 친구·동료)이 더 가까운 관계가 되는 경우가 많다.</p>`;
+  }
+
+  return html;
+}
+
 // ===== 레이더 설명 =====
 const AXIS_MEANING = {
   A1: { plus:'외향', minus:'내향', desc:'에너지를 충전하는 방식 — 사람·활동에서 얻는가, 혼자만의 시간에서 얻는가' },

@@ -1,8 +1,8 @@
 import { renderRadarSVG } from './radar.js';
 import { zodiacDetail } from './zodiacInfo.js';
 import { revealedCard } from './tarotView.js';
-import { temperamentNarrative, strengthNarrative, timeNarrative, nameNarrative, digitNarrative, fortuneNarrative, sajuNarrative, radarNarrative, synthesisNarrative } from './narrative.js';
-import { renderFortuneBars, renderLifeGraph } from './fortuneGraph.js';
+import { temperamentNarrative, strengthNarrative, timeNarrative, nameNarrative, digitNarrative, fortuneNarrative, sajuNarrative, radarNarrative, synthesisNarrative, relationNarrative } from './narrative.js';
+import { renderFortuneBars, renderLifeGraph, renderRelationBars } from './fortuneGraph.js';
 import { OHAENG_COLOR } from './sajuDetail.js';
 
 const stars = n => '★'.repeat(n) + '☆'.repeat(Math.max(0, 3 - n));
@@ -111,6 +111,15 @@ function fortuneBlock(f) {
   </div>`;
 }
 
+function relationBlock(fortune, sajuDetail) {
+  if (!fortune?.relation) return '';
+  return `<div class="card">
+    <h3>가족 인연운 <small>배우자 · 자식 · 부모 · 형제</small></h3>
+    ${renderRelationBars(fortune.relation)}
+    <div class="narrative" style="margin-top:14px">${relationNarrative(fortune, sajuDetail)}</div>
+  </div>`;
+}
+
 function digitBlock(d) {
   if (!d) return '';
   return `<div class="card">
@@ -192,6 +201,8 @@ export function renderReport(result, spread) {
     </div>
 
     ${fortuneBlock(result.fortune)}
+
+    ${relationBlock(result.fortune, result.sajuDetail)}
 
     ${nameBlock(result.name)}
 

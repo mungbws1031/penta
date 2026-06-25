@@ -1,6 +1,7 @@
 // 운세 시각화 (의존성 없는 SVG/HTML 문자열)
 
 const ICON = { 재물: '💰', 성공: '🏆', 연애: '💕', 건강: '🌿' };
+const REL_ICON = { 배우자: '💑', 자식: '👶', 부모: '🏠', 형제: '🤝' };
 
 export function renderFortuneBars(natal) {
   return `<div class="f-bars">` + Object.entries(natal).map(([k, v]) => `
@@ -9,6 +10,17 @@ export function renderFortuneBars(natal) {
       <span class="f-bar"><i style="width:${v}%"></i></span>
       <span class="f-score">${v}</span>
     </div>`).join('') + `</div>`;
+}
+
+export function renderRelationBars(relation) {
+  return `<div class="f-bars">` + Object.entries(relation).map(([k, v]) => {
+    const cls = v >= 68 ? 'rel-high' : v < 44 ? 'rel-low' : '';
+    return `<div class="f-row">
+      <span class="f-name">${REL_ICON[k] || ''} ${k}운</span>
+      <span class="f-bar"><i class="${cls}" style="width:${v}%"></i></span>
+      <span class="f-score">${v}</span>
+    </div>`;
+  }).join('') + `</div>`;
 }
 
 const W = 680, H = 250, PADL = 34, PADR = 18, PADT = 26, PADB = 52;

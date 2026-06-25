@@ -24,6 +24,30 @@ export function tenGod(dayGan, other) {
   return '비견';
 }
 
+// 사주 본명(natal) 십성 카운트 → 가족 인연 점수 (성별 반영)
+export function relationFortune(counts, gender) {
+  const c = k => counts[k] || 0;
+  const isFemale = gender === 'female';
+
+  // 배우자성: 남=재성(정재+편재), 여=관성(정관+편관); 상관은 관성을 극해 여성 배우자운 손상
+  const spouse = isFemale
+    ? clamp(42 + c('정관') * 12 + c('편관') * 7 - c('상관') * 5)
+    : clamp(42 + c('정재') * 12 + c('편재') * 7 - c('겁재') * 3);
+
+  // 자식성: 남=관성, 여=식상
+  const child = isFemale
+    ? clamp(42 + c('식신') * 14 + c('상관') * 7)
+    : clamp(42 + c('정관') * 12 + c('편관') * 8);
+
+  // 부모: 인성=어머니, 재성(편재)=아버지
+  const parent = clamp(45 + c('정인') * 12 + c('편인') * 5 + c('편재') * 8 + c('정재') * 4);
+
+  // 형제: 비견=형제, 겁재=경쟁형 형제(2개 이상이면 갈등)
+  const sibling = clamp(42 + c('비견') * 14 + c('겁재') * 3 - Math.max(0, c('겁재') - 1) * 5);
+
+  return { 배우자: spouse, 자식: child, 부모: parent, 형제: sibling };
+}
+
 // 사주 본명(natal) 십성 카운트 → 4대 운 점수
 export function natalFortune(counts) {
   const c = k => counts[k] || 0;
@@ -88,5 +112,10 @@ export function lifeTimeline(birth) {
 }
 
 export function analyzeFortune(counts, birth) {
-  return { natal: natalFortune(counts), timeline: lifeTimeline(birth) };
+  return {
+    natal: natalFortune(counts),
+    relation: relationFortune(counts, birth.gender),
+    gender: birth.gender,
+    timeline: lifeTimeline(birth),
+  };
 }
