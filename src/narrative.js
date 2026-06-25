@@ -251,6 +251,186 @@ export function sajuNarrative(detail) {
   return html;
 }
 
+// ===== 레이더 설명 =====
+const AXIS_MEANING = {
+  A1: { plus:'외향', minus:'내향', desc:'에너지를 충전하는 방식 — 사람·활동에서 얻는가, 혼자만의 시간에서 얻는가' },
+  A2: { plus:'직관', minus:'현실', desc:'정보를 처리하는 방식 — 가능성·패턴을 먼저 보는가, 눈앞의 사실·경험을 먼저 보는가' },
+  A3: { plus:'사고', minus:'감정', desc:'결정의 기준 — 논리·원칙으로 판단하는가, 사람·관계·공감으로 판단하는가' },
+  A4: { plus:'계획', minus:'유연', desc:'일하는 방식 — 미리 정하고 실행하는가, 흐름에 따라 즉흥적으로 움직이는가' },
+  A5: { plus:'주도', minus:'수용', desc:'역할 선호 — 방향을 정하고 이끄는가, 흐름을 받아들이고 조화를 맞추는가' },
+};
+
+export function radarNarrative(axes) {
+  let html = `<p>오각형의 각 꼭짓점은 성격의 한 축이다. 꼭짓점에 가까울수록 그 방향이 뚜렷하고, 중심에 가까울수록 균형 상태다. <b>★ 개수</b>는 사주·MBTI·별자리 세 렌즈 중 몇 개가 같은 방향을 가리키는지를 나타낸다 — 별이 많을수록 신뢰도 높다.</p>`;
+
+  html += `<div class="rat-table">`;
+  axes.forEach(a => {
+    const m = AXIS_MEANING[a.id];
+    const starsHtml = '★'.repeat(a.stars) + '☆'.repeat(Math.max(0, 3 - a.stars));
+    const poleCls = a.resultPole === 0 ? 'rat-pole bal' : 'rat-pole';
+    const conflictTag = a.conflict ? `<span class="tag conflict" style="font-size:.68rem;padding:1px 6px">충돌</span>` : '';
+    const sysStr = a.contributingSystems.length ? a.contributingSystems.join('·') : '신호 약함';
+    html += `<div class="rat-row">
+      <div class="rat-meta">
+        <span class="rat-label">${a.label}</span>
+        <span class="${poleCls}">${a.poleLabel}</span>
+        <span class="rat-stars">${starsHtml}</span>
+        ${conflictTag}
+      </div>
+      <div class="rat-detail">
+        <span class="rat-sys">${sysStr}</span>
+        <span class="rat-desc">${m ? m.desc : ''}</span>
+      </div>
+    </div>`;
+  });
+  html += `</div>`;
+
+  const threeStarAxes = axes.filter(a => a.stars >= 3 && a.resultPole !== 0);
+  const conflictAxes = axes.filter(a => a.conflict);
+  if (threeStarAxes.length) {
+    html += `<p><b>★★★ 확정 성향</b>: ${threeStarAxes.map(a => `${a.label}(${a.poleLabel})`).join(' · ')} — 세 시스템이 동시에 가리키니 사실상 너의 고정된 결이다.</p>`;
+  }
+  if (conflictAxes.length) {
+    html += `<p><b>충돌 영역</b>: ${conflictAxes.map(a => a.label).join(' · ')} — 시스템마다 신호가 엇갈린다. 상황에 따라 다른 모습을 보이는, 다면적인 영역이다.</p>`;
+  }
+  return html;
+}
+
+// ===== 종합 의견 =====
+const INCOME_STYLE = {
+  관성: { cond: v => v >= 2, text:'조직·직장을 통한 안정적 수입이 가장 잘 맞는다. 전문성이 쌓일수록 직위와 수입이 함께 오르는 구조다.' },
+  재성: { cond: v => v >= 2, text:'재물을 직접 다루는 감각이 있다. 사업·투자·영업에서 기회를 포착해 과감하게 실행할 때 돈이 따라온다.' },
+  식상: { cond: v => v >= 2, text:'재능·기술·표현력으로 버는 돈이 잘 맞는다. 프리랜서·창작·교육·서비스에서 자신만의 수입 구조를 만드는 것이 유리하다.' },
+  인성: { cond: v => v >= 2, text:'자격·명예와 함께 수입이 따라오는 유형이다. 빠른 돈보다 신뢰가 쌓인 뒤 안정적인 수입이 온다.' },
+  비겁: { cond: v => v >= 2, text:'자수성가형 수입 구조다. 혼자 힘으로 일으키는 독립 사업이나 전문직에서 잠재력이 크다.' },
+};
+
+const WEAK_TG_ADVICE = {
+  비겁: '협력이 결과를 배로 만든다. 독자적인 강점을 살리되 파트너십을 의식적으로 넓힐 것.',
+  식상: '표현하지 않으면 아무도 모른다. 재능을 밖으로 꺼내는 것이 첫 번째 숙제다.',
+  재성: '돈을 쫓기보다 가치 있는 일에 집중하라. 가치가 쌓이면 재물은 따라온다.',
+  관성: '책임지는 자리를 두려워하지 마라. 그 자리가 너를 성장시키는 무대가 된다.',
+  인성: '배운 것을 행동으로 옮겨야 실력이 된다. 생각 다음엔 반드시 실행이 와야 한다.',
+};
+
+export function synthesisNarrative(result) {
+  if (!result.sajuDetail) return '';
+  const { axes, strengths, sunSign, fortune, sajuDetail, birthYear } = result;
+  const CURRENT_YEAR = 2026;
+  const approxAge = birthYear ? CURRENT_YEAR - birthYear : null;
+  const dp = sajuDetail.pillars?.dayProfile;
+  const tgs = sajuDetail.tenGodGroups || {};
+  const natal = fortune?.natal || {};
+  const timeline = fortune?.timeline || {};
+
+  let html = '';
+
+  // ① 핵심 정체성
+  const strongAxes = axes.filter(a => a.stars >= 3 && a.resultPole !== 0);
+  const coreAxes = strongAxes.length ? strongAxes : axes.filter(a => a.stars >= 2 && a.resultPole !== 0).slice(0, 3);
+  const topStrengths = [...strengths].sort((a,b) => b.count - a.count).filter(s => s.count >= 2);
+
+  html += `<p class="nv-head nv-confirm">🔮 이 사람은 어떤 사람인가</p>`;
+  html += `<p>`;
+  if (dp) html += `사주 일간 <b>${sajuDetail.pillars.dayGan}(${dp.symbol})</b>의 기운 위에 `;
+  if (coreAxes.length) {
+    html += `${coreAxes.map(a => `<b>${a.poleLabel}</b>`).join('·')}의 성향이 `;
+    html += strongAxes.length >= 2 ? '세 렌즈 모두에서 겹쳐 사실상 고정된 결이다. ' : '여러 렌즈에서 반복된다. ';
+  }
+  html += `태양궁 <b>${sunSign}</b>까지 더하면 — `;
+  if (dp) html += `${dp.fate.split('—').pop()?.trim() || dp.core + '의 삶을 산다.'}`;
+  html += `</p>`;
+
+  if (topStrengths.length) {
+    html += `<p>여러 시스템이 동시에 지목하는 핵심 강점은 <b>${topStrengths.map(s => s.name).join(' · ')}</b>이다. 이 자질이 가장 빛나는 자리에 있을 때 성과가 극대화된다.</p>`;
+  }
+
+  // ② 돈을 언제·어떻게 버는가
+  html += `<p class="nv-head">💰 돈을 언제·어떻게 버는가</p>`;
+
+  const moneyScore = natal.재물 || 50;
+  const successScore = natal.성공 || 50;
+
+  html += `<p>타고난 재물운 기본값은 <b>${moneyScore}점</b>`;
+  if (moneyScore >= 70) html += ` — 재물 인연이 강한 팔자다. 자산을 다루는 감각이 있고 돈이 비교적 잘 따라온다.`;
+  else if (moneyScore >= 55) html += ` — 노력과 타이밍이 결과를 만드는 유형이다. 기회를 알아보고 잡는 안목이 관건이다.`;
+  else html += ` — 성취·명예(${successScore}점)가 먼저 오고 수입이 뒤따르는 구조다. 인정을 받은 후 보상이 따라오는 패턴이다.`;
+  html += `</p>`;
+
+  // 수입 방식 (십성)
+  let incomeText = '';
+  for (const [key, spec] of Object.entries(INCOME_STYLE)) {
+    if (spec.cond(tgs[key] || 0)) { incomeText = spec.text; break; }
+  }
+  if (!incomeText) incomeText = '어느 한 방향에 치우치지 않은 균형 잡힌 수입 구조다. 여러 경로에서 고르게 벌 수 있으나, 한 분야에 집중할수록 효율이 높다.';
+  html += `<p>${incomeText}</p>`;
+
+  // 돈이 들어오는 시기 (대운)
+  if (timeline.periods && timeline.periods.length > 1) {
+    const good = timeline.periods.filter(p => p.overall >= 65 || (p.label && (p.label.includes('재물') || p.label.includes('전성'))));
+    const bad  = timeline.periods.filter(p => p.overall < 38  || (p.label && p.label.includes('시련')));
+    if (good.length) {
+      const gs = good.map(p => `<b>${p.startAge}~${p.startAge+9}세</b>(${p.label})`).join(', ');
+      html += `<p>대운 타이밍상 재물과 기회가 집중되는 구간은 ${gs}이다. 이 시기엔 과감한 투자·확장이 결실을 맺는다.</p>`;
+    }
+    if (bad.length) {
+      const bs = bad.map(p => `<b>${p.startAge}~${p.startAge+9}세</b>`).join(', ');
+      html += `<p>${bs}는 기운이 수축하는 구간이다. 이때 무리한 확장·투자보다 내실을 다지는 편이 현명하다.</p>`;
+    }
+  }
+
+  // ③ 앞으로 어떻게 될 것인가
+  html += `<p class="nv-head">🌊 앞으로 어떻게 될 것인가</p>`;
+
+  if (approxAge && timeline.periods && timeline.periods.length > 1) {
+    const sorted = [...timeline.periods].sort((a,b) => a.startAge - b.startAge);
+    let curIdx = -1;
+    for (let i = 0; i < sorted.length; i++) {
+      const next = sorted[i + 1];
+      if (sorted[i].startAge <= approxAge && (!next || next.startAge > approxAge)) { curIdx = i; break; }
+    }
+    if (curIdx >= 0) {
+      const cur  = sorted[curIdx];
+      const nxt  = sorted[curIdx + 1];
+      const nxt2 = sorted[curIdx + 2];
+
+      html += `<p>지금(약 ${approxAge}세)은 <b>${cur.label}</b> 대운이다. `;
+      if (cur.overall >= 68) html += `흐름이 살아있는 시기 — 지금 움직이면 결과가 따라온다.`;
+      else if (cur.overall < 42) html += `기운이 낮은 구간이다. 큰 결정보다 기반 다지기와 내공 쌓기에 집중하자.`;
+      else html += `안정적인 흐름 속에서 준비를 다지는 시기다. 꾸준함이 다음 도약의 씨앗이 된다.`;
+      html += `</p>`;
+
+      if (nxt) {
+        html += `<p><b>${nxt.startAge}세부터</b>는 <b>${nxt.label}</b> 대운이 시작된다. `;
+        if (nxt.overall >= 70) html += `전성기에 가까운 기운이 들어오는 구간이다. 지금부터 그 시기를 위한 포지셔닝을 시작해야 한다.`;
+        else if (nxt.overall < 42) html += `다소 어려운 시기가 예고된다. 지금 기반을 단단히 해두는 것이 최선이다.`;
+        else html += `무난하게 흘러가는 구간이다. 한 방향으로 꾸준히 쌓아가는 것이 최선이다.`;
+        html += `</p>`;
+      }
+
+      if (nxt2) {
+        html += `<p><b>${nxt2.startAge}세 이후</b>는 <b>${nxt2.label}</b> 구간이다. 지금 이 시점에서 그 흐름까지 역산해 큰 그림을 그리는 것이 현명하다.</p>`;
+      }
+    }
+  } else if (timeline.peak != null) {
+    html += `<p><b>${timeline.peak}세</b> 무렵 인생의 전성기 기운이 들어온다. 그 시기를 향해 지금부터 역산해 움직이는 것이 현명하다.</p>`;
+  } else {
+    html += `<p>생년월일로 대운 흐름을 계산했다. 앞으로의 방향은 위 재물·성공운 그래프의 흐름을 따른다.</p>`;
+  }
+
+  // ④ 핵심 조언
+  html += `<p class="nv-head">✨ 핵심 조언</p>`;
+  const sortedTg = Object.entries(tgs).sort((a,b) => a[1] - b[1]);
+  const weakTg = sortedTg[0]?.[0];
+  const adviceText = weakTg ? WEAK_TG_ADVICE[weakTg] : '';
+  const dpCaution = dp?.caution?.split('.')[0] || '';
+  const combined = [adviceText, dpCaution].filter(Boolean).join(' 그리고 ');
+  if (combined) html += `<p>${combined}.</p>`;
+
+  html += `<p class="nv-foot">사주·MBTI·별자리·혈액형·타로 5개 시스템 종합 분석입니다. 재미용 풀이이며 과학적 확정 예측이 아닙니다.</p>`;
+  return html;
+}
+
 // ===== 타로 시간축 서술 (메이저 22 × 정/역) =====
 const TAROT_LONG = {
   0:  { up: '겁 없이 첫발을 내딛던 순수한 모험의 기운이 흐른다. 정해진 길이 없다는 건 곧 무엇이든 될 수 있다는 뜻이었다.', down: '준비 없이 뛰어들어 휘청였거나, 두려움에 발이 묶여 시작을 미뤘던 시간이다.' },

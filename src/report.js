@@ -1,7 +1,7 @@
 import { renderRadarSVG } from './radar.js';
 import { zodiacDetail } from './zodiacInfo.js';
 import { revealedCard } from './tarotView.js';
-import { temperamentNarrative, strengthNarrative, timeNarrative, nameNarrative, digitNarrative, fortuneNarrative, sajuNarrative } from './narrative.js';
+import { temperamentNarrative, strengthNarrative, timeNarrative, nameNarrative, digitNarrative, fortuneNarrative, sajuNarrative, radarNarrative, synthesisNarrative } from './narrative.js';
 import { renderFortuneBars, renderLifeGraph } from './fortuneGraph.js';
 import { OHAENG_COLOR } from './sajuDetail.js';
 
@@ -164,8 +164,9 @@ export function renderReport(result, spread) {
     </div>
 
     <div class="card radar-card">
-      <h3>일치도 레이더</h3>
+      <h3>일치도 레이더 <small>5축 성향 · ★ = 시스템 일치 수</small></h3>
       <div class="radar-wrap">${renderRadarSVG(axes)}</div>
+      <div class="narrative" style="margin-top:12px">${radarNarrative(axes)}</div>
     </div>
 
     ${sajuBlock(result.sajuDetail)}
@@ -195,6 +196,11 @@ export function renderReport(result, spread) {
     ${nameBlock(result.name)}
 
     ${tarotBlock(spread)}
+
+    <div class="card synthesis-card">
+      <h3>종합 의견 <small>5개 시스템 통합 분석</small></h3>
+      <div class="narrative">${synthesisNarrative(result)}</div>
+    </div>
 
     ${timeNote}
     <p class="disclaimer">이 결과는 <b>재미용 셀프 분석</b>입니다. 과학적·확정적 예측이 아닙니다.</p>

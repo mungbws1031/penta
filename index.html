@@ -170,6 +170,21 @@
     .career-chip { display: inline-block; padding: 4px 10px; margin: 3px 3px 3px 0;
       border-radius: 8px; background: rgba(255,255,255,0.07); border: 1px solid var(--border);
       font-size: .84rem; color: var(--ink); }
+    /* 레이더 설명 테이블 */
+    .rat-table { display: flex; flex-direction: column; gap: 8px; margin: 8px 0 0; }
+    .rat-row { display: grid; grid-template-columns: 1fr; gap: 2px;
+      padding: 10px 12px; border-radius: 10px; background: rgba(255,255,255,0.04); border: 1px solid var(--border); }
+    .rat-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .rat-label { font-weight: 700; font-size: .9rem; }
+    .rat-pole { font-size: .82rem; padding: 2px 8px; border-radius: 6px; background: rgba(240,199,94,0.15); color: var(--gold); }
+    .rat-pole.bal { background: rgba(255,255,255,0.07); color: var(--muted); }
+    .rat-stars { font-size: .9rem; letter-spacing: .05em; color: var(--gold); margin-left: auto; }
+    .rat-detail { font-size: .82rem; color: var(--muted); margin-top: 3px; display: flex; gap: 8px; flex-wrap: wrap; }
+    .rat-sys { color: var(--confirm); font-weight: 600; }
+    .rat-desc { flex: 1; min-width: 160px; }
+    /* 종합 카드 */
+    .synthesis-card { border-color: rgba(110,231,168,0.25); }
+    .synthesis-card h3 { color: var(--good); }
     .disclaimer { color: var(--muted); font-size: .82rem; text-align: center; margin-top: 18px; }
     .actions { text-align: center; margin-top: 18px; }
     .ghost { background: transparent; border: 1px solid var(--border); color: var(--ink); padding: 11px 22px; border-radius: 12px; cursor: pointer; font-size: .95rem; }
