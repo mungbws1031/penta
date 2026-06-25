@@ -1,4 +1,5 @@
 import { zodiacDetail } from './zodiacInfo.js';
+import { DAY_GAN_PROFILE, TENGOD_GROUP_TEXT } from './sajuDetail.js';
 
 const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
@@ -149,6 +150,77 @@ export function fortuneNarrative(f) {
     html += `<p class="nv-period">` + tl.periods.map(p => `${p.startAge}세~ <b>${p.label}</b>`).join('　·　') + `</p>`;
   }
   html += `<p class="nv-foot">대운 흐름은 사주 십성에 기반한 재미용 해석입니다. 정밀 명리(용신·격국)는 반영하지 않았어요.</p>`;
+  return html;
+}
+
+// ===== 사주 상세 풀이 서술 =====
+const OHAENG_NATURE = {
+  목: '성장과 추진의 기운이 강해, 새로운 것을 시작하고 위로 뻗으려는 에너지가 크다',
+  화: '열정과 표현의 기운이 강해, 감정과 창의를 밖으로 드러내는 힘이 크다',
+  토: '안정과 신뢰의 기운이 강해, 중심을 잡고 품어내는 포용력이 크다',
+  금: '결단과 의리의 기운이 강해, 원칙을 지키고 정확하게 처리하는 힘이 크다',
+  수: '지혜와 융통의 기운이 강해, 흐름을 읽고 깊이 사유하는 힘이 크다',
+};
+const OHAENG_WEAK = {
+  목: '추진과 성장 기운이 상대적으로 약하다. 시작을 미루거나 끈기가 약해지는 순간을 의식적으로 살필 필요가 있다',
+  화: '열정과 표현 기운이 상대적으로 약하다. 감정을 드러내거나 적극적으로 나서기가 어색할 수 있다',
+  토: '안정과 중심 기운이 상대적으로 약하다. 중심이 흔들리거나 지속성이 부족해지는 시기를 경계할 필요가 있다',
+  금: '결단과 의리 기운이 상대적으로 약하다. 결정이 늦어지거나 원칙이 흔들릴 때를 주의하면 좋다',
+  수: '지혜와 유연성이 상대적으로 약하다. 고집이 강해지거나 변화에 둔감해지는 시기를 살필 필요가 있다',
+};
+const HANJA = { 목:'木', 화:'火', 토:'土', 금:'金', 수:'水' };
+
+export function sajuNarrative(detail) {
+  if (!detail) return '';
+  const { pillars, ohaeng, tenGodGroups } = detail;
+  let html = '';
+
+  // 일간 성격
+  if (pillars.dayProfile) {
+    const p = pillars.dayProfile;
+    html += `<p><b>일간(日干) ${pillars.dayGan} · ${p.symbol}</b><br>핵심 기질: <b>${p.core}</b><br>${p.text}</p>`;
+  }
+
+  // 오행 강약
+  const entries = Object.entries(ohaeng).sort((a,b) => b[1]-a[1]);
+  const dominant = entries.filter(([,v]) => v >= 3).map(([k]) => k);
+  const weak = entries.filter(([,v]) => v === 0).map(([k]) => k);
+  if (dominant.length) {
+    html += `<p><b>강한 오행 — ${dominant.map(e=>`${e}(${HANJA[e]})`).join(' · ')}</b><br>`;
+    html += dominant.map(e => OHAENG_NATURE[e]).join('. ') + '.</p>';
+  }
+  if (weak.length) {
+    html += `<p><b>약한 오행 — ${weak.map(e=>`${e}(${HANJA[e]})`).join(' · ')}</b><br>`;
+    html += weak.map(e => OHAENG_WEAK[e]).join('. ') + '.</p>';
+  }
+
+  // 십성 그룹 분석 (가장 강한 그룹 위주)
+  const sorted = Object.entries(tenGodGroups).sort((a,b) => b[1]-a[1]);
+  const topGroups = sorted.filter(([,v]) => v >= 2);
+  if (topGroups.length) {
+    topGroups.forEach(([g, cnt]) => {
+      const t = TENGOD_GROUP_TEXT[g];
+      if (t) html += `<p><b>${g}(${cnt}) 강세</b><br>${t.high}</p>`;
+    });
+  } else {
+    // 모두 1 이하 — 균형
+    html += `<p>다섯 가지 십성 그룹이 고르게 분포되어 있다. 어느 한쪽으로 치우치지 않는 균형 잡힌 사주로, 상황에 따라 다양한 역할을 유연하게 소화할 수 있다.</p>`;
+  }
+
+  // 약한 그룹 힌트
+  const minVal = sorted[sorted.length-1]?.[1];
+  if (minVal === 0) {
+    const zeroGroups = sorted.filter(([,v]) => v === 0).map(([g]) => g);
+    const zeroTexts = zeroGroups.map(g => {
+      const t = TENGOD_GROUP_TEXT[g];
+      return t ? `${g}: ${t.low}` : null;
+    }).filter(Boolean);
+    if (zeroTexts.length) {
+      html += `<p><b>보완이 필요한 영역</b><br>${zeroTexts.join('<br>')}</p>`;
+    }
+  }
+
+  html += `<p class="nv-foot">천간·지지의 기본 기질 분석입니다. 합충(合沖)·용신(用神)·격국(格局)을 포함한 정밀 명리는 반영하지 않았어요.</p>`;
   return html;
 }
 

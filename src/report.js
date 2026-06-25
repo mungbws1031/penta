@@ -1,8 +1,9 @@
 import { renderRadarSVG } from './radar.js';
 import { zodiacDetail } from './zodiacInfo.js';
 import { revealedCard } from './tarotView.js';
-import { temperamentNarrative, strengthNarrative, timeNarrative, nameNarrative, digitNarrative, fortuneNarrative } from './narrative.js';
+import { temperamentNarrative, strengthNarrative, timeNarrative, nameNarrative, digitNarrative, fortuneNarrative, sajuNarrative } from './narrative.js';
 import { renderFortuneBars, renderLifeGraph } from './fortuneGraph.js';
+import { OHAENG_COLOR } from './sajuDetail.js';
 
 const stars = n => '★'.repeat(n) + '☆'.repeat(Math.max(0, 3 - n));
 
@@ -45,6 +46,58 @@ function strengthChips(strengths) {
     const cls = s.count >= 3 ? 'gold' : s.count === 2 ? 'silver' : s.count === 1 ? 'bronze' : 'zero';
     return `<span class="s-chip ${cls}">${s.name}<i>${s.count}</i></span>`;
   }).join('');
+}
+
+function sajuBlock(detail) {
+  if (!detail) return '';
+  const { pillars, ohaeng, tenGodGroups } = detail;
+
+  // 사주 팔자 표
+  const cols = [pillars.time, pillars.day, pillars.month, pillars.year].filter(Boolean);
+  const headers = pillars.time
+    ? ['시(時)', '일(日)', '월(月)', '년(年)']
+    : ['일(日)', '월(月)', '년(年)'];
+  const tableHtml = `<table class="saju-table">
+    <tr>${headers.map(h => `<th>${h}</th>`).join('')}</tr>
+    <tr>${cols.map(p => `<td class="saju-gan" style="color:${OHAENG_COLOR[p.ganEl]}">${p.ganKo}(${p.gan})</td>`).join('')}</tr>
+    <tr>${cols.map(p => `<td class="saju-el">${p.ganEl}</td>`).join('')}</tr>
+    <tr class="saju-sep"><td colspan="${cols.length}"></td></tr>
+    <tr>${cols.map(p => `<td class="saju-zhi" style="color:${OHAENG_COLOR[p.zhiEl]}">${p.zhiKo}(${p.zhi})</td>`).join('')}</tr>
+    <tr>${cols.map(p => `<td class="saju-el">${p.zhiEl} · ${p.animal}</td>`).join('')}</tr>
+  </table>`;
+
+  // 오행 균형 막대
+  const total = Math.max(1, Object.values(ohaeng).reduce((a, b) => a + b, 0));
+  const OHAENG_KO = { 목:'木 목', 화:'火 화', 토:'土 토', 금:'金 금', 수:'水 수' };
+  const ohaengHtml = Object.entries(ohaeng).map(([el, cnt]) => {
+    const pct = Math.round(cnt / total * 100);
+    return `<div class="oh-row">
+      <span class="oh-label">${OHAENG_KO[el]}</span>
+      <div class="oh-track"><div class="oh-fill" style="width:${pct}%;background:${OHAENG_COLOR[el]}"></div></div>
+      <span class="oh-cnt">${cnt}</span>
+    </div>`;
+  }).join('');
+
+  // 십성 5그룹 칩
+  const tgHtml = Object.entries(tenGodGroups).map(([g, cnt]) => {
+    const cls = cnt >= 3 ? 'tg-high' : cnt >= 2 ? 'tg-mid' : cnt >= 1 ? 'tg-low' : 'tg-zero';
+    return `<span class="tg-chip ${cls}">${g} <i>${cnt}</i></span>`;
+  }).join('');
+
+  const timeNote = pillars.timeUnknown
+    ? '<p class="note">※ 출생 시간 미입력 — 시주(時柱) 제외</p>' : '';
+
+  return `<div class="card">
+    <h3>사주 풀이 <small>四柱八字 · 日主 분석</small></h3>
+    <h4 class="f-sub">사주 팔자 (四柱八字)</h4>
+    ${tableHtml}
+    ${timeNote}
+    <h4 class="f-sub">오행 균형 <small>천간·지지 합산</small></h4>
+    <div class="oh-bars">${ohaengHtml}</div>
+    <h4 class="f-sub">십성 분포 <small>비겁·식상·재성·관성·인성</small></h4>
+    <div class="tg-chips">${tgHtml}</div>
+    <div class="narrative" style="margin-top:14px">${sajuNarrative(detail)}</div>
+  </div>`;
 }
 
 function fortuneBlock(f) {
@@ -114,6 +167,8 @@ export function renderReport(result, spread) {
       <h3>일치도 레이더</h3>
       <div class="radar-wrap">${renderRadarSVG(axes)}</div>
     </div>
+
+    ${sajuBlock(result.sajuDetail)}
 
     ${zodiacBlock(sunSign)}
 

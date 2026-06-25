@@ -137,6 +137,35 @@
     .narrative .nv-hidden { color: var(--hidden); } .narrative .nv-nurtured { color: var(--nurtured); }
     .narrative .nv-foot { color: var(--muted); font-size: .86rem; font-style: italic; }
     .note { color: #ffc98a; font-size: .85rem; }
+
+    /* 사주 팔자 표 */
+    .saju-table { width: 100%; border-collapse: collapse; text-align: center; margin-bottom: 6px; }
+    .saju-table th { color: var(--muted); font-size: .78rem; padding: 4px 0 8px; letter-spacing: .04em; }
+    .saju-table td { padding: 5px 4px; }
+    .saju-table .saju-gan { font-size: 1.2rem; font-weight: 800; letter-spacing: .04em; }
+    .saju-table .saju-zhi { font-size: 1.1rem; font-weight: 700; }
+    .saju-table .saju-el { font-size: .74rem; color: var(--muted); }
+    .saju-table .saju-sep td { padding: 2px 0; }
+    .saju-table .saju-sep td::before { content: ''; display: block; border-top: 1px solid var(--border); }
+
+    /* 오행 균형 막대 */
+    .oh-bars { display: grid; gap: 8px; margin-bottom: 6px; }
+    .oh-row { display: grid; grid-template-columns: 52px 1fr 22px; align-items: center; gap: 10px; }
+    .oh-label { font-size: .82rem; color: var(--muted); font-weight: 600; }
+    .oh-track { height: 10px; background: rgba(0,0,0,0.3); border-radius: 6px; overflow: hidden; }
+    .oh-fill { height: 100%; border-radius: 6px; min-width: 4px; transition: width .4s ease; }
+    .oh-cnt { font-size: .8rem; color: var(--ink); text-align: right; }
+
+    /* 십성 그룹 칩 */
+    .tg-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 4px; }
+    .tg-chip { padding: 6px 13px; border-radius: 10px; font-size: .88rem; font-weight: 600;
+      border: 1px solid var(--border); display: inline-flex; align-items: center; gap: 6px; }
+    .tg-chip i { font-style: normal; font-size: .7rem; padding: 1px 6px; border-radius: 6px; background: rgba(0,0,0,0.3); }
+    .tg-high { border-color: var(--gold); color: var(--gold); box-shadow: 0 0 10px rgba(240,199,94,0.2); }
+    .tg-mid { border-color: rgba(240,199,94,0.4); color: #e8d89a; }
+    .tg-low { color: var(--muted); }
+    .tg-zero { opacity: .38; color: var(--muted); }
+    .nv-src { font-size: .78rem; color: var(--muted); margin-left: 4px; }
     .disclaimer { color: var(--muted); font-size: .82rem; text-align: center; margin-top: 18px; }
     .actions { text-align: center; margin-top: 18px; }
     .ghost { background: transparent; border: 1px solid var(--border); color: var(--ink); padding: 11px 22px; border-radius: 12px; cursor: pointer; font-size: .95rem; }
