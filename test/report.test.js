@@ -5,7 +5,7 @@ import { drawThree } from '../src/tarot.js';
 
 const result = runEngine({
   birth: { year:1990, month:5, day:15, hour:10, calendar:'solar', gender:'male' },
-  mbti: 'ENTJ', blood: 'O', selectedStrengths: ['논리','실행력','분석'],
+  mbti: 'ENTJ', blood: 'O', name: '홍길동',
 });
 
 describe('renderReport', () => {
@@ -18,8 +18,13 @@ describe('renderReport', () => {
     expect(renderReport(result)).toContain('재미용');
   });
   it('시주 미상이면 고지 노출', () => {
-    const r = runEngine({ birth:{ year:1990,month:5,day:15,hour:null,calendar:'solar',gender:'male' }, mbti:'ENTJ', blood:'O', selectedStrengths:['논리'] });
+    const r = runEngine({ birth:{ year:1990,month:5,day:15,hour:null,calendar:'solar',gender:'male' }, mbti:'ENTJ', blood:'O' });
     expect(renderReport(r)).toContain('시주');
+  });
+  it('이름 주면 성명학 섹션 포함, 없으면 미포함', () => {
+    expect(renderReport(result)).toContain('성명학');
+    const noName = runEngine({ birth:{ year:1990,month:5,day:15,hour:10,calendar:'solar',gender:'male' }, mbti:'ENTJ', blood:'O' });
+    expect(renderReport(noName)).not.toContain('성명학');
   });
   it('별자리 상세 섹션을 포함한다', () => {
     const html = renderReport(result);

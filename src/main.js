@@ -21,7 +21,6 @@ function bindShare(btnId, svgString, filename) {
 
 const MBTIS = ['INTJ','INTP','ENTJ','ENTP','INFJ','INFP','ENFJ','ENFP',
   'ISTJ','ISFJ','ESTJ','ESFJ','ISTP','ISFP','ESTP','ESFP'];
-const STRENGTHS = ['논리','언어','공간','신체','음악','대인','자기성찰','자연','창의','실행력','직관','분석'];
 
 function fillMbti(sel, withPlaceholder) {
   if (withPlaceholder) sel.add(new Option('선택', '', true, true));
@@ -59,23 +58,7 @@ navButtons.forEach(btn => btn.addEventListener('click', () => {
 // ===== 프로파일 (입력 → 타로 → 통합 결과) =====
 const mbtiSel = document.getElementById('mbti');
 fillMbti(mbtiSel, true);
-
-const sf = document.getElementById('strengths');
-const sOptions = sf.querySelector('.s-options');
-const countHint = sf.querySelector('.count-hint');
-const submitBtn = document.getElementById('submit-btn');
-STRENGTHS.forEach(s => {
-  const l = document.createElement('label');
-  l.innerHTML = `<input type="checkbox" name="strength" value="${s}" /> ${s}`;
-  sOptions.appendChild(l);
-});
-sf.addEventListener('change', () => {
-  const checked = sOptions.querySelectorAll('input:checked');
-  sOptions.querySelectorAll('input[type=checkbox]').forEach(b => { b.disabled = !b.checked && checked.length >= 3; });
-  countHint.textContent = `${checked.length} / 3 선택`;
-  submitBtn.disabled = checked.length !== 3;
-});
-submitBtn.disabled = true;
+const nameInput = document.getElementById('name');
 
 const hourUnknown = document.getElementById('hourUnknown');
 hourUnknown.addEventListener('change', () => { document.getElementById('hour').disabled = hourUnknown.checked; });
@@ -97,8 +80,6 @@ function showProfileResult(input, spread) {
 
 document.getElementById('penta-form').addEventListener('submit', (e) => {
   e.preventDefault();
-  const selected = [...sOptions.querySelectorAll('input:checked')].map(b => b.value);
-  if (selected.length !== 3) { alert('강점을 정확히 3개 선택하세요.'); return; }
   if (!mbtiSel.value) { alert('MBTI를 선택하세요.'); return; }
   const input = {
     birth: {
@@ -108,7 +89,7 @@ document.getElementById('penta-form').addEventListener('submit', (e) => {
       calendar: document.querySelector('input[name=cal]:checked').value,
       gender: document.querySelector('input[name=gender]:checked').value,
     },
-    mbti: mbtiSel.value, blood: document.getElementById('blood').value, selectedStrengths: selected,
+    mbti: mbtiSel.value, blood: document.getElementById('blood').value, name: nameInput.value.trim(),
   };
   // 입력 확정 → 타로 3장 뽑기 → 통합 결과
   runTarotPick(resultEl, (spread) => showProfileResult(input, spread));

@@ -37,9 +37,10 @@
     legend { font-weight: 700; padding: 0 6px; }
     fieldset { border: 1px solid var(--border); border-radius: 14px; margin: 0 0 14px; padding: 14px 16px; }
     label { display: inline-flex; align-items: center; gap: 5px; margin: 4px 10px 4px 0; }
-    input[type=number], select { background: rgba(0,0,0,0.25); color: var(--ink); border: 1px solid var(--border);
+    input[type=number], input[type=text], select { background: rgba(0,0,0,0.25); color: var(--ink); border: 1px solid var(--border);
       border-radius: 10px; padding: 9px 11px; font-size: .95rem; margin: 4px 6px 4px 0; outline: none; }
-    input[type=number] { width: 86px; } input[type=number]:focus, select:focus { border-color: var(--gold); }
+    input[type=number] { width: 86px; } input[type=text] { width: 150px; }
+    input[type=number]:focus, input[type=text]:focus, select:focus { border-color: var(--gold); }
     input[type=number]:disabled { opacity: .4; } select { min-width: 116px; }
     input[type=checkbox], input[type=radio] { accent-color: var(--gold); width: 16px; height: 16px; }
     #strengths .s-options { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px 10px; }
@@ -171,14 +172,11 @@
           </div>
         </fieldset>
         <fieldset>
-          <legend>MBTI · 혈액형</legend>
+          <legend>이름 · MBTI · 혈액형</legend>
+          <label>이름 <input type="text" id="name" placeholder="홍길동 (한글)" maxlength="10" /></label>
           <label>MBTI <select id="mbti" required></select></label>
           <label>혈액형 <select id="blood"><option>A</option><option>B</option><option>O</option><option>AB</option></select></label>
-        </fieldset>
-        <fieldset id="strengths">
-          <legend>강점 상위 3개</legend>
-          <div class="s-options"></div>
-          <p class="count-hint">0 / 3 선택</p>
+          <p class="count-hint">이름을 한글로 적으면 성명학(소리오행) 풀이가 추가돼요.</p>
         </fieldset>
         <button type="submit" class="submit" id="submit-btn">✦ 분석 시작 · 타로 뽑기</button>
       </form>

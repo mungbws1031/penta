@@ -1,5 +1,7 @@
 import { zodiacDetail } from './zodiacInfo.js';
 
+const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
 // ===== 타고난 기질: 축별 서술 =====
 const AXIS_TEXT = {
   A1: {
@@ -82,21 +84,43 @@ const STRENGTH_TEXT = {
 };
 
 export function strengthNarrative(result) {
-  const { confirmed, hidden, nurtured } = result.gap;
+  const ranked = [...result.strengths].sort((a, b) => b.count - a.count);
+  const strong = ranked.filter(s => s.count >= 2);
+  const mild = ranked.filter(s => s.count === 1);
   let html = '';
-  if (confirmed.length) {
-    html += `<p class="nv-head nv-confirm">✅ 확인된 강점 — 너도 알고, 시스템도 안다</p>`;
-    confirmed.forEach(n => { html += `<p><b>${n}</b> ${STRENGTH_TEXT[n] || ''} 네가 스스로 꼽은 강점이자 여러 시스템이 함께 가리킨, 가장 믿고 밀어붙여도 좋은 너의 핵심 무기다.</p>`; });
+  if (strong.length) {
+    html += `<p class="nv-head nv-confirm">⭐ 여러 렌즈가 함께 가리키는 핵심 강점</p>`;
+    strong.forEach(s => {
+      html += `<p><b>${s.name}</b> <span class="nv-src">${s.systems.join(' · ')}</span><br>${STRENGTH_TEXT[s.name] || ''} ${s.count}개의 렌즈가 동시에 이 자질을 비추니, 믿고 밀어붙여도 좋은 너의 무기다.</p>`;
+    });
   }
-  if (hidden.length) {
-    html += `<p class="nv-head nv-hidden">💡 숨은 강점 — 시스템이 본 잠재력</p>`;
-    hidden.forEach(n => { html += `<p><b>${n}</b> ${STRENGTH_TEXT[n] || ''} 정작 너는 꼽지 않았지만 여러 렌즈가 가리키는 자원이다. 의식적으로 한 번 꺼내 쓰기 시작하면, 생각보다 큰 힘이 되어줄 수 있다.</p>`; });
+  if (mild.length) {
+    html += `<p class="nv-head">🔹 한 렌즈에서 비치는 잠재 강점</p>`;
+    html += `<p>${mild.map(s => s.name).join(' · ')} — 아직 한 시스템에서만 신호가 잡히지만, 의식적으로 키우면 충분히 너의 무기가 될 수 있는 씨앗들이다.</p>`;
   }
-  if (nurtured.length) {
-    html += `<p class="nv-head nv-nurtured">🌱 키워온 강점 — 네가 만들어온 힘</p>`;
-    nurtured.forEach(n => { html += `<p><b>${n}</b> ${STRENGTH_TEXT[n] || ''} 타고난 신호는 옅지만, 네가 스스로 택해 갈고닦아온 강점이다. 타고남이 아니라 노력으로 빚은 힘이라 오히려 더 값지다.</p>`; });
+  if (!html) html = '<p>아직 뚜렷하게 합의된 강점이 옅다. 여러 영역을 폭넓게 시도하며 너만의 무기를 찾아가는 시기다.</p>';
+  return html;
+}
+
+// ===== 성명학 서술 =====
+export function nameNarrative(n) {
+  if (!n) return '';
+  let html = `<p>이름 <b>${esc(n.raw)}</b>을(를) 소리오행(發音五行)으로 풀어본다. 각 글자의 첫소리가 품은 기운은 이렇다.</p>`;
+  html += `<p>${n.syllables.map(s => `<b>${esc(s.char)}</b> → ${s.element}(${s.choseong})`).join(' &nbsp; ')}</p>`;
+  if (n.flow.length) {
+    const good = n.flow.filter(f => f.relation === '상생').length;
+    const bad = n.flow.filter(f => f.relation === '상극').length;
+    html += `<p><b>글자 사이 기운의 흐름</b><br>` +
+      n.flow.map(f => `${f.from}→${f.to} <b>${f.relation}</b> — ${f.note}`).join('<br>') + `</p>`;
+    const verdict = good > bad ? '서로 북돋우는 기운이 우세해, 이름이 순하게 흐른다.'
+      : bad > good ? '부딪히는 기운이 섞여 있어, 그만큼 자기 색이 강하고 굴곡이 있는 이름이다.'
+      : '생과 극이 균형을 이뤄, 안정과 자극을 함께 품은 이름이다.';
+    html += `<p>${verdict}</p>`;
   }
-  if (!html) html = '<p>아직 뚜렷한 강점 합의가 잡히지 않았다. 여러 영역을 폭넓게 시도해보며 너만의 무기를 찾아가는 시기다.</p>';
+  if (n.sajuRelation) {
+    html += `<p><b>사주와의 어울림</b><br>${n.sajuRelation.note} — <b>${n.sajuRelation.verdict}</b>.</p>`;
+  }
+  html += `<p class="nv-foot">한글 초성 소리오행 기준의 재미용 풀이입니다. 한자 획수·수리(數理) 정밀 해석은 포함하지 않았어요.</p>`;
   return html;
 }
 

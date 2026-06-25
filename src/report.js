@@ -1,7 +1,7 @@
 import { renderRadarSVG } from './radar.js';
 import { zodiacDetail } from './zodiacInfo.js';
 import { revealedCard } from './tarotView.js';
-import { temperamentNarrative, strengthNarrative, timeNarrative } from './narrative.js';
+import { temperamentNarrative, strengthNarrative, timeNarrative, nameNarrative } from './narrative.js';
 
 const stars = n => '★'.repeat(n) + '☆'.repeat(Math.max(0, 3 - n));
 
@@ -46,14 +46,11 @@ function strengthChips(strengths) {
   }).join('');
 }
 
-function gapColumn(title, arr, cls, hint) {
-  const items = arr.length
-    ? arr.map(n => `<li>${n}</li>`).join('')
-    : `<li class="empty">—</li>`;
-  return `<div class="gap-col ${cls}">
-    <h4>${title}</h4>
-    <p class="gap-hint">${hint}</p>
-    <ul>${items}</ul>
+function nameBlock(nameAnalysis) {
+  if (!nameAnalysis) return '';
+  return `<div class="card">
+    <h3>성명학 <small>소리오행 · 점수 ${nameAnalysis.score}</small></h3>
+    <div class="narrative">${nameNarrative(nameAnalysis)}</div>
   </div>`;
 }
 
@@ -81,7 +78,7 @@ function tarotBlock(spread) {
 }
 
 export function renderReport(result, spread) {
-  const { axes, strengths, gap, sajuTimeUnknown, sunSign } = result;
+  const { axes, strengths, sajuTimeUnknown, sunSign } = result;
   const timeNote = sajuTimeUnknown
     ? `<p class="note">※ 시주(출생시) 없이 추정 — 내면·말년 영역 정밀도가 낮습니다.</p>` : '';
 
@@ -116,14 +113,7 @@ export function renderReport(result, spread) {
       <div class="narrative" style="margin-top:14px">${strengthNarrative(result)}</div>
     </div>
 
-    <div class="card">
-      <h3>갭 분석 <small>네 생각 vs 시스템</small></h3>
-      <div class="gap-grid">
-        ${gapColumn('확인된 강점', gap.confirmed, 'g-confirm', '너도 알고 시스템도 안다')}
-        ${gapColumn('숨은 강점', gap.hidden, 'g-hidden', '시스템이 본 잠재력')}
-        ${gapColumn('키워온 강점', gap.nurtured, 'g-nurtured', '네가 만들어온 힘')}
-      </div>
-    </div>
+    ${nameBlock(result.name)}
 
     ${tarotBlock(spread)}
 

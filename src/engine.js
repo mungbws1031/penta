@@ -5,15 +5,16 @@ import { sunSign, zodiacSignals } from './zodiac.js';
 import { bloodSignals } from './bloodtype.js';
 import { sajuSignals, sajuDayElement } from './saju.js';
 import { strengthCounts } from './strengths.js';
-import { analyzeGap } from './gap.js';
+import { analyzeName } from './nameology.js';
 
 const BASE_WEIGHT = { 사주:1.0, MBTI:1.0, 별자리:0.6, 혈액형:0.3 };
 
 export function runEngine(input) {
-  const { birth, mbti, blood, selectedStrengths } = input;
+  const { birth, mbti, blood, name } = input;
 
   const saju = sajuSignals(birth);
   const sajuCounts = saju.counts;
+  const dayElement = sajuDayElement(birth);
   const sign = sunSign(birth.month, birth.day);
   const sys = {
     사주: saju.signals,
@@ -36,7 +37,7 @@ export function runEngine(input) {
   });
 
   const strengths = strengthCounts({ sajuCounts, mbti, sign });
-  const gap = analyzeGap(selectedStrengths, strengths);
+  const nameAnalysis = name ? analyzeName(name, dayElement) : null;
 
-  return { axes, strengths, gap, sajuTimeUnknown: saju.timeUnknown, sunSign: sign, dayElement: sajuDayElement(birth) };
+  return { axes, strengths, sajuTimeUnknown: saju.timeUnknown, sunSign: sign, dayElement, name: nameAnalysis };
 }
