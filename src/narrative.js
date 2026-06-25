@@ -366,21 +366,33 @@ export function radarNarrative(axes) {
 }
 
 // ===== 종합 의견 =====
-const INCOME_STYLE = {
-  관성: { cond: v => v >= 2, text:'조직·직장을 통한 안정적 수입이 가장 잘 맞는다. 전문성이 쌓일수록 직위와 수입이 함께 오르는 구조다.' },
-  재성: { cond: v => v >= 2, text:'재물을 직접 다루는 감각이 있다. 사업·투자·영업에서 기회를 포착해 과감하게 실행할 때 돈이 따라온다.' },
-  식상: { cond: v => v >= 2, text:'재능·기술·표현력으로 버는 돈이 잘 맞는다. 프리랜서·창작·교육·서비스에서 자신만의 수입 구조를 만드는 것이 유리하다.' },
-  인성: { cond: v => v >= 2, text:'자격·명예와 함께 수입이 따라오는 유형이다. 빠른 돈보다 신뢰가 쌓인 뒤 안정적인 수입이 온다.' },
-  비겁: { cond: v => v >= 2, text:'자수성가형 수입 구조다. 혼자 힘으로 일으키는 독립 사업이나 전문직에서 잠재력이 크다.' },
+
+// 일간 원소별 이미지
+const EL_IMAGE = {
+  목: '씩씩하게 하늘로 뻗는 나무',
+  화: '주변을 환하게 물들이는 불꽃',
+  토: '흔들리지 않고 모든 것을 품는 대지',
+  금: '불순물을 잘라내는 단단한 금속',
+  수: '막힘 없이 스며드는 물',
 };
 
-const WEAK_TG_ADVICE = {
-  비겁: '협력이 결과를 배로 만든다. 독자적인 강점을 살리되 파트너십을 의식적으로 넓힐 것.',
-  식상: '표현하지 않으면 아무도 모른다. 재능을 밖으로 꺼내는 것이 첫 번째 숙제다.',
-  재성: '돈을 쫓기보다 가치 있는 일에 집중하라. 가치가 쌓이면 재물은 따라온다.',
-  관성: '책임지는 자리를 두려워하지 마라. 그 자리가 너를 성장시키는 무대가 된다.',
-  인성: '배운 것을 행동으로 옮겨야 실력이 된다. 생각 다음엔 반드시 실행이 와야 한다.',
-};
+// 십성 조합 → 수입 역설 서술
+function incomeParadox(tgs) {
+  const jae = tgs.재성 || 0, gwan = tgs.관성 || 0,
+        sik = tgs.식상 || 0, in_ = tgs.인성 || 0, bi = tgs.비겁 || 0;
+
+  if (jae >= 2 && gwan <= 1)
+    return `재성은 강한데 관성이 약한 구조다. 돈 감각은 타고났지만 조직의 틀 안에서는 그 감각이 눌린다. <b>독립·사업·자영</b>으로 움직일 때 진짜 수입이 열린다 — 월급의 안정감이 오히려 이 팔자의 능력을 잠재운다.`;
+  if (gwan >= 2 && jae <= 1)
+    return `관성은 강하고 재성이 약한 구조다. 인정과 직위가 먼저 쌓이고 돈은 그 다음에 따라온다. 빠른 수입을 쫓기보다 <b>전문성·명예·조직 내 지위</b>를 쌓는 방향이 장기적으로 훨씬 큰 결실을 만든다.`;
+  if (sik >= 2 && jae <= 1 && gwan <= 1)
+    return `식상이 발달하고 재성·관성이 약한 구조다. <b>재능·기술·표현</b>이 수입원인 팔자다. 남이 만들어 놓은 구조보다 자신만의 방식으로 일할 때 돈이 따라온다 — 프리랜서, 강의, 창작, 서비스에서 가장 자연스럽다.`;
+  if (in_ >= 2 && jae <= 1)
+    return `인성이 강한 구조다. 성급하게 수익을 추구할수록 오히려 역효과가 난다. <b>신뢰와 학식</b>이 먼저 쌓이고, 전문성이 깊어질수록 수입이 자연스럽게 따라오는 패턴이다.`;
+  if (bi >= 2 && jae <= 1)
+    return `비겁이 강하고 재성이 약한 구조다. 혼자 벌기보다 <b>팀·협업</b>에서 더 큰 수입이 나오는 역설적인 팔자다. 경쟁하기보다 연대하고, 재능 있는 파트너를 곁에 두는 것이 수입의 열쇠다.`;
+  return `재성·관성·식상이 고르게 분포된 구조다. 여러 경로로 벌 수 있는 팔자이지만, 집중하지 않으면 모든 방향에서 중간치에 머문다 — <b>하나를 깊게 파는 것</b>이 전략이다.`;
+}
 
 export function synthesisNarrative(result) {
   if (!result.sajuDetail) return '';
@@ -388,115 +400,131 @@ export function synthesisNarrative(result) {
   const CURRENT_YEAR = 2026;
   const approxAge = birthYear ? CURRENT_YEAR - birthYear : null;
   const dp = sajuDetail.pillars?.dayProfile;
+  const dayEl = sajuDetail.pillars?.day?.ganEl || '';
   const tgs = sajuDetail.tenGodGroups || {};
   const natal = fortune?.natal || {};
   const timeline = fortune?.timeline || {};
 
   let html = '';
 
-  // ① 핵심 정체성
-  const strongAxes = axes.filter(a => a.stars >= 3 && a.resultPole !== 0);
-  const coreAxes = strongAxes.length ? strongAxes : axes.filter(a => a.stars >= 2 && a.resultPole !== 0).slice(0, 3);
-  const topStrengths = [...strengths].sort((a,b) => b.count - a.count).filter(s => s.count >= 2);
+  // ① 핵심 정체성 — 조합·역설 중심
+  const confirmed = axes.filter(a => a.stars >= 3 && a.resultPole !== 0);
+  const notable   = axes.filter(a => a.stars >= 2 && a.resultPole !== 0);
+  const conflicts = axes.filter(a => a.conflict);
+  const coreAxes  = confirmed.length ? confirmed : notable.slice(0, 3);
+  const topS = [...strengths].sort((a,b) => b.count - a.count).filter(s => s.count >= 3);
 
   html += `<p class="nv-head nv-confirm">🔮 이 사람은 어떤 사람인가</p>`;
-  html += `<p>`;
-  if (dp) html += `사주 일간 <b>${sajuDetail.pillars.dayGan}(${dp.symbol})</b>의 기운 위에 `;
+
+  // 일간 이미지 + 확정 성향
+  const elImg = EL_IMAGE[dayEl];
+  const daySymbol = dp?.symbol || '';
+  let identLine = elImg
+    ? `${daySymbol ? `일간 ${daySymbol}, ` : ''}${elImg}처럼 — `
+    : '';
+
   if (coreAxes.length) {
-    html += `${coreAxes.map(a => `<b>${a.poleLabel}</b>`).join('·')}의 성향이 `;
-    html += strongAxes.length >= 2 ? '세 렌즈 모두에서 겹쳐 사실상 고정된 결이다. ' : '여러 렌즈에서 반복된다. ';
+    const poleStr = coreAxes.map(a => `<b>${a.poleLabel}</b>`).join(' · ');
+    const certainty = confirmed.length >= 2
+      ? `세 렌즈가 동시에 가리키는 신호, 경향이 아니라 이 사람의 고정된 결이다`
+      : `여러 렌즈에서 반복 포착되는 패턴이다`;
+    identLine += `${poleStr}의 성향이 ${certainty}.`;
   }
-  html += `태양궁 <b>${sunSign}</b>까지 더하면 — `;
-  if (dp) html += `${dp.fate.split('—').pop()?.trim() || dp.core + '의 삶을 산다.'}`;
-  html += `</p>`;
+  html += `<p>${identLine}</p>`;
 
-  if (topStrengths.length) {
-    html += `<p>여러 시스템이 동시에 지목하는 핵심 강점은 <b>${topStrengths.map(s => s.name).join(' · ')}</b>이다. 이 자질이 가장 빛나는 자리에 있을 때 성과가 극대화된다.</p>`;
+  // 시스템 간 충돌 → 입체감
+  if (conflicts.length) {
+    const cls = conflicts.map(a => a.label).join(' · ');
+    html += `<p><b>${cls}</b> 영역에서는 시스템마다 신호가 엇갈린다. 이 모순이 결점이 아니다 — 상황에 따라 다른 모습이 나오는, 단순하지 않은 입체적 사람의 증거다.</p>`;
   }
 
-  // ② 돈을 언제·어떻게 버는가
-  html += `<p class="nv-head">💰 돈을 언제·어떻게 버는가</p>`;
+  // 핵심 강점 (3개 시스템 이상 지목)
+  if (topS.length) {
+    html += `<p>세 시스템 이상이 동시에 지목하는 자질 — <b>${topS.map(s => s.name).join(' · ')}</b>. 이 강점이 살아나는 자리에 있을 때 이 사람의 진짜 잠재력이 열린다.</p>`;
+  }
+
+  // 그림자: 일간의 함정
+  if (dp?.caution) {
+    const shadow = dp.caution.split(/[.·]/)[0].trim();
+    if (shadow) html += `<p style="color:var(--muted);font-size:.91rem">그늘 — ${shadow}. 이것이 이 사람이 가장 자주 걸려 넘어지는 함정이다.</p>`;
+  }
+
+  // ② 돈 — 역설과 구체 타이밍
+  html += `<p class="nv-head">💰 어떻게 돈을 버는 사람인가</p>`;
+  html += `<p>${incomeParadox(tgs)}</p>`;
 
   const moneyScore = natal.재물 || 50;
   const successScore = natal.성공 || 50;
+  let moneyCtx = moneyScore >= 68
+    ? `재물 인연이 강한 팔자(${moneyScore}점) — 자산을 다루는 감각이 있고 돈이 비교적 잘 따라온다.`
+    : moneyScore >= 52
+    ? `재물운이 중간(${moneyScore}점) — 노력과 타이밍이 결과를 만드는 유형이다. 기회를 알아보는 안목이 관건이다.`
+    : `재물보다 성취·명예(${successScore}점)가 먼저 오는 팔자(${moneyScore}점) — 인정이 쌓인 뒤 수입이 따라오는 순서다.`;
+  html += `<p>${moneyCtx}</p>`;
 
-  html += `<p>타고난 재물운 기본값은 <b>${moneyScore}점</b>`;
-  if (moneyScore >= 70) html += ` — 재물 인연이 강한 팔자다. 자산을 다루는 감각이 있고 돈이 비교적 잘 따라온다.`;
-  else if (moneyScore >= 55) html += ` — 노력과 타이밍이 결과를 만드는 유형이다. 기회를 알아보고 잡는 안목이 관건이다.`;
-  else html += ` — 성취·명예(${successScore}점)가 먼저 오고 수입이 뒤따르는 구조다. 인정을 받은 후 보상이 따라오는 패턴이다.`;
-  html += `</p>`;
-
-  // 수입 방식 (십성)
-  let incomeText = '';
-  for (const [key, spec] of Object.entries(INCOME_STYLE)) {
-    if (spec.cond(tgs[key] || 0)) { incomeText = spec.text; break; }
-  }
-  if (!incomeText) incomeText = '어느 한 방향에 치우치지 않은 균형 잡힌 수입 구조다. 여러 경로에서 고르게 벌 수 있으나, 한 분야에 집중할수록 효율이 높다.';
-  html += `<p>${incomeText}</p>`;
-
-  // 돈이 들어오는 시기 (대운)
-  if (timeline.periods && timeline.periods.length > 1) {
-    const good = timeline.periods.filter(p => p.overall >= 65 || (p.label && (p.label.includes('재물') || p.label.includes('전성'))));
-    const bad  = timeline.periods.filter(p => p.overall < 38  || (p.label && p.label.includes('시련')));
+  if (timeline.periods?.length > 1) {
+    const good = timeline.periods.filter(p => p.overall >= 65);
+    const hard = timeline.periods.filter(p => p.overall < 40);
     if (good.length) {
-      const gs = good.map(p => `<b>${p.startAge}~${p.startAge+9}세</b>(${p.label})`).join(', ');
-      html += `<p>대운 타이밍상 재물과 기회가 집중되는 구간은 ${gs}이다. 이 시기엔 과감한 투자·확장이 결실을 맺는다.</p>`;
+      const gs = good.map(p => `<b>${p.startAge}~${p.startAge + 9}세</b>(${p.label})`).join(', ');
+      html += `<p>기운이 올라오는 구간 ${gs} — 이 시기엔 확장·투자가 결실로 이어진다.</p>`;
     }
-    if (bad.length) {
-      const bs = bad.map(p => `<b>${p.startAge}~${p.startAge+9}세</b>`).join(', ');
-      html += `<p>${bs}는 기운이 수축하는 구간이다. 이때 무리한 확장·투자보다 내실을 다지는 편이 현명하다.</p>`;
+    if (hard.length) {
+      const hs = hard.map(p => `<b>${p.startAge}~${p.startAge + 9}세</b>`).join(', ');
+      html += `<p>${hs}는 수축·점검의 시기 — 이때 무리한 도박보다 기반을 조이는 것이 훨씬 현명하다.</p>`;
     }
   }
 
-  // ③ 앞으로 어떻게 될 것인가
+  // ③ 앞으로 어떻게 될 것인가 — 미니 인생 이야기
   html += `<p class="nv-head">🌊 앞으로 어떻게 될 것인가</p>`;
 
-  if (approxAge && timeline.periods && timeline.periods.length > 1) {
-    const sorted = [...timeline.periods].sort((a,b) => a.startAge - b.startAge);
-    let curIdx = -1;
+  if (approxAge && timeline.periods?.length > 1) {
+    const sorted = [...timeline.periods].sort((a, b) => a.startAge - b.startAge);
+    let ci = -1;
     for (let i = 0; i < sorted.length; i++) {
-      const next = sorted[i + 1];
-      if (sorted[i].startAge <= approxAge && (!next || next.startAge > approxAge)) { curIdx = i; break; }
+      const nx = sorted[i + 1];
+      if (sorted[i].startAge <= approxAge && (!nx || nx.startAge > approxAge)) { ci = i; break; }
     }
-    if (curIdx >= 0) {
-      const cur  = sorted[curIdx];
-      const nxt  = sorted[curIdx + 1];
-      const nxt2 = sorted[curIdx + 2];
+    if (ci >= 0) {
+      const cur = sorted[ci], nxt = sorted[ci + 1], nxt2 = sorted[ci + 2];
 
-      html += `<p>지금(약 ${approxAge}세)은 <b>${cur.label}</b> 대운이다. `;
-      if (cur.overall >= 68) html += `흐름이 살아있는 시기 — 지금 움직이면 결과가 따라온다.`;
-      else if (cur.overall < 42) html += `기운이 낮은 구간이다. 큰 결정보다 기반 다지기와 내공 쌓기에 집중하자.`;
-      else html += `안정적인 흐름 속에서 준비를 다지는 시기다. 꾸준함이 다음 도약의 씨앗이 된다.`;
-      html += `</p>`;
+      const curMood = cur.overall >= 68
+        ? `기운이 살아있는 시기다 — 지금 결정한 것이 3년 후의 결과가 된다. 준비보다 실행이 먼저다.`
+        : cur.overall < 42
+        ? `기운이 낮은 구간이다. 이 시기의 진짜 과제는 '기다리는 힘'을 기르는 것 — 성급한 결정은 대부분 후회로 돌아온다.`
+        : `잔잔하게 흐르는 시기다. 파도가 없다는 것은, 지금 쌓는 것이 소리 없이 다음 도약의 기반이 된다는 뜻이다.`;
+      html += `<p>지금(약 ${approxAge}세)은 <b>${cur.label}</b> 대운 한가운데 — ${curMood}</p>`;
 
       if (nxt) {
-        html += `<p><b>${nxt.startAge}세부터</b>는 <b>${nxt.label}</b> 대운이 시작된다. `;
-        if (nxt.overall >= 70) html += `전성기에 가까운 기운이 들어오는 구간이다. 지금부터 그 시기를 위한 포지셔닝을 시작해야 한다.`;
-        else if (nxt.overall < 42) html += `다소 어려운 시기가 예고된다. 지금 기반을 단단히 해두는 것이 최선이다.`;
-        else html += `무난하게 흘러가는 구간이다. 한 방향으로 꾸준히 쌓아가는 것이 최선이다.`;
-        html += `</p>`;
+        const nxtMood = nxt.overall >= 70
+          ? `전성기에 가까운 흐름이 들어온다. 지금이 그 시기를 위해 씨앗을 심는 순간이다.`
+          : nxt.overall < 42
+          ? `어려운 파도가 예고된다. 지금 지반을 단단히 하는 것이 그 파도를 헤쳐 나가는 유일한 준비다.`
+          : `무난하게 흘러간다. 방향을 정하고 꾸준히 걷는 것이 최선이다.`;
+        html += `<p><b>${nxt.startAge}세</b>부터 <b>${nxt.label}</b> 대운이 시작된다 — ${nxtMood}</p>`;
       }
 
       if (nxt2) {
-        html += `<p><b>${nxt2.startAge}세 이후</b>는 <b>${nxt2.label}</b> 구간이다. 지금 이 시점에서 그 흐름까지 역산해 큰 그림을 그리는 것이 현명하다.</p>`;
+        html += `<p><b>${nxt2.startAge}세</b> 이후 <b>${nxt2.label}</b>까지, 이 세 대운이 만들어가는 궤적이 이 사람의 인생 후반을 결정한다. 지금 이 시점에서 역산해 큰 그림을 그려야 한다.</p>`;
       }
     }
   } else if (timeline.peak != null) {
-    html += `<p><b>${timeline.peak}세</b> 무렵 인생의 전성기 기운이 들어온다. 그 시기를 향해 지금부터 역산해 움직이는 것이 현명하다.</p>`;
-  } else {
-    html += `<p>생년월일로 대운 흐름을 계산했다. 앞으로의 방향은 위 재물·성공운 그래프의 흐름을 따른다.</p>`;
+    html += `<p><b>${timeline.peak}세</b> 무렵 전성기 기운이 온다. 그 시점을 역산해 지금부터 움직여야 한다.</p>`;
   }
 
-  // ④ 핵심 조언
-  html += `<p class="nv-head">✨ 핵심 조언</p>`;
-  const sortedTg = Object.entries(tgs).sort((a,b) => a[1] - b[1]);
-  const weakTg = sortedTg[0]?.[0];
-  const adviceText = weakTg ? WEAK_TG_ADVICE[weakTg] : '';
-  const dpCaution = dp?.caution?.split('.')[0] || '';
-  const combined = [adviceText, dpCaution].filter(Boolean).join(' 그리고 ');
-  if (combined) html += `<p>${combined}.</p>`;
+  // ④ 한 줄 핵심
+  html += `<p class="nv-head">✨ 한 줄 핵심</p>`;
+  const weakTg = Object.entries(tgs).sort((a, b) => a[1] - b[1])[0]?.[0];
+  const CORE_LINE = {
+    비겁: '파트너십이 이 팔자의 빈 칸을 채운다 — 혼자보다 함께일 때 더 크다.',
+    식상: '표현하지 않으면 세상은 모른다 — 재능을 꺼내는 용기가 첫 번째 과제다.',
+    재성: '돈을 쫓지 마라, 가치 있는 일을 쫓아라 — 가치가 쌓이면 재물은 따라온다.',
+    관성: '책임지는 자리가 이 사람을 성장시킨다 — 그 자리를 두려워하지 마라.',
+    인성: '배운 것을 쌓아두지 말고 행동으로 내보내라 — 실행이 지식을 실력으로 바꾼다.',
+  };
+  html += `<p><b>${CORE_LINE[weakTg] || '5개 시스템이 가리키는 방향을 믿고, 자신의 결에 맞는 삶을 살아라.'}</b></p>`;
 
-  html += `<p class="nv-foot">사주·MBTI·별자리·혈액형·타로 5개 시스템 종합 분석입니다. 재미용 풀이이며 과학적 확정 예측이 아닙니다.</p>`;
+  html += `<p class="nv-foot">사주·MBTI·별자리·혈액형·타로 5개 시스템 종합 분석입니다. 재미용 풀이이며 확정 예측이 아닙니다.</p>`;
   return html;
 }
 
