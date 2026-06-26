@@ -1,7 +1,7 @@
 import { renderRadarSVG } from './radar.js';
 import { zodiacDetail } from './zodiacInfo.js';
 import { revealedCard } from './tarotView.js';
-import { temperamentNarrative, strengthNarrative, timeNarrative, nameNarrative, digitNarrative, fortuneNarrative, sajuNarrative, radarNarrative, synthesisNarrative, relationNarrative } from './narrative.js';
+import { temperamentNarrative, strengthNarrative, timeNarrative, nameNarrative, digitNarrative, fortuneNarrative, sajuNarrative, radarNarrative, synthesisNarrative, relationNarrative, ziweiNarrative } from './narrative.js';
 import { renderFortuneBars, renderLifeGraph, renderRelationBars } from './fortuneGraph.js';
 import { OHAENG_COLOR } from './sajuDetail.js';
 
@@ -128,6 +128,23 @@ function digitBlock(d) {
   </div>`;
 }
 
+function ziweiBlock(ziwei) {
+  if (!ziwei) return '';
+  const { mingongKo, bureauKo, mainStars, profiles } = ziwei;
+  const starLabel = profiles.length
+    ? profiles.map(p => p.nameKo).join(' · ')
+    : '공궁(空宮)';
+  return `<div class="card ziwei-card">
+    <h3>자미두수 명궁 <small>紫微斗數 · 命宮 + 主星</small></h3>
+    <div class="zw-meta">
+      <span class="zw-pill">명궁 <b>${mingongKo}</b></span>
+      <span class="zw-pill">오행국 <b>${bureauKo}</b></span>
+      <span class="zw-pill">주성 <b>${starLabel}</b></span>
+    </div>
+    <div class="narrative" style="margin-top:14px">${ziweiNarrative(ziwei)}</div>
+  </div>`;
+}
+
 function nameBlock(nameAnalysis) {
   if (!nameAnalysis) return '';
   return `<div class="card">
@@ -179,6 +196,8 @@ export function renderReport(result, spread) {
     </div>
 
     ${sajuBlock(result.sajuDetail)}
+
+    ${ziweiBlock(result.ziwei)}
 
     ${zodiacBlock(sunSign)}
 

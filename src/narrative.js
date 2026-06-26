@@ -572,3 +572,45 @@ export function timeNarrative(spread) {
   html += '<p class="nv-foot">기억하자 — 타로의 미래는 정해진 운명이 아니라, 지금 너의 선택으로 얼마든지 다시 쓸 수 있는 가능성의 지도다.</p>';
   return html;
 }
+
+export function ziweiNarrative(ziwei) {
+  if (!ziwei) return '';
+  const { mingongKo, bureauKo, profiles, mainStars } = ziwei;
+
+  if (!profiles || profiles.length === 0) {
+    return `<p>명궁 <b>${mingongKo}</b>은 주성이 없는 공궁(空宮)이다. 인접한 대궁(對宮)의 에너지를 빌려오는 구조로, 환경과 타인의 영향을 더 많이 받으며 성장하는 유형이다.</p>`;
+  }
+
+  let html = '';
+  profiles.forEach(p => {
+    if (!p.nature) return;
+    html += `
+      <div class="zw-star">
+        <div class="zw-star-head">
+          <span class="zw-star-name">${p.nameKo}</span>
+          <span class="zw-star-nature">${p.nature}</span>
+        </div>
+        <p>${p.personality}</p>
+        <div class="zw-meta-row">
+          <span class="zw-label">핵심 강점</span>
+          <span class="zw-val">${p.strength}</span>
+        </div>
+        <div class="zw-meta-row">
+          <span class="zw-label">그림자</span>
+          <span class="zw-val zw-shadow">${p.shadow}</span>
+        </div>
+        <div class="zw-meta-row">
+          <span class="zw-label">이 명궁의 과제</span>
+          <span class="zw-val">${p.advice}</span>
+        </div>
+        <div class="zw-keywords">${(p.keywords || []).map(k => `<span class="chip">${k}</span>`).join('')}</div>
+      </div>`;
+  });
+
+  const starCount = mainStars.length;
+  const coda = starCount >= 2
+    ? `<p class="nv-foot">명궁에 주성이 ${starCount}개 이상 있다는 것은, 여러 에너지가 동시에 작용하는 복합적 운명이라는 뜻이다. 어느 하나만이 '나'가 아니며, 두 힘을 통합하는 것이 이 삶의 핵심 과제다.</p>`
+    : '';
+
+  return html + coda;
+}
