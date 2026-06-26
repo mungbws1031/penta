@@ -47,5 +47,5 @@ export function runEngine(input) {
   const sajuDetail = analyzeSajuDetail(birth, sajuCounts);
 
   const ziwei = analyzeZiwei(birth);
-  return { axes, strengths, sajuTimeUnknown: saju.timeUnknown, sunSign: sign, dayElement, name: nameAnalysis, digit: digitAnalysis, fortune, sajuDetail, ziwei, birthYear: birth.year };
+  return { axes, strengths, sajuTimeUnknown: saju.timeUnknown, sunSign: sign, dayElement, mbti, name: nameAnalysis, digit: digitAnalysis, fortune, sajuDetail, ziwei, birthYear: birth.year };
 }
