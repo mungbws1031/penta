@@ -323,7 +323,26 @@
     .yf-bar-fill.yf-mid  { background: linear-gradient(90deg, #d4a53e, #f2ca6e); }
     .yf-bar-fill.yf-low  { background: linear-gradient(90deg, #c43030, #ff7676); }
     .yf-score { font-size: .84rem; font-weight: 900; color: var(--gold); min-width: 26px; text-align: right; }
-    .yf-text { font-size: .89rem; margin: 0; line-height: 1.7; color: var(--ink-dim); }
+    .yf-climate {
+      font-size: .85rem; margin: 0 0 10px; padding: 9px 13px; line-height: 1.65;
+      background: rgba(242,202,110,0.05); border-left: 2px solid rgba(242,202,110,0.32);
+      border-radius: 0 9px 9px 0; color: var(--ink-dim);
+    }
+    .yf-climate b { color: var(--gold); }
+    .yf-text { font-size: .89rem; margin: 0; line-height: 1.78; color: var(--ink-dim); }
+    .yf-aspects { display: grid; gap: 8px; margin: 13px 0 0; }
+    .yf-aspect {
+      display: grid; grid-template-columns: 84px 1fr; gap: 10px; align-items: start;
+      padding: 9px 12px; border-radius: 10px; background: rgba(255,255,255,0.03); border: 1px solid var(--border);
+    }
+    .yf-aspect-label { font-size: .8rem; font-weight: 800; color: var(--gold); white-space: nowrap; }
+    .yf-aspect-text { font-size: .85rem; line-height: 1.62; color: var(--ink-dim); }
+    .yf-advice {
+      font-size: .87rem; margin: 13px 0 0; padding: 11px 14px; line-height: 1.68;
+      background: rgba(93,232,164,0.06); border: 1px solid rgba(93,232,164,0.18);
+      border-radius: 10px; color: var(--ink-dim);
+    }
+    .yf-advice b { color: var(--good); font-weight: 800; }
 
     /* ─── SYNTHESIS ─── */
     .synthesis-card { border-color: rgba(93,232,164,0.2); }

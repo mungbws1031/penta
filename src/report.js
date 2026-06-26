@@ -153,32 +153,34 @@ function yearlyFortuneBlock(yf) {
       <div class="yf-bar-wrap"><div class="yf-bar-fill ${scoreClass(score)}" style="width:${score}%"></div></div>
       <span class="yf-score">${score}</span>
     </div>`;
-  const period = (title, sub, score, label, text) => `
+  const aspectsHtml = (list) => !list ? '' : `
+    <div class="yf-aspects">
+      ${list.map(a => `
+        <div class="yf-aspect">
+          <span class="yf-aspect-label">${a.icon} ${a.label}</span>
+          <span class="yf-aspect-text">${a.text}</span>
+        </div>`).join('')}
+    </div>`;
+  const period = (title, sub, p) => `
     <div class="yf-period">
       <div class="yf-period-head">
         <span class="yf-period-title">${title}</span>
         <span class="yf-period-sub">${sub}</span>
-        <span class="yf-tg-badge">${label}</span>
+        <span class="yf-tg-badge">${p.label}</span>
       </div>
-      ${bar(score)}
-      <p class="yf-text">${text}</p>
+      ${bar(p.score)}
+      ${p.climate ? `<p class="yf-climate">${p.climate}</p>` : ''}
+      <p class="yf-text">${p.flow}</p>
+      ${aspectsHtml(p.aspects)}
+      ${p.advice ? `<p class="yf-advice"><b>한 줄 조언</b> · ${p.advice}</p>` : ''}
     </div>`;
 
   const { today, thisYear, nextYear, dayGan } = yf;
   return `<div class="card yf-card">
     <h3>오늘 · 올해 · 내년 운세 <small>세운 · 일운 · 일간(${dayGan}) 기준</small></h3>
-    ${period(
-      '오늘의 운세', `${today.dateStr} · ${today.gan}${today.zhi}일`,
-      today.score, today.label, today.text
-    )}
-    ${period(
-      '올해의 운세', `${thisYear.year}년 ${thisYear.gan}${thisYear.zhi} · ${thisYear.animal}의 해`,
-      thisYear.score, thisYear.label, thisYear.text
-    )}
-    ${nextYear ? period(
-      '내년의 운세', `${nextYear.year}년 ${nextYear.gan}${nextYear.zhi} · ${nextYear.animal}의 해`,
-      nextYear.score, nextYear.label, nextYear.text
-    ) : ''}
+    ${period('오늘의 운세', `${today.dateStr} · ${today.gan}${today.zhi}일`, today)}
+    ${period('올해의 운세', `${thisYear.year}년 ${thisYear.gan}${thisYear.zhi} · ${thisYear.animal}의 해`, thisYear)}
+    ${nextYear ? period('내년의 운세', `${nextYear.year}년 ${nextYear.gan}${nextYear.zhi} · ${nextYear.animal}의 해`, nextYear) : ''}
   </div>`;
 }
 
