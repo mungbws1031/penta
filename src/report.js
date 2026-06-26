@@ -145,6 +145,43 @@ function ziweiBlock(ziwei) {
   </div>`;
 }
 
+function yearlyFortuneBlock(yf) {
+  if (!yf) return '';
+  const scoreClass = s => s >= 70 ? 'yf-good' : s >= 55 ? 'yf-mid' : 'yf-low';
+  const bar = (score) => `
+    <div class="yf-bar-row">
+      <div class="yf-bar-wrap"><div class="yf-bar-fill ${scoreClass(score)}" style="width:${score}%"></div></div>
+      <span class="yf-score">${score}</span>
+    </div>`;
+  const period = (title, sub, score, label, text) => `
+    <div class="yf-period">
+      <div class="yf-period-head">
+        <span class="yf-period-title">${title}</span>
+        <span class="yf-period-sub">${sub}</span>
+        <span class="yf-tg-badge">${label}</span>
+      </div>
+      ${bar(score)}
+      <p class="yf-text">${text}</p>
+    </div>`;
+
+  const { today, thisYear, nextYear, dayGan } = yf;
+  return `<div class="card yf-card">
+    <h3>오늘 · 올해 · 내년 운세 <small>세운 · 일운 · 일간(${dayGan}) 기준</small></h3>
+    ${period(
+      '오늘의 운세', `${today.dateStr} · ${today.gan}${today.zhi}일`,
+      today.score, today.label, today.text
+    )}
+    ${period(
+      '올해의 운세', `${thisYear.year}년 ${thisYear.gan}${thisYear.zhi} · ${thisYear.animal}의 해`,
+      thisYear.score, thisYear.label, thisYear.text
+    )}
+    ${nextYear ? period(
+      '내년의 운세', `${nextYear.year}년 ${nextYear.gan}${nextYear.zhi} · ${nextYear.animal}의 해`,
+      nextYear.score, nextYear.label, nextYear.text
+    ) : ''}
+  </div>`;
+}
+
 function nameBlock(nameAnalysis) {
   if (!nameAnalysis) return '';
   return `<div class="card">
@@ -222,6 +259,8 @@ export function renderReport(result, spread) {
     ${fortuneBlock(result.fortune)}
 
     ${relationBlock(result.fortune, result.sajuDetail)}
+
+    ${yearlyFortuneBlock(result.yearlyFortune)}
 
     ${nameBlock(result.name)}
 
