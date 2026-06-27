@@ -1,7 +1,7 @@
 import { renderRadarSVG } from './radar.js';
 import { zodiacDetail } from './zodiacInfo.js';
 import { revealedCard } from './tarotView.js';
-import { temperamentNarrative, strengthNarrative, timeNarrative, nameNarrative, digitNarrative, fortuneNarrative, sajuNarrative, radarNarrative, synthesisNarrative, synthesisSummary, relationNarrative, ziweiNarrative } from './narrative.js';
+import { temperamentNarrative, strengthNarrative, timeNarrative, nameNarrative, digitNarrative, fortuneNarrative, sajuNarrative, radarNarrative, synthesisNarrative, synthesisSummary, relationNarrative, ziweiNarrative, zodiacNarrative } from './narrative.js';
 import { renderFortuneBars, renderLifeGraph, renderRelationBars } from './fortuneGraph.js';
 import { OHAENG_COLOR } from './sajuDetail.js';
 
@@ -279,7 +279,7 @@ function zodiacBlock(sunSign) {
       <span class="z-pill">${z.modalityLabel}</span>
       <span class="z-pill">${z.polarity}(陰陽)</span>
     </div>
-    <p class="z-blurb">${z.blurb}</p>
+    <div class="narrative">${zodiacNarrative(sunSign)}</div>
   </div>`;
 }
 
