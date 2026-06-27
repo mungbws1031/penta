@@ -367,6 +367,26 @@
       border-radius: 10px; color: var(--ink-dim);
     }
     .yf-advice b { color: var(--good); font-weight: 800; }
+    .ym-summary { font-size: .85rem; color: var(--muted); margin: 0 0 12px; }
+    .ym-summary b.good { color: var(--good); }
+    .ym-summary b.bad { color: var(--bad); }
+    .yf-months { display: grid; gap: 8px; }
+    .ym-row {
+      display: grid; grid-template-columns: 58px 1fr; gap: 12px; align-items: center;
+      padding: 9px 12px; border-radius: 11px; background: rgba(255,255,255,0.03); border: 1px solid var(--border);
+    }
+    .ym-row.good { background: rgba(93,232,164,0.06); border-color: rgba(93,232,164,0.18); }
+    .ym-row.bad { background: rgba(255,138,138,0.05); border-color: rgba(255,138,138,0.18); }
+    .ym-head { display: flex; flex-direction: column; align-items: center; gap: 1px; }
+    .ym-m { font-size: 1rem; font-weight: 900; color: var(--ink); }
+    .ym-gz { font-size: .68rem; color: var(--muted); }
+    .ym-body { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+    .ym-line { display: flex; align-items: center; gap: 8px; }
+    .ym-tg { font-size: .76rem; font-weight: 800; color: var(--gold); white-space: nowrap; min-width: 30px; }
+    .ym-bar { flex: 1; height: 7px; border-radius: 999px; background: rgba(255,255,255,0.08); overflow: hidden; }
+    .ym-bar .yf-bar-fill { height: 100%; border-radius: 999px; }
+    .ym-score { font-size: .78rem; font-weight: 800; color: var(--ink-dim); min-width: 22px; text-align: right; }
+    .ym-text { font-size: .8rem; line-height: 1.5; color: var(--ink-dim); margin: 0; }
 
     /* ─── 종합 한눈에(요약) ─── */
     .summary-card {

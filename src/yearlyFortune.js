@@ -187,12 +187,27 @@ const TG_FORTUNE = {
   },
 };
 
+// 월운(月運) 한 줄 — 십신별
+const MONTH_TEXT = {
+  비견: '내 주관대로 독립적으로 움직이기 좋은 달. 추진력은 좋지만 동료와의 마찰·고집은 주의.',
+  겁재: '경쟁과 지출이 늘기 쉬운 달. 돈 관리와 말조심, 보증·투자 신중이 필요하다.',
+  식신: '여유와 재능이 살아나는 편안한 달. 즐기며 풀면 일도 자연스럽게 잘 풀린다.',
+  상관: '아이디어가 넘치지만 구설도 따르는 달. 표현은 한 번 더 다듬어 내보낼 것.',
+  편재: '활동과 사교에서 기회가 오는 달. 발로 뛰고 사람을 만나면 이득이 생긴다.',
+  정재: '착실하게 쌓은 것이 결실로 오는 안정된 달. 저축·계약 등 금전 관리에 길하다.',
+  편관: '압박과 부담이 커지는 달. 무리한 확장보다 몸을 낮추고 건강을 챙길 것.',
+  정관: '책임과 인정이 따르는 달. 원칙대로 처리하면 평판과 자리가 오른다.',
+  편인: '직관과 배움이 살아나는 달. 새 공부에 좋지만 시작한 일의 마무리에 신경 쓸 것.',
+  정인: '귀인과 학문의 기운이 드는 달. 서두르기보다 쉬며 내실을 채우기 좋다.',
+};
+
 function pillarFromDate(year, month, day) {
   try {
     const ec = Solar.fromYmd(year, month, day).getLunar().getEightChar();
     return {
       yearGan: ec.getYearGan(), yearZhi: ec.getYearZhi(),
-      monthGan: ec.getMonthGan(), dayGan: ec.getDayGan(), dayZhi: ec.getDayZhi(),
+      monthGan: ec.getMonthGan(), monthZhi: ec.getMonthZhi(),
+      dayGan: ec.getDayGan(), dayZhi: ec.getDayZhi(),
     };
   } catch { return null; }
 }
@@ -249,6 +264,27 @@ export function analyzeYearlyFortune(birth, userDayGan, strength) {
     const tyAnimal = ZHI_ANIMAL[tyP.yearZhi] || '';
     const nyAnimal = nyP ? (ZHI_ANIMAL[nyP.yearZhi] || '') : '';
 
+    // 올해 월별 흐름(1~12월) — 각 달 15일 기준 월주(月柱)
+    const months = [];
+    for (let m = 1; m <= 12; m++) {
+      const mp = pillarFromDate(cy, m, 15);
+      if (!mp) continue;
+      const mtg = tenGod(dayGan, mp.monthGan);
+      const mbase = TG_FORTUNE[mtg]?.score || 60;
+      const madj = yongAdjust(mtg, mbase, strength, false);
+      months.push({
+        month: m, gan: mp.monthGan, zhi: mp.monthZhi, tenGod: mtg,
+        score: madj.score,
+        kind: madj.note ? (madj.score >= mbase ? 'good' : 'bad') : null,
+        text: MONTH_TEXT[mtg] || '',
+      });
+    }
+    let bestMonth = null, worstMonth = null;
+    if (months.length) {
+      bestMonth = months.reduce((a, b) => b.score > a.score ? b : a).month;
+      worstMonth = months.reduce((a, b) => b.score < a.score ? b : a).month;
+    }
+
     // 용신/기신 보정
     const todayAdj = yongAdjust(todayDayTG, baseToday, strength, true);
     const tyAdj = yongAdjust(thisYearTG, tyF.score, strength, false);
@@ -256,6 +292,7 @@ export function analyzeYearlyFortune(birth, userDayGan, strength) {
 
     return {
       dayGan,
+      months, bestMonth, worstMonth,
       today: {
         dateStr: `${cy}.${pad2(cm)}.${pad2(cd)}`,
         gan: todayP.dayGan, zhi: todayP.dayZhi,

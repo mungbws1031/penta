@@ -196,11 +196,34 @@ function yearlyFortuneBlock(yf) {
       ${p.advice ? `<p class="yf-advice"><b>한 줄 조언</b> · ${p.advice}</p>` : ''}
     </div>`;
 
+  const monthsHtml = (yf) => {
+    if (!yf.months?.length) return '';
+    const rows = yf.months.map(mo => `
+      <div class="ym-row ${mo.kind || ''}">
+        <div class="ym-head">
+          <span class="ym-m">${mo.month}월</span>
+          <span class="ym-gz">${mo.gan}${mo.zhi}</span>
+        </div>
+        <div class="ym-body">
+          <div class="ym-line">
+            <span class="ym-tg">${mo.tenGod}</span>
+            <div class="ym-bar"><div class="yf-bar-fill ${scoreClass(mo.score)}" style="width:${mo.score}%"></div></div>
+            <span class="ym-score">${mo.score}</span>
+          </div>
+          <p class="ym-text">${mo.text}</p>
+        </div>
+      </div>`).join('');
+    return `<h4 class="f-sub" style="margin-top:20px">올해 월별 흐름 <small>1월~12월 월운(月運)</small></h4>
+      <p class="ym-summary">기운이 가장 좋은 달 <b class="good">${yf.bestMonth}월</b> · 조심할 달 <b class="bad">${yf.worstMonth}월</b></p>
+      <div class="yf-months">${rows}</div>`;
+  };
+
   const { today, thisYear, nextYear, dayGan } = yf;
   return `<div class="card yf-card">
     <h3>오늘 · 올해 · 내년 운세 <small>세운 · 일운 · 일간(${dayGan}) 기준</small></h3>
     ${period('오늘의 운세', `${today.dateStr} · ${today.gan}${today.zhi}일`, today)}
     ${period('올해의 운세', `${thisYear.year}년 ${thisYear.gan}${thisYear.zhi} · ${thisYear.animal}의 해`, thisYear)}
+    ${monthsHtml(yf)}
     ${nextYear ? period('내년의 운세', `${nextYear.year}년 ${nextYear.gan}${nextYear.zhi} · ${nextYear.animal}의 해`, nextYear) : ''}
   </div>`;
 }
