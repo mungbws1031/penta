@@ -453,6 +453,20 @@ const EL_IMAGE = {
   수: '막힘 없이 스며드는 물',
 };
 
+// 일간(日干)별 정수(精髓) — 한 줄로 사람을 꿰뚫는 통찰 헤드라인
+const DAY_ESSENCE = {
+  '甲': '굽히는 법을 끝내 배우지 못한 사람이다. 곧게 자라는 것이 본능이라 꺾이느니 부러지는 쪽을 택한다 — 그 우직함이 가장 큰 자산이자 가장 깊은 상처다.',
+  '乙': '약해 보이는 것이 가장 강한 생존법임을 본능으로 아는 사람이다. 바위를 뚫는 대신 휘감아 오르고, 맞서는 대신 눕는다 — 그 부드러움 속에 누구보다 질긴 생명력이 숨어 있다.',
+  '丙': '감출 줄을 모르는 사람이다. 기쁨도 분노도 빛처럼 새어 나가 존재가 늘 먼저 도착한다 — 세상을 밝히는 그 빛이, 정작 자신의 그림자만은 보지 못하게 한다.',
+  '丁': '조용히, 그러나 끝까지 타는 사람이다. 큰 불꽃의 화려함은 없어도 어둠 속 한 점 빛이 필요한 자리엔 늘 이 사람이 있다 — 그 깊이는 알아보는 이에게만 보인다.',
+  '戊': '쉽게 움직이지 않는 사람이다. 그 무거움이 누군가에겐 답답함이지만, 흔들리는 세상에서 기댈 곳을 찾는 이들에겐 마지막 안식처가 된다.',
+  '己': '드러내지 않고 만물을 기르는 사람이다. 공을 제 것으로 챙기지 않아 손해 보는 듯하지만, 사람이 사람을 기억하는 방식으로 결국 가장 크게 남는다.',
+  '庚': '베어야 할 것을 베는 사람이다. 무뎌지는 것을 가장 두려워해 끊임없이 자신을 갈고 단련한다 — 그 날카로움이 길을 열기도, 사람을 베기도 한다.',
+  '辛': '이미 완성된 아름다움을 타고난 사람이다. 그래서 흠을 견디지 못한다 — 세상과 자신을 향한 그 높은 기준이, 빛이 되기도 칼이 되기도 한다.',
+  '壬': '한곳에 고이지 않는 사람이다. 막히면 돌아가고 넘치면 새 길을 내, 어떤 막다른 곳에서도 흐름을 만든다 — 그 자유가 깊이가 될지 산만함이 될지는 스스로에게 달렸다.',
+  '癸': '보이지 않는 것을 먼저 느끼는 사람이다. 말로 설명되지 않는 직감과 감수성이 이 사람의 나침반이다 — 그 섬세함을 약점으로 여기는 순간, 가장 큰 무기를 잃는다.',
+};
+
 // ── 교차 통찰 테이블 ────────────────────────────────────────────────
 // 사주 일간 오행(5) × MBTI I/E · T/F(4) = 20가지 교차 서술
 const SAJU_MBTI_CROSS = {
@@ -696,7 +710,10 @@ export function synthesisSummary(result) {
   const { axes, strengths, sajuDetail } = result;
   const dp = sajuDetail.pillars?.dayProfile;
   const dayEl = sajuDetail.pillars?.day?.ganEl || '';
+  const dayGan = sajuDetail.pillars?.dayGan;
   const tgs = sajuDetail.tenGodGroups || {};
+
+  const essence = DAY_ESSENCE[dayGan];
 
   const conflicts = axes.filter(a => a.conflict);
   const confirmed = axes.filter(a => a.stars >= 3 && a.resultPole !== 0 && !a.conflict);
@@ -707,13 +724,16 @@ export function synthesisSummary(result) {
 
   let html = '';
 
+  // 정수(精髓) 헤드라인 — 한 줄 통찰
+  if (essence) html += `<p class="sum-essence">“${essence}”</p>`;
+
   // 한 줄 정체성
   const elImg = EL_IMAGE[dayEl];
   const daySymbol = dp?.symbol || '';
   const poleStr = coreAxes.length ? coreAxes.map(a => a.poleLabel).join(' · ') : '';
   let ident = '';
   if (elImg) ident += `${daySymbol ? `일간 <b>${daySymbol}</b>, ` : ''}${elImg}처럼 — `;
-  if (poleStr) ident += `<b>${poleStr}</b>의 결을 지닌 사람.`;
+  if (poleStr) ident += `<b>${poleStr}</b>의 결이 또렷하다.`;
   if (ident) html += `<p class="sum-ident">${ident}</p>`;
 
   // 확정/주요 성향 배지
@@ -747,6 +767,7 @@ export function synthesisNarrative(result) {
   const approxAge = birthYear ? CURRENT_YEAR - birthYear : null;
   const dp = sajuDetail.pillars?.dayProfile;
   const dayEl = sajuDetail.pillars?.day?.ganEl || '';
+  const dayGan = sajuDetail.pillars?.dayGan;
   const tgs = sajuDetail.tenGodGroups || {};
   const natal = fortune?.natal || {};
   const timeline = fortune?.timeline || {};
@@ -762,6 +783,10 @@ export function synthesisNarrative(result) {
 
   html += `<p class="nv-head nv-confirm">🔮 이 사람은 어떤 사람인가</p>`;
 
+  // 정수(精髓) 헤드라인
+  const essence = DAY_ESSENCE[dayGan];
+  if (essence) html += `<p class="nv-essence">“${essence}”</p>`;
+
   // 일간 이미지 + 확정 성향
   const elImg = EL_IMAGE[dayEl];
   const daySymbol = dp?.symbol || '';
@@ -772,9 +797,9 @@ export function synthesisNarrative(result) {
   if (coreAxes.length) {
     const poleStr = coreAxes.map(a => `<b>${a.poleLabel}</b>`).join(' · ');
     const certainty = confirmed.length >= 2
-      ? `세 렌즈가 동시에 가리키는 신호, 경향이 아니라 이 사람의 고정된 결이다`
-      : `여러 렌즈에서 반복 포착되는 패턴이다`;
-    identLine += `${poleStr}의 성향이 ${certainty}.`;
+      ? `세 렌즈가 한 점을 가리킨다. 흔한 경향이 아니라, 시간이 흘러도 변하지 않을 이 사람의 고정된 축이다`
+      : `여러 렌즈에서 거듭 떠오르는, 우연으로 보기 어려운 패턴이다`;
+    identLine += `${poleStr} — ${certainty}.`;
   }
   html += `<p>${identLine}</p>`;
 
