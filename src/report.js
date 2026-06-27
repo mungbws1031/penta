@@ -1,7 +1,7 @@
 import { renderRadarSVG } from './radar.js';
 import { zodiacDetail } from './zodiacInfo.js';
 import { revealedCard } from './tarotView.js';
-import { temperamentNarrative, strengthNarrative, timeNarrative, nameNarrative, digitNarrative, fortuneNarrative, sajuNarrative, radarNarrative, synthesisNarrative, synthesisSummary, relationNarrative, ziweiNarrative, zodiacNarrative, workplaceNarrative } from './narrative.js';
+import { temperamentNarrative, strengthNarrative, timeNarrative, nameNarrative, digitNarrative, fortuneNarrative, sajuNarrative, radarNarrative, synthesisNarrative, synthesisSummary, relationNarrative, ziweiNarrative, zodiacNarrative, workplaceNarrative, strengthBalanceNarrative } from './narrative.js';
 import { renderFortuneBars, renderLifeGraph, renderRelationBars } from './fortuneGraph.js';
 import { OHAENG_COLOR } from './sajuDetail.js';
 
@@ -100,6 +100,15 @@ function sajuBlock(detail) {
   </div>`;
 }
 
+function strengthBlock(strength) {
+  const html = strengthBalanceNarrative(strength);
+  if (!html) return '';
+  return `<div class="card">
+    <h3>신강·신약 & 용신 <small>身强身弱 · 用神</small></h3>
+    <div class="narrative">${html}</div>
+  </div>`;
+}
+
 function fortuneBlock(f) {
   if (!f) return '';
   return `<div class="card">
@@ -178,6 +187,7 @@ function yearlyFortuneBlock(yf) {
         <span class="yf-tg-badge">${p.label}</span>
       </div>
       ${bar(p.score)}
+      ${p.yongNote ? `<p class="yf-yong">${p.yongNote}</p>` : ''}
       ${p.climate ? `<p class="yf-climate">${p.climate}</p>` : ''}
       <p class="yf-text">${p.flow}</p>
       ${aspectsHtml(p.aspects)}
@@ -323,6 +333,8 @@ export function renderReport(result, spread) {
     </div>
 
     ${sajuBlock(result.sajuDetail)}
+
+    ${strengthBlock(result.strength)}
 
     ${ziweiBlock(result.ziwei)}
 

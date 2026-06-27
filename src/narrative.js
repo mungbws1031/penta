@@ -1014,6 +1014,58 @@ export function ziweiNarrative(ziwei) {
   return html + coda;
 }
 
+// ===== 신강·신약 & 용신 =====
+const SB_EL_KO = { 목:'목(木)', 화:'화(火)', 토:'토(土)', 금:'금(金)', 수:'수(水)' };
+const SB_EL_COLOR = { 목:'청록·초록', 화:'빨강·보라', 토:'노랑·황금', 금:'흰색·은색', 수:'검정·파랑' };
+const SB_EL_DIR = { 목:'동쪽', 화:'남쪽', 토:'중앙', 금:'서쪽', 수:'북쪽' };
+const SB_EL_NATURE = { 목:'성장·추진', 화:'열정·표현', 토:'안정·신뢰', 금:'결단·원칙', 수:'지혜·유연' };
+const SB_MEANING = {
+  태강: '자아가 대단히 강해 주관이 또렷하고 추진력·독립심이 뛰어나다. 다만 기운이 넘쳐 고집·독선으로 흐르고 남의 말을 잘 안 듣기 쉽다. 가진 힘을 밖으로 풀어내고 베풀 때 비로소 그릇이 커진다.',
+  신강: '자기 중심이 단단하고 밀어붙이는 힘이 좋다. 웬만한 압박엔 흔들리지 않지만, 때로 고집스럽고 융통성이 부족해 보인다. 에너지를 일·재물·관계로 흘려보낼 출구를 만드는 게 관건이다.',
+  중화: '한쪽으로 치우치지 않아 어떤 운이 와도 크게 흔들리지 않는 안정형이다. 극단적 부침이 적은 대신, 스스로 방향을 정하고 끝까지 밀어붙이는 동력은 의식적으로 만들어야 한다.',
+  신약: '섬세하고 주변에 잘 맞추며 환경의 영향을 크게 받는다. 혼자 밀어붙이기보다 도움과 협력 속에서 빛나는 유형 — 받쳐줄 사람·실력·환경을 갖출 때 비로소 안정된다.',
+  태약: '매우 섬세하고 수용적이라 환경과 사람에 크게 좌우된다. 홀로 버티기보다 좋은 귀인·조직에 기대어 힘을 빌릴 때 가장 잘 풀린다. 내 편을 만드는 것이 평생의 전략이다.',
+};
+
+export function strengthBalanceNarrative(s) {
+  if (!s) return '';
+  let html = '';
+  const levelText = {
+    태강: '일간이 매우 강한 <b>신태강(身太强)</b> 사주',
+    신강: '일간이 강한 <b>신강(身强)</b> 사주',
+    중화: '기운이 고르게 잡힌 <b>중화(中和)</b> 사주',
+    신약: '일간이 약한 <b>신약(身弱)</b> 사주',
+    태약: '일간이 매우 약한 <b>신태약(身太弱)</b> 사주',
+  }[s.level];
+
+  const ryeong = s.deukRyeong === true ? ', 게다가 월령(月令)의 지지까지 받아'
+    : s.deukRyeong === false ? ', 월령(月令)의 뒷받침도 받지 못해' : '';
+
+  html += `<p class="nv-head nv-confirm">⚖ 신강·신약 판정</p>`;
+  html += `<p>일간 <b>${SB_EL_KO[s.dayEl]}</b>를 돕는 기운(비겁+인성) <b>${s.support}</b> vs 빼는 기운(식상+재성+관성) <b>${s.drain}</b>${ryeong} — ${levelText}다.</p>`;
+  html += `<p>${SB_MEANING[s.level]}</p>`;
+
+  if (s.balanced) {
+    html += `<p class="nv-head">💊 용신(用神) — 균형의 보충</p>`;
+    html += `<p>이미 균형이 좋아 특정 기운에 매이지 않는다. 굳이 꼽자면 가장 비어 있는 <b>${SB_EL_KO[s.primaryYong]}</b> 기운을 보충할 때 운의 흐름이 한층 매끄러워진다.</p>`;
+  } else {
+    html += `<p class="nv-head">💊 용신(用神) — 나를 살리는 보약</p>`;
+    const yongG = s.yongGroups.join('·');
+    const yongE = s.yongEls.map(e => SB_EL_KO[e]).join('·');
+    html += `<p>${s.isStrong ? '이미 강하니 기운을 <b>덜어내고 흘려보내야</b> 균형이 맞는다' : '약하니 기운을 <b>보태고 살려주어야</b> 균형이 맞는다'}. 이 사주의 보약, 곧 <b>용신은 ${yongG}</b> 계열 — 오행으로는 <b>${yongE}</b> 기운이다. 이 기운이 들어오는 시기·사람·환경이 당신을 일으켜 세운다.</p>`;
+    const giG = s.giGroups.join('·');
+    const giE = s.giEls.map(e => SB_EL_KO[e]).join('·');
+    html += `<p class="nv-caution"><b>기신(忌神)은 ${giG}</b> 계열 — 오행 <b>${giE}</b> 기운이다. 이미 넘치거나 부담스러운 쪽이라, 이게 더해지면 오히려 탈이 나기 쉽다.</p>`;
+  }
+
+  const pe = s.primaryYong;
+  const careers = OHAENG_CAREER[pe];
+  html += `<p class="nv-head">🧭 용신 활용법</p>`;
+  html += `<p>대표 용신 <b>${SB_EL_KO[pe]}</b>(${SB_EL_NATURE[pe]})를 일상에 끌어들이면 좋다 — 행운의 색 <b>${SB_EL_COLOR[pe]}</b>, 방향 <b>${SB_EL_DIR[pe]}</b>${careers ? `, 잘 맞는 분야 <b>${careers.join('·')}</b>` : ''}. 이 기운을 가진 사람을 곁에 두는 것도 큰 도움이 된다.</p>`;
+  html += `<p class="nv-foot">억부법(抑扶法) 기준 간략 추정입니다. 실제 용신은 조후·병약·통관까지 함께 봐야 정밀해져요.</p>`;
+  return html;
+}
+
 // ===== 직장에서의 평가 (조직운) =====
 const WORK_PERSONA_EL = {
   목: '새 프로젝트를 던져두면 알아서 키워내는, 추진형 일꾼으로 비친다.',

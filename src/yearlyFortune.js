@@ -1,5 +1,23 @@
 import { Solar } from 'lunar-javascript';
 import { tenGod } from './fortune.js';
+import { TENGOD_GROUP } from './strength.js';
+
+// 용신/기신 보정 — 그 해(날)의 십신이 용신운이면 길(+), 기신운이면 흉(−)
+function yongAdjust(tg, base, strength, daily) {
+  if (!strength || !strength.yongGroups?.length) return { score: base, note: null };
+  const g = TENGOD_GROUP[tg];
+  if (strength.yongGroups.includes(g)) {
+    return { score: Math.min(95, base + 9),
+      note: daily ? '🟢 용신(用神)이 도와주는 날 — 평소보다 일이 순하게 풀린다.'
+                  : '🟢 용신운(用神運) — 보약 같은 기운이 들어오는 길한 해다. 적극적으로 움직일 것.' };
+  }
+  if (strength.giGroups.includes(g)) {
+    return { score: Math.max(30, base - 9),
+      note: daily ? '🔴 기신(忌神) 기운이 강한 날 — 무리한 결정은 미루는 게 낫다.'
+                  : '🔴 기신운(忌神運) — 이미 넘치는 기운이 더해지는 해다. 욕심을 줄이고 지키는 데 집중할 것.' };
+  }
+  return { score: base, note: null };
+}
 
 const ZHI_ANIMAL = { '子':'쥐','丑':'소','寅':'호랑이','卯':'토끼','辰':'용','巳':'뱀','午':'말','未':'양','申':'원숭이','酉':'닭','戌':'개','亥':'돼지' };
 
@@ -200,7 +218,7 @@ function aspects(f) {
   ];
 }
 
-export function analyzeYearlyFortune(birth, userDayGan) {
+export function analyzeYearlyFortune(birth, userDayGan, strength) {
   try {
     // 생일 일간은 음력/시주 경계까지 반영된 sajuDetail 값을 받아 쓰는 것이 정확하다.
     // (폴백: 양력 가정 계산 — 호출부가 dayGan을 안 넘긴 경우만)
@@ -226,37 +244,45 @@ export function analyzeYearlyFortune(birth, userDayGan) {
     const nyF   = nextYearTG ? (TG_FORTUNE[nextYearTG] || TG_FORTUNE['비견']) : null;
 
     const monMod = (TG_FORTUNE[todayMonTG]?.score || 60) >= 68 ? 4 : -3;
-    const todayScore = Math.min(95, Math.max(30, dayF.score + monMod));
+    const baseToday = Math.min(95, Math.max(30, dayF.score + monMod));
 
     const tyAnimal = ZHI_ANIMAL[tyP.yearZhi] || '';
     const nyAnimal = nyP ? (ZHI_ANIMAL[nyP.yearZhi] || '') : '';
+
+    // 용신/기신 보정
+    const todayAdj = yongAdjust(todayDayTG, baseToday, strength, true);
+    const tyAdj = yongAdjust(thisYearTG, tyF.score, strength, false);
+    const nyAdj = nyF ? yongAdjust(nextYearTG, nyF.score, strength, false) : { score: 60, note: null };
 
     return {
       dayGan,
       today: {
         dateStr: `${cy}.${pad2(cm)}.${pad2(cd)}`,
         gan: todayP.dayGan, zhi: todayP.dayZhi,
-        tenGod: todayDayTG, score: todayScore,
+        tenGod: todayDayTG, score: todayAdj.score,
         label: dayF.label,
         flow: dayF.daily,
         aspects: null,
         advice: null,
+        yongNote: todayAdj.note,
       },
       thisYear: {
         year: cy, gan: tyP.yearGan, zhi: tyP.yearZhi, animal: tyAnimal,
-        tenGod: thisYearTG, score: tyF.score, label: tyF.label,
+        tenGod: thisYearTG, score: tyAdj.score, label: tyF.label,
         climate: yearClimate(tyP.yearGan, tyP.yearZhi, tyAnimal),
         flow: tyF.yearlyFlow,
         aspects: aspects(tyF),
         advice: tyF.yearlyAdvice,
+        yongNote: tyAdj.note,
       },
       nextYear: nyP ? {
         year: cy + 1, gan: nyP.yearGan, zhi: nyP.yearZhi, animal: nyAnimal,
-        tenGod: nextYearTG, score: nyF?.score || 60, label: nyF?.label || nextYearTG,
+        tenGod: nextYearTG, score: nyAdj.score, label: nyF?.label || nextYearTG,
         climate: yearClimate(nyP.yearGan, nyP.yearZhi, nyAnimal),
         flow: nyF?.yearlyFlow || '',
         aspects: nyF ? aspects(nyF) : null,
         advice: nyF?.yearlyAdvice || null,
+        yongNote: nyAdj.note,
       } : null,
     };
   } catch { return null; }
