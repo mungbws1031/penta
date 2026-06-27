@@ -1091,6 +1091,26 @@ export function strengthBalanceNarrative(s) {
   return html;
 }
 
+// ===== 격국(格局) 풀이 =====
+export function gyeokgukNarrative(g) {
+  if (!g) return '';
+  const GAN_KO = { '甲':'갑','乙':'을','丙':'병','丁':'정','戊':'무','己':'기','庚':'경','辛':'신','壬':'임','癸':'계' };
+  let html = '';
+  const tuchul = g.byTuchul
+    ? `월지 지장간 <b>${GAN_KO[g.basisStem]}(${g.basisStem})</b>가 천간에 투출(透出)해 격을 이룬다`
+    : `월지의 본기(本氣) 기준으로 격을 잡는다`;
+  html += `<p>월령(月令)을 중심으로 본 이 사주의 틀, 곧 <b>격국(格局)</b>은 <b>${g.name}(${g.hanja})</b> — <span class="gk-type">${g.type}</span>이다. ${tuchul}.</p>`;
+  html += `<p>${g.desc}</p>`;
+  html += `<p><b>🧩 격을 완성하는 상신(相神)</b><br>${g.sangsin}</p>`;
+  if (g.warn) {
+    html += `<p class="gk-warn"><b>⚠ 파격(破格) 주의</b><br>${g.warn}</p>`;
+  } else if (g.good) {
+    html += `<p class="gk-good"><b>✓ 성격(成格)</b><br>${g.good}</p>`;
+  }
+  html += `<p class="nv-foot">월지 투출·정기 기준 간략 격국 판정입니다. 변격·종격·잡격까지는 다루지 않았어요.</p>`;
+  return html;
+}
+
 // ===== 지지 관계(합·충) 풀이 =====
 export function hapchungNarrative(hc) {
   if (!hc || !hc.findings?.length) {

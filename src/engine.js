@@ -14,6 +14,7 @@ import { analyzeYearlyFortune } from './yearlyFortune.js';
 import { analyzeSinjeom } from './sinjeom.js';
 import { analyzeStrength } from './strength.js';
 import { analyzeHapchung } from './hapchung.js';
+import { analyzeGyeokguk } from './gyeokguk.js';
 
 const BASE_WEIGHT = { 사주:1.0, MBTI:1.0, 별자리:0.6, 혈액형:0.3 };
 
@@ -53,7 +54,8 @@ export function runEngine(input) {
   const ziwei = analyzeZiwei(birth);
   const strength = analyzeStrength(sajuDetail);
   const hapchung = analyzeHapchung(sajuDetail);
+  const gyeokguk = analyzeGyeokguk(sajuDetail, sajuCounts);
   const yearlyFortune = analyzeYearlyFortune(birth, sajuDetail.pillars?.dayGan, strength);
   const sinjeom = analyzeSinjeom(birth, sajuDetail);
-  return { axes, strengths, sajuTimeUnknown: saju.timeUnknown, sunSign: sign, dayElement, mbti, name: nameAnalysis, digit: digitAnalysis, fortune, sajuDetail, ziwei, strength, hapchung, yearlyFortune, sinjeom, birthYear: birth.year };
+  return { axes, strengths, sajuTimeUnknown: saju.timeUnknown, sunSign: sign, dayElement, mbti, name: nameAnalysis, digit: digitAnalysis, fortune, sajuDetail, ziwei, strength, hapchung, gyeokguk, yearlyFortune, sinjeom, birthYear: birth.year };
 }

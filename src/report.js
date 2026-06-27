@@ -1,7 +1,7 @@
 import { renderRadarSVG } from './radar.js';
 import { zodiacDetail } from './zodiacInfo.js';
 import { revealedCard } from './tarotView.js';
-import { temperamentNarrative, strengthNarrative, timeNarrative, nameNarrative, digitNarrative, fortuneNarrative, sajuNarrative, radarNarrative, synthesisNarrative, synthesisSummary, relationNarrative, ziweiNarrative, zodiacNarrative, workplaceNarrative, strengthBalanceNarrative, hapchungNarrative } from './narrative.js';
+import { temperamentNarrative, strengthNarrative, timeNarrative, nameNarrative, digitNarrative, fortuneNarrative, sajuNarrative, radarNarrative, synthesisNarrative, synthesisSummary, relationNarrative, ziweiNarrative, zodiacNarrative, workplaceNarrative, strengthBalanceNarrative, hapchungNarrative, gyeokgukNarrative } from './narrative.js';
 import { renderFortuneBars, renderLifeGraph, renderRelationBars } from './fortuneGraph.js';
 import { OHAENG_COLOR } from './sajuDetail.js';
 
@@ -100,12 +100,14 @@ function sajuBlock(detail) {
   </div>`;
 }
 
-function strengthBlock(strength, hapchung) {
+function strengthBlock(strength, hapchung, gyeokguk) {
   const html = strengthBalanceNarrative(strength);
   if (!html) return '';
+  const gk = gyeokgukNarrative(gyeokguk);
   const hc = hapchungNarrative(hapchung);
   return `<div class="card">
-    <h3>신강·신약 & 용신 <small>身强身弱 · 用神</small></h3>
+    <h3>격국·신강신약·용신 <small>格局 · 身强身弱 · 用神</small></h3>
+    ${gk ? `<h4 class="f-sub">격국(格局) — 사주의 그릇</h4><div class="narrative">${gk}</div><div class="sb-div"></div>` : ''}
     <div class="narrative">${html}</div>
     ${hc ? `<h4 class="f-sub" style="margin-top:18px">지지 관계 · 합충(合沖)</h4><div class="narrative">${hc}</div>` : ''}
   </div>`;
@@ -359,7 +361,7 @@ export function renderReport(result, spread) {
 
     ${sajuBlock(result.sajuDetail)}
 
-    ${strengthBlock(result.strength, result.hapchung)}
+    ${strengthBlock(result.strength, result.hapchung, result.gyeokguk)}
 
     ${ziweiBlock(result.ziwei)}
 
