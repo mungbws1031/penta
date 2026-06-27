@@ -559,6 +559,110 @@ function threeWayInsight(dayEl, mbti, sunSign) {
   return '';
 }
 
+// ── 입체 분석(兩面性 심층) — 축별 두 얼굴 ──────────────────────
+// keyed by 축 id. plus/minus 극의 '언제 나오는가'와 대가·강점·조언.
+const AXIS_DUALITY = {
+  A1: {
+    field: '에너지',
+    desc: '에너지를 충전하는 회로가 이중으로 깔려 있다. 사람들 속에서 켜지는 회로와 혼자일 때 켜지는 회로가 둘 다 살아 있어, 보는 사람에 따라 전혀 다른 사람으로 기억된다.',
+    when: { 외향: '익숙하고 안전한 자리, 컨디션이 좋을 때, 좋아하는 주제 앞에서는 누구보다 활발하게 무대 중앙에 선다', 내향: '낯선 자리, 에너지가 떨어졌을 때, 의미 없는 잡담이 길어지면 조용히 물러나 혼자만의 동굴을 찾는다' },
+    cost: '가장 흔한 대가는 "남들은 나를 외향이라 아는데 정작 나는 방전돼 있다"는 간극이다. 밖에서 다 쓰고 집에 와 무너지는 패턴, 그리고 "쟤 변덕스럽다"는 오해를 사기 쉽다.',
+    gift: '무대에 설 줄도, 혼자 깊이 파고들 줄도 안다. 사람을 모으다가도 혼자 결과물을 완성해내는 — 한쪽만 가진 사람은 못 하는 일을 해낸다.',
+    advice: '회복 시간을 미리 일정에 넣어라. 외향 모드로 쓴 에너지를 내향 모드로 채우는 리듬을 스스로 설계하면, 변덕이 아니라 전략이 된다.',
+  },
+  A2: {
+    field: '정보 처리',
+    desc: '세상을 읽는 두 채널이 동시에 켜져 있다. 큰 그림과 가능성을 먼저 보는 눈, 그리고 손에 잡히는 사실과 디테일을 챙기는 눈이 번갈아 작동한다.',
+    when: { 직관: '새로운 일을 구상하거나 미래를 그릴 때는 디테일을 건너뛰고 큰 그림으로 도약한다', 현실: '책임이 걸린 실무, 돈이 오가는 결정, 검증이 필요한 순간에는 갑자기 깐깐한 현실주의자로 돌변한다' },
+    cost: '아이디어는 폭발하는데 실행에서 스스로 발목을 잡거나("이게 진짜 될까"), 반대로 디테일에 빠져 큰 그림을 놓치는 양극단을 오간다. 주변은 "비전가인지 실무가인지" 헷갈려 한다.',
+    gift: '꿈을 꾸면서 동시에 그 꿈을 검증할 수 있다. 몽상으로 끝나지도, 무모한 추진으로 망하지도 않는 — 기획과 실행을 한 몸에 담은 드문 조합이다.',
+    advice: '두 모드를 "순서"로 분리하라. 구상 단계엔 직관에 전권을, 실행 단계엔 현실 검증에 전권을. 동시에 켜면 충돌하지만 단계별로 쓰면 최강이다.',
+  },
+  A3: {
+    field: '판단',
+    desc: '결정을 내리는 저울이 두 개다. 논리와 원칙으로 따지는 머리, 사람과 관계의 온도를 살피는 가슴이 매 순간 경합한다.',
+    when: { 사고: '일·숫자·시스템 앞에서는 냉정하고 객관적으로 옳고 그름을 가른다', 감정: '가까운 사람이 얽히면 논리로는 답이 나왔는데도 마음이 그 답을 거부한다' },
+    cost: '"냉정하다"와 "감정적이다"를 동시에 듣는다. 머리로 내린 결정에 가슴이 죄책감을 얹고, 가슴으로 내린 결정에 머리가 비효율을 따져 — 한 번 결정하고 두 번 후회하기 쉽다.',
+    gift: '옳은 판단과 따뜻한 판단을 모두 할 줄 안다. 원칙을 지키되 사람을 상하지 않게 하는, 리더에게 가장 필요한 균형감을 타고났다.',
+    advice: '결정 전에 "이건 머리로 풀 문제인가, 가슴으로 풀 문제인가"부터 정하라. 영역을 구분하지 않으면 두 저울이 서로를 깎아먹는다.',
+  },
+  A4: {
+    field: '생활 양식',
+    desc: '일을 다루는 두 모드가 공존한다. 미리 정하고 정돈하는 질서의 모드, 흐름을 타고 즉흥적으로 움직이는 자유의 모드다.',
+    when: { 계획: '중요한 일·마감·책임 앞에서는 철저히 계획을 세우고 끝을 본다', 유연: '익숙해진 일이나 여유가 있을 때는 계획을 풀어버리고 즉흥적으로 흘러간다' },
+    cost: '스스로도 "내가 계획형인지 즉흥형인지" 헷갈린다. 빡빡하게 조이다 갑자기 풀어지는 낙차가 커서, 함께 일하는 사람이 페이스를 읽기 어려워한다.',
+    gift: '판을 짤 줄도, 변수에 즉흥으로 대응할 줄도 안다. 계획대로 가다 무너졌을 때 오히려 빛나는 — 위기에 강한 조합이다.',
+    advice: '"큰 틀은 계획, 세부는 유연"으로 층을 나눠라. 뼈대만 단단히 잡고 살은 흐름에 맡기면 두 성향이 싸우지 않고 협력한다.',
+  },
+  A5: {
+    field: '역할',
+    desc: '집단 안에서 두 자리를 다 점유할 수 있다. 앞장서 끌고 가는 리더의 자리, 곁에서 받치고 조율하는 조력자의 자리다.',
+    when: { 주도: '판이 멈춰 있거나 아무도 나서지 않을 때, 책임이 분명할 때는 망설임 없이 키를 잡는다', 수용: '더 나은 적임자가 있거나 조화가 중요할 때는 기꺼이 한 발 물러나 떠받친다' },
+    cost: '"리더인 줄 알았는데 빠진다" 또는 "따르는 줄 알았는데 갑자기 나선다"는 인상을 준다. 나설 때와 빠질 때의 기준이 스스로에게도 흐리면 우유부단으로 비치기 쉽다.',
+    gift: '이끌 줄도 따를 줄도 아는 사람은 어떤 팀에서도 쓰인다. 권력을 쥐어도 독선에 빠지지 않고, 받쳐도 자기를 잃지 않는 — 성숙한 리더의 조건이다.',
+    advice: '"이 자리에서 내 역할은 끄는 것인가 받치는 것인가"를 의식적으로 선언하라. 역할을 스스로 정하면 입체성이 강점, 떠밀려 정해지면 약점이 된다.',
+  },
+};
+
+// 충돌 축 → 깊이 있는 입체 풀이 (사주쟁이 스타일)
+function deepConflictAnalysis(conflicts) {
+  if (!conflicts.length) return '';
+  let html = '';
+  conflicts.forEach(a => {
+    const d = AXIS_DUALITY[a.id];
+    if (!d) return;
+    // 어느 렌즈가 어느 극에 섰는지
+    const plusSys = (a.plusSystems || []).join('·');
+    const minusSys = (a.minusSystems || []).join('·');
+    const splitLine = (plusSys && minusSys)
+      ? `<span class="dc-split">${plusSys}는 <b>${a.plus}</b> 쪽, ${minusSys}는 <b>${a.minus}</b> 쪽 — 렌즈가 정확히 양분된다.</span>`
+      : '';
+
+    html += `<div class="deep-conflict">
+      <div class="dc-head">⚔ ${a.label}<span class="dc-field">${a.plus} ↔ ${a.minus}</span></div>
+      <p class="dc-desc">${d.desc}${splitLine ? '<br>' + splitLine : ''}</p>
+      <div class="dc-faces">
+        <div class="dc-face"><span class="dc-face-pole">${a.plus} 모드</span><span class="dc-face-when">${d.when[a.plus]}.</span></div>
+        <div class="dc-face"><span class="dc-face-pole">${a.minus} 모드</span><span class="dc-face-when">${d.when[a.minus]}.</span></div>
+      </div>
+      <p class="dc-row"><b class="dc-cost">치르는 대가</b> ${d.cost}</p>
+      <p class="dc-row"><b class="dc-gift">숨은 강점</b> ${d.gift}</p>
+      <p class="dc-row"><b class="dc-advice">다루는 법</b> ${d.advice}</p>
+    </div>`;
+  });
+  return html;
+}
+
+// 사주 내부의 긴장 — 오행 편중 / 십성 모순
+function sajuInnerTension(sajuDetail) {
+  if (!sajuDetail) return '';
+  const oh = sajuDetail.ohaeng || {};
+  const tgs = sajuDetail.tenGodGroups || {};
+  const out = [];
+
+  // 오행 편중: 강한 것(>=3)과 빈 것(0)
+  const strong = Object.entries(oh).filter(([,v]) => v >= 3).map(([k]) => k);
+  const empty  = Object.entries(oh).filter(([,v]) => v === 0).map(([k]) => k);
+  if (strong.length && empty.length) {
+    const sEl = strong.map(e => `${e}(${HANJA[e]})`).join('·');
+    const eEl = empty.map(e => `${e}(${HANJA[e]})`).join('·');
+    out.push(`<p class="dc-row"><b class="dc-tension">오행의 쏠림</b> 팔자가 <b>${sEl}</b>으로 넘치는 만큼 <b>${eEl}</b>은 텅 비어 있다. 넘치는 기운은 그 분야에서 과잉(고집·과열·반복)으로, 빈 기운은 평생의 결핍이자 끌림으로 작동한다 — 사람은 흔히 자기에게 없는 것을 가진 상대에게 끌리고, 없는 기운이 들어오는 시기에 인생이 크게 출렁인다.</p>`);
+  }
+
+  // 십성 모순
+  const bi = tgs.비겁||0, sik = tgs.식상||0, jae = tgs.재성||0, gwan = tgs.관성||0, in_ = tgs.인성||0;
+  if (bi >= 3 && jae <= 1) {
+    out.push(`<p class="dc-row"><b class="dc-tension">독립과 재물의 긴장</b> 혼자 서려는 힘(비겁)은 강한데 그것을 돈으로 바꾸는 통로(재성)가 약하다. 자존심이 수익을 가로막는 역설이라, 혼자 다 쥐려 할수록 손에 남는 게 적다 — 나눌수록 커지는 구조다.</p>`);
+  } else if (sik >= 3 && gwan >= 2) {
+    out.push(`<p class="dc-row"><b class="dc-tension">자유와 규율의 긴장</b> 틀을 깨고 표현하려는 힘(식상)과 틀을 지키고 책임지려는 힘(관성)이 안에서 정면으로 맞선다. 규칙 안에서 답답해하면서도 규칙 없는 곳에선 불안해하는 — 평생 "내 식대로 하되 인정도 받고 싶은" 줄다리기를 한다.</p>`);
+  } else if (in_ >= 3 && sik <= 1) {
+    out.push(`<p class="dc-row"><b class="dc-tension">받아들임과 내보냄의 긴장</b> 배우고 채우는 힘(인성)은 큰데 꺼내 표현하는 힘(식상)이 약하다. 머릿속엔 가득한데 밖으로 내보내질 못해 안에 고이기 쉽다 — 완벽히 준비되기 전엔 시작을 미루는 패턴을 의식적으로 깨야 한다.</p>`);
+  }
+
+  if (!out.length) return '';
+  return `<p class="dc-sub">팔자 안에서도 두 기운이 맞서는 지점이 있다.</p>` + out.join('');
+}
+
 // 십성 조합 → 수입 역설 서술
 function incomeParadox(tgs) {
   const jae = tgs.재성 || 0, gwan = tgs.관성 || 0,
@@ -615,12 +719,6 @@ export function synthesisNarrative(result) {
   }
   html += `<p>${identLine}</p>`;
 
-  // 시스템 간 충돌 → 입체감
-  if (conflicts.length) {
-    const cls = conflicts.map(a => a.label).join(' · ');
-    html += `<p><b>${cls}</b> 영역에서는 시스템마다 신호가 엇갈린다. 이 모순이 결점이 아니다 — 상황에 따라 다른 모습이 나오는, 단순하지 않은 입체적 사람의 증거다.</p>`;
-  }
-
   // 핵심 강점 (3개 시스템 이상 지목)
   if (topS.length) {
     html += `<p>세 시스템 이상이 동시에 지목하는 자질 — <b>${topS.map(s => s.name).join(' · ')}</b>. 이 강점이 살아나는 자리에 있을 때 이 사람의 진짜 잠재력이 열린다.</p>`;
@@ -655,6 +753,22 @@ export function synthesisNarrative(result) {
     }
 
     if (threeWayText) html += threeWayText;
+  }
+
+  // ①-2 입체 분석 — 너 안의 모순(兩面性) 심층
+  const conflictHtml = deepConflictAnalysis(conflicts);
+  const innerTension = sajuInnerTension(sajuDetail);
+  if (conflictHtml || innerTension) {
+    html += `<p class="nv-head nv-cross">🎭 입체 분석 — 너 안의 모순</p>`;
+    html += `<p class="dc-intro">단순한 사람은 한 방향만 가리킨다. 이 사람은 렌즈와 기운이 서로 엇갈리는 지점을 품고 있다 — 모순처럼 보이지만, 사주에서는 이것을 <b>그릇이 큰 입체적 운명</b>으로 읽는다. 어느 상황에서 어느 얼굴이 나오는지, 그 대가와 강점은 무엇인지 깊이 들여다본다.</p>`;
+    html += conflictHtml;
+    html += innerTension;
+    if (!conflictHtml && innerTension) {
+      // 교차 충돌은 없지만 사주 내부 긴장만 있을 때
+    }
+    if (conflictHtml || innerTension) {
+      html += `<p class="dc-foot">이 모순들을 억지로 한쪽으로 정리하려 들면 평생 자신과 싸우게 된다. 둘 다 '진짜 나'임을 받아들이고 <b>상황에 맞게 꺼내 쓰는 법</b>을 익히는 순간, 입체성은 약점이 아니라 누구도 흉내 못 낼 무기가 된다.</p>`;
+    }
   }
 
   // ② 돈 — 역설과 구체 타이밍

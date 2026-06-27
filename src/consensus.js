@@ -30,6 +30,8 @@ export function computeAxis(entries) {
     conflict,
     contributingSystems: contributing.map(e => e.system),
     dissentingSystems: dissenting.map(e => e.system),
+    plusSystems: plus.map(e => e.system),   // meta.plus 극에 선 렌즈
+    minusSystems: minus.map(e => e.system),  // meta.minus 극에 선 렌즈
     weightedLean,
   };
 }
