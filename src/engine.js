@@ -49,7 +49,7 @@ export function runEngine(input) {
   const sajuDetail = analyzeSajuDetail(birth, sajuCounts);
 
   const ziwei = analyzeZiwei(birth);
-  const yearlyFortune = analyzeYearlyFortune(birth);
+  const yearlyFortune = analyzeYearlyFortune(birth, sajuDetail.pillars?.dayGan);
   const sinjeom = analyzeSinjeom(birth, sajuDetail);
   return { axes, strengths, sajuTimeUnknown: saju.timeUnknown, sunSign: sign, dayElement, mbti, name: nameAnalysis, digit: digitAnalysis, fortune, sajuDetail, ziwei, yearlyFortune, sinjeom, birthYear: birth.year };
 }

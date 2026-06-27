@@ -200,11 +200,12 @@ function aspects(f) {
   ];
 }
 
-export function analyzeYearlyFortune(birth) {
+export function analyzeYearlyFortune(birth, userDayGan) {
   try {
-    const userPillar = pillarFromDate(birth.year, birth.month, birth.day);
-    if (!userPillar) return null;
-    const dayGan = userPillar.dayGan;
+    // 생일 일간은 음력/시주 경계까지 반영된 sajuDetail 값을 받아 쓰는 것이 정확하다.
+    // (폴백: 양력 가정 계산 — 호출부가 dayGan을 안 넘긴 경우만)
+    const dayGan = userDayGan || pillarFromDate(birth.year, birth.month, birth.day)?.dayGan;
+    if (!dayGan) return null;
 
     const now = new Date();
     const cy = now.getFullYear(), cm = now.getMonth() + 1, cd = now.getDate();
