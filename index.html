@@ -344,6 +344,32 @@
     }
     .yf-advice b { color: var(--good); font-weight: 800; }
 
+    /* ─── 종합 한눈에(요약) ─── */
+    .summary-card {
+      border-color: rgba(242,202,110,0.3);
+      background: linear-gradient(160deg, rgba(242,202,110,0.07), rgba(196,124,255,0.04));
+    }
+    .summary-card h3 { color: var(--gold); }
+    .summary-card h3::before { background: linear-gradient(180deg, var(--gold), rgba(242,202,110,0.15)); }
+    .sum-ident { font-size: 1.02rem; line-height: 1.65; color: var(--ink); margin: 0 0 12px; font-weight: 600; }
+    .sum-ident b { color: var(--gold); font-weight: 800; }
+    .sum-row { display: grid; grid-template-columns: 78px 1fr; gap: 10px; align-items: start; margin-bottom: 9px; }
+    .sum-key { font-size: .78rem; font-weight: 800; color: var(--muted); padding-top: 4px; }
+    .sum-vals { display: flex; flex-wrap: wrap; gap: 6px; }
+    .sum-chip {
+      font-size: .8rem; font-weight: 700; padding: 3px 11px; border-radius: 999px;
+      background: rgba(255,255,255,0.06); border: 1px solid var(--border); color: var(--ink-dim);
+    }
+    .sum-chip.gold { color: var(--gold); border-color: rgba(242,202,110,0.3); background: rgba(242,202,110,0.08); }
+    .sum-text { font-size: .85rem; line-height: 1.6; color: var(--ink-dim); display: block; }
+    .sum-text b { color: var(--gold); }
+    .sum-core {
+      font-size: .95rem; font-weight: 800; line-height: 1.65; color: var(--ink);
+      margin: 14px 0 0; padding: 12px 15px; border-radius: 12px;
+      background: rgba(93,232,164,0.07); border: 1px solid rgba(93,232,164,0.2);
+    }
+    .sum-guide { font-size: .76rem; color: var(--muted); text-align: center; margin: 12px 0 0; letter-spacing: .02em; }
+
     /* ─── 입체 분석(兩面性) ─── */
     .dc-intro { font-size: .9rem; line-height: 1.75; color: var(--ink-dim); margin: 0 0 14px; }
     .dc-intro b { color: var(--gold); }
@@ -454,6 +480,7 @@
       .sj-sal { grid-template-columns: 92px 1fr; }
       .yf-aspect { grid-template-columns: 72px 1fr; }
       .dc-faces { grid-template-columns: 1fr; }
+      .sum-row { grid-template-columns: 64px 1fr; gap: 8px; }
     }
   </style>
 </head>

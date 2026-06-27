@@ -1,7 +1,7 @@
 import { renderRadarSVG } from './radar.js';
 import { zodiacDetail } from './zodiacInfo.js';
 import { revealedCard } from './tarotView.js';
-import { temperamentNarrative, strengthNarrative, timeNarrative, nameNarrative, digitNarrative, fortuneNarrative, sajuNarrative, radarNarrative, synthesisNarrative, relationNarrative, ziweiNarrative } from './narrative.js';
+import { temperamentNarrative, strengthNarrative, timeNarrative, nameNarrative, digitNarrative, fortuneNarrative, sajuNarrative, radarNarrative, synthesisNarrative, synthesisSummary, relationNarrative, ziweiNarrative } from './narrative.js';
 import { renderFortuneBars, renderLifeGraph, renderRelationBars } from './fortuneGraph.js';
 import { OHAENG_COLOR } from './sajuDetail.js';
 
@@ -184,6 +184,15 @@ function yearlyFortuneBlock(yf) {
   </div>`;
 }
 
+function summaryBlock(result) {
+  const html = synthesisSummary(result);
+  if (!html) return '';
+  return `<div class="card summary-card">
+    <h3>종합 한눈에 <small>핵심만 먼저</small></h3>
+    ${html}
+  </div>`;
+}
+
 function sinjeomBlock(s) {
   if (!s) return '';
   const { guardian, subGuardian, sinki, sinkiText, salList, samjae, gongsu, dayElKo, dayZhiKo } = s;
@@ -295,6 +304,8 @@ export function renderReport(result, spread) {
       <h2 class="catch">${catchphrase(axes)}</h2>
       <p class="sun">☀ 태양궁 <b>${sunSign}</b></p>
     </div>
+
+    ${summaryBlock(result)}
 
     <div class="card radar-card">
       <h3>일치도 레이더 <small>5축 성향 · ★ = 시스템 일치 수</small></h3>

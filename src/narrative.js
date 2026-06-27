@@ -681,6 +681,65 @@ function incomeParadox(tgs) {
   return `재성·관성·식상이 고르게 분포된 구조다. 여러 경로로 벌 수 있는 팔자이지만, 집중하지 않으면 모든 방향에서 중간치에 머문다 — <b>하나를 깊게 파는 것</b>이 전략이다.`;
 }
 
+const CORE_LINE = {
+  비겁: '파트너십이 이 팔자의 빈 칸을 채운다 — 혼자보다 함께일 때 더 크다.',
+  식상: '표현하지 않으면 세상은 모른다 — 재능을 꺼내는 용기가 첫 번째 과제다.',
+  재성: '돈을 쫓지 마라, 가치 있는 일을 쫓아라 — 가치가 쌓이면 재물은 따라온다.',
+  관성: '책임지는 자리가 이 사람을 성장시킨다 — 그 자리를 두려워하지 마라.',
+  인성: '배운 것을 쌓아두지 말고 행동으로 내보내라 — 실행이 지식을 실력으로 바꾼다.',
+};
+const CORE_LINE_DEFAULT = '5개 시스템이 가리키는 방향을 믿고, 자신의 결에 맞는 삶을 살아라.';
+
+// ── 종합 한눈에(짧은 요약) — 리포트 맨 위 ──
+export function synthesisSummary(result) {
+  if (!result.sajuDetail) return '';
+  const { axes, strengths, sajuDetail } = result;
+  const dp = sajuDetail.pillars?.dayProfile;
+  const dayEl = sajuDetail.pillars?.day?.ganEl || '';
+  const tgs = sajuDetail.tenGodGroups || {};
+
+  const conflicts = axes.filter(a => a.conflict);
+  const confirmed = axes.filter(a => a.stars >= 3 && a.resultPole !== 0 && !a.conflict);
+  const notable   = axes.filter(a => a.stars >= 2 && a.resultPole !== 0 && !a.conflict);
+  const coreAxes  = (confirmed.length ? confirmed : notable).slice(0, 4);
+  const ranked    = [...strengths].sort((a, b) => b.count - a.count);
+  const topS      = (ranked.filter(s => s.count >= 3).length ? ranked.filter(s => s.count >= 3) : ranked).slice(0, 3);
+
+  let html = '';
+
+  // 한 줄 정체성
+  const elImg = EL_IMAGE[dayEl];
+  const daySymbol = dp?.symbol || '';
+  const poleStr = coreAxes.length ? coreAxes.map(a => a.poleLabel).join(' · ') : '';
+  let ident = '';
+  if (elImg) ident += `${daySymbol ? `일간 <b>${daySymbol}</b>, ` : ''}${elImg}처럼 — `;
+  if (poleStr) ident += `<b>${poleStr}</b>의 결을 지닌 사람.`;
+  if (ident) html += `<p class="sum-ident">${ident}</p>`;
+
+  // 확정/주요 성향 배지
+  if (coreAxes.length) {
+    const tag = confirmed.length ? '★★★ 확정 성향' : '주요 성향';
+    html += `<div class="sum-row"><span class="sum-key">${tag}</span><span class="sum-vals">${coreAxes.map(a => `<span class="sum-chip">${a.label} · ${a.poleLabel}</span>`).join('')}</span></div>`;
+  }
+
+  // 핵심 강점
+  if (topS.length) {
+    html += `<div class="sum-row"><span class="sum-key">핵심 강점</span><span class="sum-vals">${topS.map(s => `<span class="sum-chip gold">${s.name}</span>`).join('')}</span></div>`;
+  }
+
+  // 입체(충돌) 요약
+  if (conflicts.length) {
+    html += `<div class="sum-row"><span class="sum-key">입체성</span><span class="sum-vals sum-text">${conflicts.map(a => a.label).join(' · ')} 영역에서 겉과 속이 갈리는 다면형 — 자세한 풀이는 아래 <b>종합 의견</b>에서.</span></div>`;
+  }
+
+  // 한 줄 핵심
+  const weakTg = Object.entries(tgs).sort((a, b) => a[1] - b[1])[0]?.[0];
+  html += `<p class="sum-core">✨ ${CORE_LINE[weakTg] || CORE_LINE_DEFAULT}</p>`;
+
+  html += `<p class="sum-guide">↓ 레이더 · 사주 · 신점 · 운세 등 상세 분석이 이어집니다</p>`;
+  return html;
+}
+
 export function synthesisNarrative(result) {
   if (!result.sajuDetail) return '';
   const { axes, strengths, sunSign, fortune, sajuDetail, birthYear, mbti } = result;
@@ -837,14 +896,7 @@ export function synthesisNarrative(result) {
   // ④ 한 줄 핵심
   html += `<p class="nv-head">✨ 한 줄 핵심</p>`;
   const weakTg = Object.entries(tgs).sort((a, b) => a[1] - b[1])[0]?.[0];
-  const CORE_LINE = {
-    비겁: '파트너십이 이 팔자의 빈 칸을 채운다 — 혼자보다 함께일 때 더 크다.',
-    식상: '표현하지 않으면 세상은 모른다 — 재능을 꺼내는 용기가 첫 번째 과제다.',
-    재성: '돈을 쫓지 마라, 가치 있는 일을 쫓아라 — 가치가 쌓이면 재물은 따라온다.',
-    관성: '책임지는 자리가 이 사람을 성장시킨다 — 그 자리를 두려워하지 마라.',
-    인성: '배운 것을 쌓아두지 말고 행동으로 내보내라 — 실행이 지식을 실력으로 바꾼다.',
-  };
-  html += `<p><b>${CORE_LINE[weakTg] || '5개 시스템이 가리키는 방향을 믿고, 자신의 결에 맞는 삶을 살아라.'}</b></p>`;
+  html += `<p><b>${CORE_LINE[weakTg] || CORE_LINE_DEFAULT}</b></p>`;
 
   html += `<p class="nv-foot">사주·MBTI·별자리·혈액형·타로 5개 시스템 종합 분석입니다. 재미용 풀이이며 확정 예측이 아닙니다.</p>`;
   return html;
