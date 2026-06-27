@@ -431,6 +431,19 @@
     .dc-foot { font-size: .88rem; line-height: 1.72; color: var(--ink-dim); margin: 12px 0 0; padding: 12px 14px; border-radius: 11px; background: rgba(242,202,110,0.05); border: 1px solid rgba(242,202,110,0.16); }
     .dc-foot b { color: var(--gold); }
 
+    /* ─── 합·충(合沖) ─── */
+    .hc-item {
+      display: flex; flex-direction: column; gap: 3px;
+      padding: 10px 13px; border-radius: 11px; margin: 8px 0;
+      background: rgba(255,255,255,0.03); border: 1px solid var(--border);
+    }
+    .hc-item.good { background: rgba(93,232,164,0.05); border-color: rgba(93,232,164,0.16); }
+    .hc-item.caution { background: rgba(255,138,138,0.05); border-color: rgba(255,138,138,0.18); }
+    .hc-title { font-size: .86rem; font-weight: 800; color: var(--ink); }
+    .hc-item.good .hc-title { color: var(--good); }
+    .hc-item.caution .hc-title { color: #ff8a8a; }
+    .hc-text { font-size: .85rem; line-height: 1.6; color: var(--ink-dim); }
+
     /* ─── 신점 (神占) ─── */
     .sinjeom-card { border-color: rgba(232,110,110,0.22); }
     .sinjeom-card h3 { color: #ff9a8a; }

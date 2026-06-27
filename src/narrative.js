@@ -1038,11 +1038,11 @@ export function strengthBalanceNarrative(s) {
     태약: '일간이 매우 약한 <b>신태약(身太弱)</b> 사주',
   }[s.level];
 
-  const ryeong = s.deukRyeong === true ? ', 게다가 월령(月令)의 지지까지 받아'
-    : s.deukRyeong === false ? ', 월령(月令)의 뒷받침도 받지 못해' : '';
+  const ryeong = s.deukRyeong === true ? ' 게다가 월령(月令)의 뒷받침까지 받아,'
+    : s.deukRyeong === false ? ' 다만 월령(月令)의 뒷받침은 받지 못해,' : '';
 
   html += `<p class="nv-head nv-confirm">⚖ 신강·신약 판정</p>`;
-  html += `<p>일간 <b>${SB_EL_KO[s.dayEl]}</b>를 돕는 기운(비겁+인성) <b>${s.support}</b> vs 빼는 기운(식상+재성+관성) <b>${s.drain}</b>${ryeong} — ${levelText}다.</p>`;
+  html += `<p>지장간(藏干)까지 가중해 보면, 일간 <b>${SB_EL_KO[s.dayEl]}</b>를 돕는 기운과 빼는 기운의 비율은 <b>${s.strongPct} : ${100 - s.strongPct}</b>다(돕는 힘 ${s.support} · 빼는 힘 ${s.drain}).${ryeong} — ${levelText}다.</p>`;
   html += `<p>${SB_MEANING[s.level]}</p>`;
 
   if (s.balanced) {
@@ -1063,6 +1063,24 @@ export function strengthBalanceNarrative(s) {
   html += `<p class="nv-head">🧭 용신 활용법</p>`;
   html += `<p>대표 용신 <b>${SB_EL_KO[pe]}</b>(${SB_EL_NATURE[pe]})를 일상에 끌어들이면 좋다 — 행운의 색 <b>${SB_EL_COLOR[pe]}</b>, 방향 <b>${SB_EL_DIR[pe]}</b>${careers ? `, 잘 맞는 분야 <b>${careers.join('·')}</b>` : ''}. 이 기운을 가진 사람을 곁에 두는 것도 큰 도움이 된다.</p>`;
   html += `<p class="nv-foot">억부법(抑扶法) 기준 간략 추정입니다. 실제 용신은 조후·병약·통관까지 함께 봐야 정밀해져요.</p>`;
+  return html;
+}
+
+// ===== 지지 관계(합·충) 풀이 =====
+export function hapchungNarrative(hc) {
+  if (!hc || !hc.findings?.length) {
+    return `<p>네 지지 사이에 두드러진 합(合)이나 충(沖)이 잡히지 않는다 — 각 자리가 독립적으로 제 역할을 하는, 비교적 담백한 구조다.</p>`;
+  }
+  const order = { 삼합:0, 방합:1, 육합:2, 천간합:3, 반합:4, 충:5 };
+  const sorted = [...hc.findings].sort((a, b) => (order[a.type] ?? 9) - (order[b.type] ?? 9));
+  let html = `<p>사주 여덟 글자는 따로 놀지 않고 서로 끌어당기거나(합) 부딪힌다(충). 이 사주에서 잡히는 관계는 이렇다.</p>`;
+  sorted.forEach(f => {
+    html += `<div class="hc-item ${f.kind}">
+      <span class="hc-title">${f.kind === 'caution' ? '⚡' : '🔗'} ${f.title}</span>
+      <span class="hc-text">${f.text}</span>
+    </div>`;
+  });
+  html += `<p class="nv-foot">합·충은 사주 해석의 핵심 변수입니다. 형(刑)·파(破)·해(害)와 운(運)에서 들어오는 합충까지 보면 더 정밀해져요.</p>`;
   return html;
 }
 
