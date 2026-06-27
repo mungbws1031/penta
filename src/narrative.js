@@ -1045,24 +1045,49 @@ export function strengthBalanceNarrative(s) {
   html += `<p>지장간(藏干)까지 가중해 보면, 일간 <b>${SB_EL_KO[s.dayEl]}</b>를 돕는 기운과 빼는 기운의 비율은 <b>${s.strongPct} : ${100 - s.strongPct}</b>다(돕는 힘 ${s.support} · 빼는 힘 ${s.drain}).${ryeong} — ${levelText}다.</p>`;
   html += `<p>${SB_MEANING[s.level]}</p>`;
 
+  // ① 억부용신
+  html += `<p class="nv-head">💊 용신(用神) — 나를 살리는 보약</p>`;
   if (s.balanced) {
-    html += `<p class="nv-head">💊 용신(用神) — 균형의 보충</p>`;
-    html += `<p>이미 균형이 좋아 특정 기운에 매이지 않는다. 굳이 꼽자면 가장 비어 있는 <b>${SB_EL_KO[s.primaryYong]}</b> 기운을 보충할 때 운의 흐름이 한층 매끄러워진다.</p>`;
+    html += `<p><b>억부(抑扶) 기준</b> — ${s.eokbuReason}. 보충할 기운은 <b>${SB_EL_KO[s.eokbuEl]}</b>이다.</p>`;
   } else {
-    html += `<p class="nv-head">💊 용신(用神) — 나를 살리는 보약</p>`;
-    const yongG = s.yongGroups.join('·');
-    const yongE = s.yongEls.map(e => SB_EL_KO[e]).join('·');
-    html += `<p>${s.isStrong ? '이미 강하니 기운을 <b>덜어내고 흘려보내야</b> 균형이 맞는다' : '약하니 기운을 <b>보태고 살려주어야</b> 균형이 맞는다'}. 이 사주의 보약, 곧 <b>용신은 ${yongG}</b> 계열 — 오행으로는 <b>${yongE}</b> 기운이다. 이 기운이 들어오는 시기·사람·환경이 당신을 일으켜 세운다.</p>`;
-    const giG = s.giGroups.join('·');
-    const giE = s.giEls.map(e => SB_EL_KO[e]).join('·');
-    html += `<p class="nv-caution"><b>기신(忌神)은 ${giG}</b> 계열 — 오행 <b>${giE}</b> 기운이다. 이미 넘치거나 부담스러운 쪽이라, 이게 더해지면 오히려 탈이 나기 쉽다.</p>`;
+    html += `<p><b>억부(抑扶) 기준</b> — ${s.isStrong ? '이미 강하니 덜어내야' : '약하니 보태야'} 균형이 맞는다. ${s.eokbuReason} — 곧 <b>${s.eokbuGroup}(오행 ${SB_EL_KO[s.eokbuEl]})</b>이 억부용신이다.</p>`;
   }
 
+  // ② 조후용신
+  if (s.johuSeason) {
+    if (s.johuEl) {
+      html += `<p><b>조후(調候) 기준</b> — ${s.johuSeason}에 태어나, ${s.johuNote} 계절이 부르는 조후용신은 <b>${SB_EL_KO[s.johuEl]}</b>${s.johuUrgent ? ' <b>(시급)</b>' : ''}이다.</p>`;
+    } else {
+      html += `<p><b>조후(調候) 기준</b> — ${s.johuNote}</p>`;
+    }
+  }
+
+  // ③ 종합
   const pe = s.primaryYong;
+  let verdict;
+  if (s.primaryBasis === '억부·조후 일치') {
+    verdict = `억부와 조후가 모두 <b>${SB_EL_KO[pe]}</b>를 가리킨다 — 의심의 여지가 적은 <b>강력한 용신</b>이다.`;
+  } else if (s.primaryBasis === '조후(調候) 우선') {
+    verdict = `억부로는 ${SB_EL_KO[s.eokbuEl]}가 약이지만, 계절이 워낙 치우쳐 <b>조후용신 ${SB_EL_KO[pe]}가 더 시급</b>하다. 추위·더위부터 풀어야 사주가 숨을 쉰다 — 이 둘의 긴장이 이 사주의 깊이이기도 하다.`;
+  } else if (s.johuEl && s.johuEl !== s.eokbuEl) {
+    verdict = `<b>대표 용신은 ${SB_EL_KO[pe]}</b>(억부)이고, 계절을 다스리는 <b>${SB_EL_KO[s.johuEl]}</b>(조후)를 보조로 함께 쓰면 좋다.`;
+  } else {
+    verdict = `<b>대표 용신은 ${SB_EL_KO[pe]}</b>다. 이 기운이 들어오는 시기·사람·환경이 당신을 일으켜 세운다.`;
+  }
+  html += `<p class="sb-verdict">🔑 종합 용신 — ${verdict}</p>`;
+
+  // 기신
+  if (!s.balanced) {
+    const giG = s.giGroups.join('·');
+    const giE = s.giEls.map(e => SB_EL_KO[e]).join('·');
+    html += `<p class="nv-caution"><b>기신(忌神)은 ${giG}</b> 계열 — 오행 <b>${giE}</b>다. 이미 넘치거나 부담스러운 쪽이라, 이게 더해지면 오히려 탈이 나기 쉽다.</p>`;
+  }
+
+  // 활용법
   const careers = OHAENG_CAREER[pe];
   html += `<p class="nv-head">🧭 용신 활용법</p>`;
   html += `<p>대표 용신 <b>${SB_EL_KO[pe]}</b>(${SB_EL_NATURE[pe]})를 일상에 끌어들이면 좋다 — 행운의 색 <b>${SB_EL_COLOR[pe]}</b>, 방향 <b>${SB_EL_DIR[pe]}</b>${careers ? `, 잘 맞는 분야 <b>${careers.join('·')}</b>` : ''}. 이 기운을 가진 사람을 곁에 두는 것도 큰 도움이 된다.</p>`;
-  html += `<p class="nv-foot">억부법(抑扶法) 기준 간략 추정입니다. 실제 용신은 조후·병약·통관까지 함께 봐야 정밀해져요.</p>`;
+  html += `<p class="nv-foot">억부(抑扶)·조후(調候)를 함께 본 간략 추정입니다. 병약·통관·격국까지 보면 더 정밀해져요.</p>`;
   return html;
 }
 
