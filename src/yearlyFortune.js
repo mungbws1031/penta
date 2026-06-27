@@ -210,12 +210,14 @@ export function analyzeYearlyFortune(birth) {
     const cy = now.getFullYear(), cm = now.getMonth() + 1, cd = now.getDate();
 
     const todayP = pillarFromDate(cy, cm, cd);
-    const nyP = pillarFromDate(cy + 1, 1, 15);
-    if (!todayP) return null;
+    // 사주의 해 경계는 입춘(2월 초)이라, 년주(年柱)는 입춘 이후로 안전한 6/1 기준으로 계산
+    const tyP = pillarFromDate(cy, 6, 1);
+    const nyP = pillarFromDate(cy + 1, 6, 1);
+    if (!todayP || !tyP) return null;
 
     const todayDayTG  = tenGod(dayGan, todayP.dayGan);
     const todayMonTG  = tenGod(dayGan, todayP.monthGan);
-    const thisYearTG  = tenGod(dayGan, todayP.yearGan);
+    const thisYearTG  = tenGod(dayGan, tyP.yearGan);
     const nextYearTG  = nyP ? tenGod(dayGan, nyP.yearGan) : null;
 
     const dayF  = TG_FORTUNE[todayDayTG]  || TG_FORTUNE['비견'];
@@ -225,7 +227,7 @@ export function analyzeYearlyFortune(birth) {
     const monMod = (TG_FORTUNE[todayMonTG]?.score || 60) >= 68 ? 4 : -3;
     const todayScore = Math.min(95, Math.max(30, dayF.score + monMod));
 
-    const tyAnimal = ZHI_ANIMAL[todayP.yearZhi] || '';
+    const tyAnimal = ZHI_ANIMAL[tyP.yearZhi] || '';
     const nyAnimal = nyP ? (ZHI_ANIMAL[nyP.yearZhi] || '') : '';
 
     return {
@@ -240,9 +242,9 @@ export function analyzeYearlyFortune(birth) {
         advice: null,
       },
       thisYear: {
-        year: cy, gan: todayP.yearGan, zhi: todayP.yearZhi, animal: tyAnimal,
+        year: cy, gan: tyP.yearGan, zhi: tyP.yearZhi, animal: tyAnimal,
         tenGod: thisYearTG, score: tyF.score, label: tyF.label,
-        climate: yearClimate(todayP.yearGan, todayP.yearZhi, tyAnimal),
+        climate: yearClimate(tyP.yearGan, tyP.yearZhi, tyAnimal),
         flow: tyF.yearlyFlow,
         aspects: aspects(tyF),
         advice: tyF.yearlyAdvice,

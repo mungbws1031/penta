@@ -1,7 +1,7 @@
 import { renderRadarSVG } from './radar.js';
 import { zodiacDetail } from './zodiacInfo.js';
 import { revealedCard } from './tarotView.js';
-import { temperamentNarrative, strengthNarrative, timeNarrative, nameNarrative, digitNarrative, fortuneNarrative, sajuNarrative, radarNarrative, synthesisNarrative, synthesisSummary, relationNarrative, ziweiNarrative, zodiacNarrative } from './narrative.js';
+import { temperamentNarrative, strengthNarrative, timeNarrative, nameNarrative, digitNarrative, fortuneNarrative, sajuNarrative, radarNarrative, synthesisNarrative, synthesisSummary, relationNarrative, ziweiNarrative, zodiacNarrative, workplaceNarrative } from './narrative.js';
 import { renderFortuneBars, renderLifeGraph, renderRelationBars } from './fortuneGraph.js';
 import { OHAENG_COLOR } from './sajuDetail.js';
 
@@ -108,6 +108,15 @@ function fortuneBlock(f) {
     <h4 class="f-sub">인생 운세 흐름 <small>10년 단위 대운</small></h4>
     <div class="life-graph">${renderLifeGraph(f.timeline)}</div>
     <div class="narrative">${fortuneNarrative(f)}</div>
+  </div>`;
+}
+
+function workplaceBlock(sajuDetail) {
+  const html = workplaceNarrative(sajuDetail);
+  if (!html) return '';
+  return `<div class="card">
+    <h3>직장에서의 평가 <small>조직운 · 십성 기준</small></h3>
+    <div class="narrative">${html}</div>
   </div>`;
 }
 
@@ -340,6 +349,8 @@ export function renderReport(result, spread) {
     </div>
 
     ${fortuneBlock(result.fortune)}
+
+    ${workplaceBlock(result.sajuDetail)}
 
     ${relationBlock(result.fortune, result.sajuDetail)}
 
