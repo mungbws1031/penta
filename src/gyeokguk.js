@@ -73,9 +73,12 @@ export function analyzeGyeokguk(sajuDetail, counts) {
 
   const jeonggiGod = tenGod(dayGan, hidden[0]); // 월지 정기 십신
 
+  // 양인(羊刃) — 양간이 왕지를 월지로 둘 때만 성립
+  const YANGIN = { '甲':'卯', '丙':'午', '戊':'午', '庚':'酉', '壬':'子' };
+
   let key, basisStem = hidden[0], byTuchul = false;
   if (jeonggiGod === '비견') { key = '건록'; }
-  else if (jeonggiGod === '겁재') { key = '양인'; }
+  else if (jeonggiGod === '겁재') { key = (YANGIN[dayGan] === monthZhi) ? '양인' : '건록'; }
   else {
     // 투출 검사 (년·월·시간, 정기 우선). 비겁은 정격을 이루지 않으므로 제외.
     const cheongan = [p.year?.gan, p.month?.gan, p.time?.gan].filter(Boolean);
