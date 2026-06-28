@@ -1,4 +1,12 @@
 import { Solar, Lunar } from 'lunar-javascript';
+import { tenGod } from './fortune.js';
+
+// 지지 지장간(藏干) — [정기, 중기, 여기]
+const ZHI_HIDDEN = {
+  '子':['癸'], '丑':['己','癸','辛'], '寅':['甲','丙','戊'], '卯':['乙'],
+  '辰':['戊','乙','癸'], '巳':['丙','庚','戊'], '午':['丁','己'], '未':['己','丁','乙'],
+  '申':['庚','壬','戊'], '酉':['辛'], '戌':['戊','辛','丁'], '亥':['壬','甲'],
+};
 
 const GAN_ELEMENT = { '甲':'목','乙':'목','丙':'화','丁':'화','戊':'토','己':'토','庚':'금','辛':'금','壬':'수','癸':'수' };
 const ZHI_ELEMENT = { '子':'수','丑':'토','寅':'목','卯':'목','辰':'토','巳':'화','午':'화','未':'토','申':'금','酉':'금','戌':'토','亥':'수' };
@@ -191,8 +199,21 @@ export function getTenGodGroups(counts) {
   };
 }
 
+// 각 기둥에 십성(十神)·지장간(藏干) 보강 — 만세력 표용
+function enrichPillars(pillars) {
+  const dayGan = pillars.dayGan;
+  [['year', pillars.year], ['month', pillars.month], ['day', pillars.day], ['time', pillars.time]]
+    .forEach(([k, p]) => {
+      if (!p) return;
+      p.hidden = ZHI_HIDDEN[p.zhi] || [];
+      p.ganGod = (k === 'day') ? '일간' : tenGod(dayGan, p.gan);
+      p.zhiGod = p.hidden.length ? tenGod(dayGan, p.hidden[0]) : null;
+    });
+  return pillars;
+}
+
 export function analyzeSajuDetail(birth, counts) {
-  const pillars = getSajuPillars(birth);
+  const pillars = enrichPillars(getSajuPillars(birth));
   const ohaeng = getOhaengBalance(pillars);
   const tenGodGroups = getTenGodGroups(counts);
   return { pillars, ohaeng, tenGodGroups };

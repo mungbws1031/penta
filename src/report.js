@@ -57,14 +57,19 @@ function sajuBlock(detail) {
   const headers = pillars.time
     ? ['시(時)', '일(日)', '월(月)', '년(年)']
     : ['일(日)', '월(月)', '년(年)'];
+  const godCell = g => g === '일간' ? '<b class="st-me">我 일간</b>' : (g || '');
   const tableHtml = `<table class="saju-table">
     <tr>${headers.map(h => `<th>${h}</th>`).join('')}</tr>
+    <tr class="st-god">${cols.map(p => `<td>${godCell(p.ganGod)}</td>`).join('')}</tr>
     <tr>${cols.map(p => `<td class="saju-gan" style="color:${OHAENG_COLOR[p.ganEl]}">${p.ganKo}(${p.gan})</td>`).join('')}</tr>
     <tr>${cols.map(p => `<td class="saju-el">${p.ganEl}</td>`).join('')}</tr>
     <tr class="saju-sep"><td colspan="${cols.length}"></td></tr>
     <tr>${cols.map(p => `<td class="saju-zhi" style="color:${OHAENG_COLOR[p.zhiEl]}">${p.zhiKo}(${p.zhi})</td>`).join('')}</tr>
+    <tr class="st-god">${cols.map(p => `<td>${p.zhiGod || ''}</td>`).join('')}</tr>
     <tr>${cols.map(p => `<td class="saju-el">${p.zhiEl} · ${p.animal}</td>`).join('')}</tr>
-  </table>`;
+    <tr class="st-hidden">${cols.map(p => `<td>${(p.hidden || []).join('·')}</td>`).join('')}</tr>
+  </table>
+  <p class="saju-legend">행 순서 — 십성 / 천간(天干) / 오행 · 지지(地支) / 십성 / 오행·동물 / 지장간(藏干). <b>십성(十神)</b>은 일간(나)을 기준으로 각 글자가 맺는 관계(비겁·식상·재성·관성·인성)이고, <b>지장간</b>은 지지 속에 숨은 천간이다.</p>`;
 
   // 오행 균형 막대
   const total = Math.max(1, Object.values(ohaeng).reduce((a, b) => a + b, 0));
