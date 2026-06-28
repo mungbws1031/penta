@@ -281,10 +281,11 @@ function sinjeomBlock(s) {
     </div>
     ${subHtml}
 
-    <h4 class="f-sub">신기(神氣) 지수 <small>직관·영적 감수성</small></h4>
+    <h4 class="f-sub">신기(神氣) 지수 <small>75점↑ 높음 · 55~74 보통 · 54점↓ 낮음</small></h4>
     <div class="yf-bar-row">
       <div class="yf-bar-wrap"><div class="yf-bar-fill ${sinkiCls}" style="width:${sinki}%"></div></div>
       <span class="yf-score">${sinki}</span>
+      <span class="sj-sinki-badge ${sinki >= 75 ? 'good' : sinki >= 55 ? 'mid' : 'low'}">${s.sinkiLevel}</span>
     </div>
     <p class="yf-text">${sinkiText}</p>
     ${s.sinkiInfo ? `
