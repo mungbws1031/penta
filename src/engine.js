@@ -11,7 +11,6 @@ import { analyzeFortune } from './fortune.js';
 import { analyzeSajuDetail } from './sajuDetail.js';
 import { analyzeZiwei } from './ziwei.js';
 import { analyzeYearlyFortune } from './yearlyFortune.js';
-import { analyzeSinjeom } from './sinjeom.js';
 import { analyzeStrength } from './strength.js';
 import { analyzeHapchung } from './hapchung.js';
 import { analyzeGyeokguk } from './gyeokguk.js';
@@ -59,6 +58,5 @@ export function runEngine(input) {
   const ziwei = analyzeZiwei(birth);
   const hapchung = analyzeHapchung(sajuDetail);
   const yearlyFortune = analyzeYearlyFortune(birth, sajuDetail.pillars?.dayGan, luckCtx);
-  const sinjeom = analyzeSinjeom(birth, sajuDetail);
-  return { axes, strengths, sajuTimeUnknown: saju.timeUnknown, sunSign: sign, dayElement, mbti, name: nameAnalysis, digit: digitAnalysis, fortune, sajuDetail, ziwei, strength, hapchung, gyeokguk, yearlyFortune, sinjeom, birthYear: birth.year };
+  return { axes, strengths, sajuTimeUnknown: saju.timeUnknown, sunSign: sign, dayElement, mbti, name: nameAnalysis, digit: digitAnalysis, fortune, sajuDetail, ziwei, strength, hapchung, gyeokguk, yearlyFortune, birthYear: birth.year };
 }

@@ -239,82 +239,6 @@ function summaryBlock(result) {
   </div>`;
 }
 
-function sinjeomBlock(s) {
-  if (!s) return '';
-  const { guardian, subGuardian, sinki, sinkiText, salList, samjae, gongsu, dayElKo, dayZhiKo } = s;
-  const sinkiCls = sinki >= 75 ? 'yf-good' : sinki >= 55 ? 'yf-mid' : 'yf-low';
-
-  const salHtml = salList.length
-    ? salList.map(sal => `
-        <div class="sj-sal">
-          <span class="sj-sal-name">${sal.emoji} ${sal.name}</span>
-          <span class="sj-sal-text">${sal.text}</span>
-        </div>`).join('')
-    : `<p class="sj-none">올해 두드러지는 신살(神煞)은 잡히지 않는다 — 큰 굴곡 없이 평탄하게 흐르는 해다.</p>`;
-
-  const subHtml = subGuardian
-    ? `<div class="sj-sub">
-        <span class="sj-sub-name">${subGuardian.emoji} 부신(副神) · ${subGuardian.name}</span>
-        <span class="sj-sub-text">${subGuardian.text}</span>
-       </div>`
-    : '';
-
-  const samjaeHtml = samjae
-    ? `<div class="sj-samjae">
-        <span class="sj-samjae-head">⚠ 삼재(三災) · ${samjae.phase}</span>
-        <p>${samjae.text}</p>
-       </div>`
-    : '';
-
-  return `<div class="card sinjeom-card">
-    <h3>신점 (神占) <small>몸주신 · 신살 · 공수</small></h3>
-
-    <div class="sj-guardian">
-      <div class="sj-g-emoji">${guardian.emoji}</div>
-      <div class="sj-g-body">
-        <div class="sj-g-name">몸주신 · ${guardian.name}</div>
-        <div class="sj-g-nature">${guardian.nature} <span class="sj-g-src">일간 ${dayElKo} 기준</span></div>
-        <p class="sj-g-text">${guardian.personality}</p>
-        <p class="sj-g-guard"><b>가호</b> · ${guardian.guard}</p>
-        <div class="zw-keywords">${guardian.keywords.map(k => `<span class="chip">${k}</span>`).join('')}</div>
-      </div>
-    </div>
-    ${subHtml}
-
-    <h4 class="f-sub">신기(神氣) 지수 <small>75점↑ 높음 · 55~74 보통 · 54점↓ 낮음</small></h4>
-    <div class="yf-bar-row">
-      <div class="yf-bar-wrap"><div class="yf-bar-fill ${sinkiCls}" style="width:${sinki}%"></div></div>
-      <span class="yf-score">${sinki}</span>
-      <span class="sj-sinki-badge ${sinki >= 75 ? 'good' : sinki >= 55 ? 'mid' : 'low'}">${s.sinkiLevel}</span>
-    </div>
-    <p class="yf-text">${sinkiText}</p>
-    ${s.sinkiInfo ? `
-      <div class="sj-sinki">
-        <div class="sj-sinki-row"><span class="sj-sinki-k">이런 특징</span>
-          <ul class="sj-sinki-list">${s.sinkiInfo.traits.map(t => `<li>${t}</li>`).join('')}</ul></div>
-        <div class="sj-sinki-row"><span class="sj-sinki-k good">살리는 법</span><span class="sj-sinki-v">${s.sinkiInfo.use}</span></div>
-        <div class="sj-sinki-row"><span class="sj-sinki-k caution">주의할 점</span><span class="sj-sinki-v">${s.sinkiInfo.caution}</span></div>
-      </div>` : ''}
-
-    <h4 class="f-sub">올해 신살(神煞) 점검</h4>
-    <div class="sj-sals">${salHtml}</div>
-    ${samjaeHtml}
-
-    <div class="sj-gongsu">
-      <div class="sj-gongsu-head">🔔 공수 — ${guardian.name.split('(')[0]}의 한마디</div>
-      <p class="sj-gongsu-text">${gongsu}</p>
-    </div>
-
-    <div class="sj-remedy">
-      <b>비방(秘方) · 액막이</b><br>
-      길한 방향 <b>${guardian.direction}</b> · 길한 색 <b>${guardian.color}</b><br>
-      ${guardian.remedy}
-    </div>
-
-    <p class="nv-foot">무속의 신령·신살을 사주 지지(地支)로 풀어낸 재미용 해석입니다. 실제 신점·굿과는 무관해요.</p>
-  </div>`;
-}
-
 function nameBlock(nameAnalysis) {
   if (!nameAnalysis) return '';
   return `<div class="card">
@@ -372,8 +296,6 @@ export function renderReport(result, spread) {
     ${strengthBlock(result.strength, result.hapchung, result.gyeokguk)}
 
     ${ziweiBlock(result.ziwei)}
-
-    ${sinjeomBlock(result.sinjeom)}
 
     ${zodiacBlock(sunSign)}
 

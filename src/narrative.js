@@ -756,7 +756,7 @@ export function synthesisSummary(result) {
   const weakTg = Object.entries(tgs).sort((a, b) => a[1] - b[1])[0]?.[0];
   html += `<p class="sum-core">✨ ${CORE_LINE[weakTg] || CORE_LINE_DEFAULT}</p>`;
 
-  html += `<p class="sum-guide">↓ 레이더 · 사주 · 신점 · 운세 등 상세 분석이 이어집니다</p>`;
+  html += `<p class="sum-guide">↓ 레이더 · 사주 · 격국 · 운세 등 상세 분석이 이어집니다</p>`;
   return html;
 }
 
@@ -1114,7 +1114,7 @@ const EVIDENCE = [
     src: 'Fichten & Sunerton, 1983 · 바넘 효과', url: 'https://consensus.app/papers/details/e159d2b51f3d51b7a4504e39c85e9f40/',
   },
   {
-    sys: '사주·자미두수·신점·타로·성명학', level: '전통·문화', cls: 'ev-trad',
+    sys: '사주·자미두수·타로·성명학', level: '전통·문화', cls: 'ev-trad',
     text: '반증 가능한 과학적 기제가 없는 동·서양의 전통 해석 체계다. 예측의 과학적 타당도는 검증되지 않았으나, 자기 성찰과 삶을 이야기로 비춰보는 <b>내러티브 도구</b>로서의 가치는 별개다.',
     src: null, url: null,
   },
