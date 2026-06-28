@@ -287,6 +287,13 @@ function sinjeomBlock(s) {
       <span class="yf-score">${sinki}</span>
     </div>
     <p class="yf-text">${sinkiText}</p>
+    ${s.sinkiInfo ? `
+      <div class="sj-sinki">
+        <div class="sj-sinki-row"><span class="sj-sinki-k">이런 특징</span>
+          <ul class="sj-sinki-list">${s.sinkiInfo.traits.map(t => `<li>${t}</li>`).join('')}</ul></div>
+        <div class="sj-sinki-row"><span class="sj-sinki-k good">살리는 법</span><span class="sj-sinki-v">${s.sinkiInfo.use}</span></div>
+        <div class="sj-sinki-row"><span class="sj-sinki-k caution">주의할 점</span><span class="sj-sinki-v">${s.sinkiInfo.caution}</span></div>
+      </div>` : ''}
 
     <h4 class="f-sub">올해 신살(神煞) 점검</h4>
     <div class="sj-sals">${salHtml}</div>
