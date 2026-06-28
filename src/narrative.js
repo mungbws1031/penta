@@ -52,6 +52,20 @@ const ELEMENT_TEMPER = {
   수: '물처럼 스미고 흐르는 지혜와 융통의 기운',
 };
 
+// 대인관계 — 에너지(A1)×판단(A3) 4유형 + 역할(A5) 보정
+const DAEIN_BASE = {
+  '외향_사고': '사람들 사이에서 명쾌하게 판을 정리하는 유형이다. 솔직하고 시원시원해 신뢰를 빨리 얻지만, 때로 말이 직설적이라 무심코 상처를 줄 수 있다.',
+  '외향_감정': '어디서나 분위기를 데우는 따뜻한 사교가다. 사람의 감정을 빠르게 읽고 챙겨 자연스럽게 무리의 중심이 된다. 다만 모두에게 맞추다 정작 자신이 지칠 수 있다.',
+  '내향_사고': '말수는 적지만 핵심을 짚는 신중한 관찰자다. 넓게 사귀기보다 신뢰하는 소수와 깊게 간다. 속을 잘 안 드러내 차가워 보이기도 하지만, 한번 맺은 관계엔 한결같다.',
+  '내향_감정': '조용하지만 정이 깊은 다정한 조력자다. 곁의 사람을 세심히 살피고 오래 기억한다. 거절을 어려워해 혼자 끌어안다 상처받기 쉬우니, 마음의 경계를 지키는 연습이 필요하다.',
+  '균형': '상황에 따라 다가가고 물러설 줄 아는 유연한 관계 감각을 지녔다. 분위기에 맞춰 색을 바꾸되, 진짜 속내를 보여줄 한두 사람을 스스로 정해두면 관계가 더 단단해진다.',
+};
+const DAEIN_LEAD = {
+  '주도': ' 관계에서도 방향을 잡고 이끄는 역할을 자연스럽게 맡는다.',
+  '수용': ' 앞에 나서기보다 곁에서 받쳐주고 조율하는 역할에서 더 빛난다.',
+  '균형': '',
+};
+
 export function temperamentNarrative(result, dayElement) {
   const z = zodiacDetail(result.sunSign);
   let html = '';
@@ -65,6 +79,30 @@ export function temperamentNarrative(result, dayElement) {
     const body = (AXIS_TEXT[a.id] && AXIS_TEXT[a.id][pole]) || '';
     html += `<p><b>${a.label} · ${a.poleLabel}</b><br>${body}${consensusPhrase(a)}</p>`;
   });
+
+  const poleOf = id => result.axes.find(a => a.id === id)?.poleLabel || '균형';
+
+  // 🤝 대인관계
+  const e = poleOf('A1'), tf = poleOf('A3'), lead = poleOf('A5');
+  const key = (e === '균형' || tf === '균형') ? '균형' : `${e}_${tf}`;
+  const daein = (DAEIN_BASE[key] || DAEIN_BASE['균형']) + (DAEIN_LEAD[lead] || '');
+  html += `<p class="nv-head">🤝 대인관계 스타일</p><p>${daein}</p>`;
+
+  // 🎯 타고난 재능
+  const ranked = [...(result.strengths || [])].sort((a, b) => b.count - a.count).filter(s => s.count >= 1);
+  const top = ranked.slice(0, 3).map(s => s.name);
+  if (top.length || dayElement) {
+    html += `<p class="nv-head nv-confirm">🎯 타고난 재능</p>`;
+    let t = '';
+    if (top.length) {
+      t += `여러 렌즈가 함께 지목하는 너의 재능은 <b>${top.join(' · ')}</b>다. `;
+      if (top.length >= 2) t += `특히 <b>${top[0]}</b>과(와) <b>${top[1]}</b>이 맞물릴 때, 남들이 흉내 내기 어려운 너만의 무기가 만들어진다. `;
+    }
+    const careers = OHAENG_CAREER[dayElement];
+    if (careers) t += `일간 <b>${dayElement}</b> 기운은 <b>${careers.join(' · ')}</b> 분야와 결이 잘 맞아, 그쪽에서 재능이 한층 빛난다.`;
+    html += `<p>${t}</p>`;
+  }
+
   return html;
 }
 
