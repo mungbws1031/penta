@@ -48,14 +48,17 @@ export function runEngine(input) {
   const strengths = strengthCounts({ sajuCounts, mbti, sign });
   const nameAnalysis = name ? analyzeName(name, dayElement) : null;
   const digitAnalysis = analyzeDigitRatio(digit);
-  const fortune = analyzeFortune(sajuCounts, birth);
   const sajuDetail = analyzeSajuDetail(birth, sajuCounts);
 
-  const ziwei = analyzeZiwei(birth);
+  // 격국·강약·용신을 먼저 산출해 대운/세운 길흉 평가에 사용
   const strength = analyzeStrength(sajuDetail);
-  const hapchung = analyzeHapchung(sajuDetail);
   const gyeokguk = analyzeGyeokguk(sajuDetail, sajuCounts);
-  const yearlyFortune = analyzeYearlyFortune(birth, sajuDetail.pillars?.dayGan, strength);
+  const luckCtx = { strength, gyeokguk };
+
+  const fortune = analyzeFortune(sajuCounts, birth, luckCtx);
+  const ziwei = analyzeZiwei(birth);
+  const hapchung = analyzeHapchung(sajuDetail);
+  const yearlyFortune = analyzeYearlyFortune(birth, sajuDetail.pillars?.dayGan, luckCtx);
   const sinjeom = analyzeSinjeom(birth, sajuDetail);
   return { axes, strengths, sajuTimeUnknown: saju.timeUnknown, sunSign: sign, dayElement, mbti, name: nameAnalysis, digit: digitAnalysis, fortune, sajuDetail, ziwei, strength, hapchung, gyeokguk, yearlyFortune, sinjeom, birthYear: birth.year };
 }

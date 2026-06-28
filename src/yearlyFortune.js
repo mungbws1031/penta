@@ -1,23 +1,6 @@
 import { Solar } from 'lunar-javascript';
 import { tenGod } from './fortune.js';
-import { TENGOD_GROUP } from './strength.js';
-
-// 용신/기신 보정 — 그 해(날)의 십신이 용신운이면 길(+), 기신운이면 흉(−)
-function yongAdjust(tg, base, strength, daily) {
-  if (!strength || !strength.yongGroups?.length) return { score: base, note: null };
-  const g = TENGOD_GROUP[tg];
-  if (strength.yongGroups.includes(g)) {
-    return { score: Math.min(95, base + 9),
-      note: daily ? '🟢 용신(用神)이 도와주는 날 — 평소보다 일이 순하게 풀린다.'
-                  : '🟢 용신운(用神運) — 보약 같은 기운이 들어오는 길한 해다. 적극적으로 움직일 것.' };
-  }
-  if (strength.giGroups.includes(g)) {
-    return { score: Math.max(30, base - 9),
-      note: daily ? '🔴 기신(忌神) 기운이 강한 날 — 무리한 결정은 미루는 게 낫다.'
-                  : '🔴 기신운(忌神運) — 이미 넘치는 기운이 더해지는 해다. 욕심을 줄이고 지키는 데 집중할 것.' };
-  }
-  return { score: base, note: null };
-}
+import { scoreLuck } from './luckScore.js';
 
 const ZHI_ANIMAL = { '子':'쥐','丑':'소','寅':'호랑이','卯':'토끼','辰':'용','巳':'뱀','午':'말','未':'양','申':'원숭이','酉':'닭','戌':'개','亥':'돼지' };
 
@@ -233,7 +216,7 @@ function aspects(f) {
   ];
 }
 
-export function analyzeYearlyFortune(birth, userDayGan, strength) {
+export function analyzeYearlyFortune(birth, userDayGan, ctx) {
   try {
     // 생일 일간은 음력/시주 경계까지 반영된 sajuDetail 값을 받아 쓰는 것이 정확하다.
     // (폴백: 양력 가정 계산 — 호출부가 dayGan을 안 넘긴 경우만)
@@ -258,8 +241,7 @@ export function analyzeYearlyFortune(birth, userDayGan, strength) {
     const tyF   = TG_FORTUNE[thisYearTG]  || TG_FORTUNE['비견'];
     const nyF   = nextYearTG ? (TG_FORTUNE[nextYearTG] || TG_FORTUNE['비견']) : null;
 
-    const monMod = (TG_FORTUNE[todayMonTG]?.score || 60) >= 68 ? 4 : -3;
-    const baseToday = Math.min(95, Math.max(30, dayF.score + monMod));
+    const monMod = (TG_FORTUNE[todayMonTG]?.score || 60) >= 68 ? 5 : -4;
 
     const tyAnimal = ZHI_ANIMAL[tyP.yearZhi] || '';
     const nyAnimal = nyP ? (ZHI_ANIMAL[nyP.yearZhi] || '') : '';
@@ -270,12 +252,11 @@ export function analyzeYearlyFortune(birth, userDayGan, strength) {
       const mp = pillarFromDate(cy, m, 15);
       if (!mp) continue;
       const mtg = tenGod(dayGan, mp.monthGan);
-      const mbase = TG_FORTUNE[mtg]?.score || 60;
-      const madj = yongAdjust(mtg, mbase, strength, false);
+      const madj = scoreLuck(mtg, 55, ctx, false);
       months.push({
         month: m, gan: mp.monthGan, zhi: mp.monthZhi, tenGod: mtg,
         score: madj.score,
-        kind: madj.note ? (madj.score >= mbase ? 'good' : 'bad') : null,
+        kind: madj.noteKind,
         text: MONTH_TEXT[mtg] || '',
       });
     }
@@ -285,10 +266,10 @@ export function analyzeYearlyFortune(birth, userDayGan, strength) {
       worstMonth = months.reduce((a, b) => b.score < a.score ? b : a).month;
     }
 
-    // 용신/기신 보정
-    const todayAdj = yongAdjust(todayDayTG, baseToday, strength, true);
-    const tyAdj = yongAdjust(thisYearTG, tyF.score, strength, false);
-    const nyAdj = nyF ? yongAdjust(nextYearTG, nyF.score, strength, false) : { score: 60, note: null };
+    // 용신·격국 기준 길흉 보정
+    const todayAdj = scoreLuck(todayDayTG, 55 + monMod, ctx, true);
+    const tyAdj = scoreLuck(thisYearTG, 55, ctx, false);
+    const nyAdj = nyF ? scoreLuck(nextYearTG, 55, ctx, false) : { score: 60, note: null };
 
     return {
       dayGan,

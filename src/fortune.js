@@ -1,4 +1,5 @@
 import { Solar, Lunar } from 'lunar-javascript';
+import { scoreLuck } from './luckScore.js';
 
 // 천간 → 오행/음양
 const GAN_INFO = {
@@ -72,7 +73,8 @@ const TENGOD_LABEL = {
 };
 
 // 대운 타임라인. birth: { year, month, day, hour, calendar, gender }
-export function lifeTimeline(birth) {
+// ctx: { strength, gyeokguk } — 대운 길흉을 이 사주의 용신·격국 기준으로 평가
+export function lifeTimeline(birth, ctx) {
   try {
     const { year, month, day, hour, calendar, gender } = birth;
     const h = hour == null ? 12 : hour;
@@ -91,12 +93,16 @@ export function lifeTimeline(birth) {
       const gan = gz.charAt(0);
       const god = tenGod(dayGan, gan);
       if (!god) return;
+      // 용신·격국 기준 길흉. ctx 없으면 일반 십신표로 폴백.
+      const overall = ctx
+        ? scoreLuck(god, 50, ctx).score
+        : clamp(50 + (TENGOD_FORTUNE[god] || 0));
       periods.push({
         startAge: dy.getStartAge(),
         ganZhi: gz,
         tenGod: god,
         label: TENGOD_LABEL[god] || '',
-        overall: clamp(50 + (TENGOD_FORTUNE[god] || 0)),
+        overall,
       });
     });
     if (periods.length < 2) return { periods: [], lows: [], peak: null };
@@ -111,11 +117,11 @@ export function lifeTimeline(birth) {
   }
 }
 
-export function analyzeFortune(counts, birth) {
+export function analyzeFortune(counts, birth, ctx) {
   return {
     natal: natalFortune(counts),
     relation: relationFortune(counts, birth.gender),
     gender: birth.gender,
-    timeline: lifeTimeline(birth),
+    timeline: lifeTimeline(birth, ctx),
   };
 }
