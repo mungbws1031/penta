@@ -22,9 +22,10 @@ describe('renderReport', () => {
     expect(renderReport(r)).toContain('시주');
   });
   it('이름 주면 성명학 섹션 포함, 없으면 미포함', () => {
-    expect(renderReport(result)).toContain('성명학');
+    // 성명학 카드 헤딩으로 판별 (근거 노트 등 다른 곳의 '성명학' 단어와 구분)
+    expect(renderReport(result)).toContain('<h3>성명학');
     const noName = runEngine({ birth:{ year:1990,month:5,day:15,hour:10,calendar:'solar',gender:'male' }, mbti:'ENTJ', blood:'O' });
-    expect(renderReport(noName)).not.toContain('성명학');
+    expect(renderReport(noName)).not.toContain('<h3>성명학');
   });
   it('별자리 상세 섹션을 포함한다', () => {
     const html = renderReport(result);

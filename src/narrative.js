@@ -131,7 +131,7 @@ export function digitNarrative(d) {
   let html = `<p><b>${esc(d.category)}</b> 유형이다. 태내 테스토스테론 노출은 <b>${esc(d.testosterone)}</b>으로 추정된다.</p>`;
   html += `<p>${esc(d.blurb)}</p>`;
   html += `<p>느슨하게 연관되는 키워드: <b>${d.traits.map(esc).join(' · ')}</b></p>`;
-  html += `<p class="nv-foot">2D:4D는 상관 연구에 기반한 지표로 학계 논쟁이 있고 개인차가 큽니다. 재미로만 참고하세요.</p>`;
+  html += `<p class="nv-foot">연구 노트 — 2D:4D는 남녀 <b>집단 평균</b> 차이(남성이 더 낮음)는 메타분석에서 비교적 일관되게 나타납니다. 다만 성격·공격성·스포츠와의 상관은 통계적으로 유의해도 <b>매우 작아(r≈0.04~0.06)</b> 개인을 예측하기엔 부적합합니다(Hönekopp & Watson, 2011). 재미로만 참고하세요.</p>`;
   return html;
 }
 
@@ -1088,6 +1088,51 @@ export function strengthBalanceNarrative(s) {
   html += `<p class="nv-head">🧭 용신 활용법</p>`;
   html += `<p>대표 용신 <b>${SB_EL_KO[pe]}</b>(${SB_EL_NATURE[pe]})를 일상에 끌어들이면 좋다 — 행운의 색 <b>${SB_EL_COLOR[pe]}</b>, 방향 <b>${SB_EL_DIR[pe]}</b>${careers ? `, 잘 맞는 분야 <b>${careers.join('·')}</b>` : ''}. 이 기운을 가진 사람을 곁에 두는 것도 큰 도움이 된다.</p>`;
   html += `<p class="nv-foot">억부(抑扶)·조후(調候)를 함께 본 간략 추정입니다. 병약·통관·격국까지 보면 더 정밀해져요.</p>`;
+  return html;
+}
+
+// ===== 과학적 근거 노트 (학술 문헌 기반) =====
+const EVIDENCE = [
+  {
+    sys: '2D:4D 손가락 비율', level: '부분 검증', cls: 'ev-partial',
+    text: '또래검토 문헌이 가장 두텁다. 남녀 <b>집단 평균</b> 차(남성이 더 낮음)는 비교적 견고하지만, 성격·공격성·스포츠와의 상관은 유의해도 <b>매우 작아(r≈0.04~0.06)</b> 개인 예측에는 부적합하다.',
+    src: 'Hönekopp & Watson, 2011 · 메타분석', url: 'https://consensus.app/papers/details/14ae23e713685937bd451bad9563dd56/',
+  },
+  {
+    sys: 'MBTI', level: '제한적', cls: 'ev-partial',
+    text: '재검사 시 <b>약 50%가 다른 유형</b>으로 나올 만큼 재검사 신뢰도가 낮고, 16유형 이분법은 연속적인 성향을 단순화한다. 예측 타당도는 약하다(단 Big5와의 수렴타당도·내적 일관성은 양호). 정답이 아니라 대화의 출발점으로 쓰는 것이 좋다.',
+    src: 'Rajeswari et al., 2025 · 심리측정 리뷰', url: 'https://consensus.app/papers/details/ad6cfd6fdce35bb1b57c93c86885cbd1/',
+  },
+  {
+    sys: '혈액형 성격설', level: '근거 없음', cls: 'ev-none',
+    text: '일본·미국 <b>1만 명 이상</b> 대규모 조사에서 혈액형은 성격 분산의 <b>0.3% 미만</b>만 설명했다 — 사실상 무관. 과학적 근거가 없는 문화적 통념이다.',
+    src: 'Nawata, 2014 · 일·미 1만명+', url: 'https://consensus.app/papers/details/c147bfd03397523b8d5bc7498cba4d0a/',
+  },
+  {
+    sys: '별자리(점성술)', level: '근거 없음', cls: 'ev-none',
+    text: '통제된 실험에서 별자리 기반 성격·운세 예측은 <b>무작위 수준</b>이었다. "잘 맞는다"는 느낌은 누구에게나 들어맞는 모호한 서술(<b>바넘 효과</b>)과 확증 편향에서 비롯된다.',
+    src: 'Fichten & Sunerton, 1983 · 바넘 효과', url: 'https://consensus.app/papers/details/e159d2b51f3d51b7a4504e39c85e9f40/',
+  },
+  {
+    sys: '사주·자미두수·신점·타로·성명학', level: '전통·문화', cls: 'ev-trad',
+    text: '반증 가능한 과학적 기제가 없는 동·서양의 전통 해석 체계다. 예측의 과학적 타당도는 검증되지 않았으나, 자기 성찰과 삶을 이야기로 비춰보는 <b>내러티브 도구</b>로서의 가치는 별개다.',
+    src: null, url: null,
+  },
+];
+
+export function evidenceNarrative() {
+  let html = `<p>PENTA의 각 렌즈가 학술 문헌 기준으로 어디까지 검증됐는지 정직하게 정리했다. 재미와 별개로, <b>'근거 수준'을 알고 보는 것</b>이 가장 건강한 사용법이다.</p>`;
+  EVIDENCE.forEach(e => {
+    html += `<div class="ev-item">
+      <div class="ev-head">
+        <span class="ev-sys">${e.sys}</span>
+        <span class="ev-badge ${e.cls}">${e.level}</span>
+      </div>
+      <p class="ev-text">${e.text}</p>
+      ${e.url ? `<a class="ev-src" href="${e.url}" target="_blank" rel="noopener">📄 ${e.src}</a>` : `<span class="ev-src ev-src-plain">${e.src || ''}</span>`}
+    </div>`;
+  });
+  html += `<p class="nv-foot">이 앱은 <b>재미·자기 성찰용</b>입니다. 어떤 결과도 확정적 예측이나 의학·심리 진단이 아니며, 중요한 결정은 검증된 정보와 전문가의 도움을 바탕으로 내리세요.</p>`;
   return html;
 }
 

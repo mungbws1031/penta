@@ -1,7 +1,7 @@
 import { renderRadarSVG } from './radar.js';
 import { zodiacDetail } from './zodiacInfo.js';
 import { revealedCard } from './tarotView.js';
-import { temperamentNarrative, strengthNarrative, timeNarrative, nameNarrative, digitNarrative, fortuneNarrative, sajuNarrative, radarNarrative, synthesisNarrative, synthesisSummary, relationNarrative, ziweiNarrative, zodiacNarrative, workplaceNarrative, strengthBalanceNarrative, hapchungNarrative, gyeokgukNarrative } from './narrative.js';
+import { temperamentNarrative, strengthNarrative, timeNarrative, nameNarrative, digitNarrative, fortuneNarrative, sajuNarrative, radarNarrative, synthesisNarrative, synthesisSummary, relationNarrative, ziweiNarrative, zodiacNarrative, workplaceNarrative, strengthBalanceNarrative, hapchungNarrative, gyeokgukNarrative, evidenceNarrative } from './narrative.js';
 import { renderFortuneBars, renderLifeGraph, renderRelationBars } from './fortuneGraph.js';
 import { OHAENG_COLOR } from './sajuDetail.js';
 
@@ -402,6 +402,11 @@ export function renderReport(result, spread) {
     <div class="card synthesis-card">
       <h3>종합 의견 <small>5개 시스템 통합 분석</small></h3>
       <div class="narrative">${synthesisNarrative(result)}</div>
+    </div>
+
+    <div class="card evidence-card">
+      <h3>🔬 과학적 근거 노트 <small>학술 문헌 기준</small></h3>
+      <div class="narrative">${evidenceNarrative()}</div>
     </div>
 
     ${timeNote}

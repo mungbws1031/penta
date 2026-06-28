@@ -451,6 +451,22 @@
     .dc-foot { font-size: .88rem; line-height: 1.72; color: var(--ink-dim); margin: 12px 0 0; padding: 12px 14px; border-radius: 11px; background: rgba(242,202,110,0.05); border: 1px solid rgba(242,202,110,0.16); }
     .dc-foot b { color: var(--gold); }
 
+    /* ─── 과학적 근거 노트 ─── */
+    .evidence-card { border-color: rgba(116,184,255,0.2); }
+    .evidence-card h3 { color: var(--hidden); }
+    .evidence-card h3::before { background: linear-gradient(180deg, var(--hidden), rgba(116,184,255,0.15)); }
+    .ev-item { padding: 11px 13px; border-radius: 11px; margin: 9px 0; background: rgba(255,255,255,0.03); border: 1px solid var(--border); }
+    .ev-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 5px; }
+    .ev-sys { font-size: .9rem; font-weight: 800; color: var(--ink); }
+    .ev-badge { font-size: .7rem; font-weight: 800; padding: 2px 9px; border-radius: 999px; white-space: nowrap; }
+    .ev-badge.ev-partial { color: var(--gold); background: rgba(242,202,110,0.12); border: 1px solid rgba(242,202,110,0.3); }
+    .ev-badge.ev-none { color: #ff8a8a; background: rgba(255,138,138,0.1); border: 1px solid rgba(255,138,138,0.28); }
+    .ev-badge.ev-trad { color: var(--nurtured); background: rgba(196,124,255,0.1); border: 1px solid rgba(196,124,255,0.26); }
+    .ev-text { font-size: .85rem; line-height: 1.62; color: var(--ink-dim); margin: 0 0 6px; }
+    .ev-src { display: inline-block; font-size: .76rem; color: var(--hidden); text-decoration: none; }
+    .ev-src.ev-src-plain { color: var(--muted); }
+    .ev-src[href]:hover { text-decoration: underline; }
+
     /* ─── 격국(格局) ─── */
     .gk-type { font-size: .72rem; font-weight: 700; color: var(--gold); background: rgba(242,202,110,0.1); padding: 1px 8px; border-radius: 999px; }
     .narrative .gk-warn { padding: 11px 14px; border-radius: 10px; background: rgba(255,138,138,0.06); border: 1px solid rgba(255,138,138,0.2); margin: 8px 0 0; }
