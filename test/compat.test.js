@@ -5,15 +5,19 @@ const personA = { birth: { year:1990, month:5, day:15, hour:10, calendar:'solar'
 const personB = { birth: { year:1992, month:11, day:3, hour:14, calendar:'solar', gender:'female' }, mbti:'INFP', blood:'A' };
 
 describe('analyzeCompat', () => {
-  it('종합 % + 4개 시스템 + 합/충 포인트 반환', () => {
+  it('종합 % + 6개 시스템 + 영역별 + 합/충 포인트 반환', () => {
     const r = analyzeCompat(personA, personB);
     expect(r.totalPercent).toBeGreaterThanOrEqual(0);
     expect(r.totalPercent).toBeLessThanOrEqual(100);
-    expect(r.systems.map(s => s.name)).toEqual(['사주','MBTI','별자리','혈액형']);
+    expect(r.systems.map(s => s.name)).toEqual(['일간 궁합','배우자궁','오행 보완','MBTI','별자리','혈액형']);
     r.systems.forEach(s => {
       expect(['합','충','중립']).toContain(s.verdict);
       expect(typeof s.note).toBe('string');
+      expect(Number.isFinite(s.score)).toBe(true);
     });
+    expect(r.domains.map(d => d.label)).toEqual(['연애 케미','결혼·안정','대화·소통','가치관·방향']);
+    expect(typeof r.grade).toBe('string');
+    expect(typeof r.advice).toBe('string');
     expect(Array.isArray(r.goodPoints)).toBe(true);
     expect(Array.isArray(r.frictionPoints)).toBe(true);
   });

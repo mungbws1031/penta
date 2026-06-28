@@ -195,7 +195,24 @@
     .cr-bar i { display: block; height: 100%; background: linear-gradient(90deg, #f2ca6e, #ffe08a); border-radius: 999px; }
     .cr-verdict { text-align: center; font-weight: 900; font-size: .86rem; }
     .v-good { color: var(--good); } .v-bad { color: var(--bad); } .v-mid { color: var(--mid); }
-    .cr-note { grid-column: 1 / -1; margin: 2px 0 0; color: var(--muted); font-size: .79rem; }
+    .cr-note { grid-column: 1 / -1; margin: 2px 0 0; color: var(--muted); font-size: .79rem; line-height: 1.55; }
+    .cr-note b { color: var(--ink-dim); }
+    .c-gender-row { display: flex; gap: 16px; margin: 8px 0; }
+    .c-gender-row label { display: inline-flex; align-items: center; gap: 5px; font-size: .9rem; color: var(--ink-dim); }
+    /* 영역별 궁합 */
+    .cd-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .cd-item { padding: 12px 13px; border-radius: 12px; background: rgba(255,255,255,0.03); border: 1px solid var(--border); }
+    .cd-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 7px; }
+    .cd-label { font-size: .86rem; font-weight: 800; color: var(--ink); }
+    .cd-score { font-size: 1.05rem; font-weight: 900; color: var(--gold); }
+    .cd-bar { height: 8px; background: rgba(0,0,0,0.3); border-radius: 999px; overflow: hidden; margin-bottom: 8px; }
+    .cd-bar i { display: block; height: 100%; border-radius: 999px; }
+    .cd-bar i.yf-good { background: linear-gradient(90deg,#3aa76d,#5de8a4); }
+    .cd-bar i.yf-mid { background: linear-gradient(90deg,#caa23a,#ffe08a); }
+    .cd-bar i.yf-low { background: linear-gradient(90deg,#c43030,#ff7676); }
+    .cd-text { font-size: .82rem; line-height: 1.55; color: var(--ink-dim); margin: 0; }
+    .compat-advice { font-size: .92rem; line-height: 1.7; color: var(--ink-dim); margin: 0; padding: 13px 15px; border-radius: 12px; background: rgba(93,232,164,0.06); border: 1px solid rgba(93,232,164,0.18); }
+    #compat-report .narrative p b { color: var(--gold); }
 
     /* ─── TAROT ─── */
     .tboard { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin: 12px 0 18px; }
@@ -577,6 +594,7 @@
       .sj-sal { grid-template-columns: 92px 1fr; }
       .yf-aspect { grid-template-columns: 72px 1fr; }
       .dc-faces { grid-template-columns: 1fr; }
+      .cd-grid { grid-template-columns: 1fr; }
       .sum-row { grid-template-columns: 64px 1fr; gap: 8px; }
       .z-match-row { grid-template-columns: 80px 1fr; }
     }
@@ -647,6 +665,10 @@
             <input type="number" class="c-month" placeholder="월" min="1" max="12" required />
             <input type="number" class="c-day" placeholder="일" min="1" max="31" required />
           </div>
+          <div class="c-gender-row">
+            <label><input type="radio" class="c-gender" name="cg-a" value="male" checked /> 남</label>
+            <label><input type="radio" class="c-gender" name="cg-a" value="female" /> 여</label>
+          </div>
           <label>MBTI <select class="c-mbti"></select></label>
           <label>혈액형 <select class="c-blood"><option>A</option><option>B</option><option>O</option><option>AB</option></select></label>
         </fieldset>
@@ -656,6 +678,10 @@
             <input type="number" class="c-year" placeholder="년" required />
             <input type="number" class="c-month" placeholder="월" min="1" max="12" required />
             <input type="number" class="c-day" placeholder="일" min="1" max="31" required />
+          </div>
+          <div class="c-gender-row">
+            <label><input type="radio" class="c-gender" name="cg-b" value="male" checked /> 남</label>
+            <label><input type="radio" class="c-gender" name="cg-b" value="female" /> 여</label>
           </div>
           <label>MBTI <select class="c-mbti"></select></label>
           <label>혈액형 <select class="c-blood"><option>A</option><option>B</option><option>O</option><option>AB</option></select></label>

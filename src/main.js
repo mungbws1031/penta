@@ -101,10 +101,11 @@ document.querySelectorAll('#compat-form .c-mbti').forEach(sel => fillMbti(sel, t
 const compatResultEl = document.getElementById('compat-result');
 
 function readPerson(scope) {
+  const g = scope.querySelector('.c-gender:checked')?.value || 'male';
   return {
     birth: {
       year: +scope.querySelector('.c-year').value, month: +scope.querySelector('.c-month').value,
-      day: +scope.querySelector('.c-day').value, hour: null, calendar: 'solar', gender: 'male',
+      day: +scope.querySelector('.c-day').value, hour: null, calendar: 'solar', gender: g,
     },
     mbti: scope.querySelector('.c-mbti').value,
     blood: scope.querySelector('.c-blood').value,
