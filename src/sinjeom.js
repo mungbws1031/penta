@@ -1,4 +1,5 @@
 import { Solar } from 'lunar-javascript';
+import { TENGOD_GROUP } from './strength.js';
 
 // ── 지지 삼합국(三合局) — 신살 계산의 기준 ──
 const GROUPS = {
@@ -79,9 +80,58 @@ const SAL_TEXT = {
   천을귀인:{ emoji:'🕊️', good:true, text:'하늘이 내린 최고의 길신(吉神). 위기마다 귀인이 나타나 돕고, 큰 화(禍)를 면하게 하는 든든한 방패다.' },
 };
 
+const POS_LABEL = { year:'년주(年柱)·조상·초년', month:'월주(月柱)·부모형제', day:'일주(日柱)·나·배우자', time:'시주(時柱)·자녀·말년' };
+
+// 신살이 어느 궁(자리)의 어느 십성 위에 앉았는지에 따른 문맥 — 살마다, 십성 그룹마다 결이 다르다
+const SAL_GROUP_CTX = {
+  도화살: {
+    비겁: '친구·동료 사이에서 유독 인기가 많은 자리다. 매력이 관계망을 넓히는 힘이 된다.',
+    식상: '매력이 재능·표현으로 직결되는 자리다. 끼가 예술·창작으로 흘러나온다.',
+    재성: '매력이 곧 돈이 되는 자리다. 인기·호감을 실질적 수익으로 바꾸는 감각이 있다 — 연예·서비스·마케팅에 유리.',
+    관성: '매력이 명예·지위로 이어지는 자리다. 대중 앞에 설수록 빛나는 위치다.',
+    인성: '매력이 은근한 신망(信望)으로 쌓이는 자리다. 배움이나 자격을 통해 인기가 깊어진다.',
+  },
+  역마살: {
+    비겁: '움직일수록 인맥이 넓어지는 자리다. 이동이 곧 관계 확장이 된다.',
+    식상: '이동하며 재능을 펼치는 자리다. 여행·미디어·프리랜서 활동과 잘 맞는다.',
+    재성: '움직여야 버는 돈의 자리다. 무역·물류·출장·영업에서 재물이 따른다.',
+    관성: '이동하며 커리어가 열리는 자리다. 해외·출장이 잦은 직무에서 성취가 크다.',
+    인성: '이동하며 배우는 자리다. 유학·연수 등 낯선 환경에서의 학습운이 좋다.',
+  },
+  화개살: {
+    비겁: '혼자 수련하며 자기 세계를 완성하는 자리다. 고독이 힘이 된다.',
+    식상: '몰입이 예술로 승화되는 자리다. 창작 자체가 구도(求道)의 방식이 된다.',
+    재성: '고독 속에서도 실속을 챙기는 자리다. 조용히 자산을 불리는 유형.',
+    관성: '홀로 쌓은 전문성이 결국 명예로 인정받는 자리다.',
+    인성: '학문·종교·역학의 깊이가 가장 짙게 드러나는 자리다. 정신적 스승·수행자의 기질이 있다.',
+  },
+};
+const CHEONEUL_POS_CTX = {
+  year: '조상·윗사람의 음덕으로 귀인이 온다 — 집안·연장자의 도움이 크다.',
+  month: '부모형제와 초년의 인맥에서 귀인이 온다 — 젊을 때 만난 인연이 평생 간다.',
+  day: '배우자 인연으로 귀인이 온다 — 짝이 곧 인생의 방패가 된다.',
+  time: '자녀와 말년의 인복으로 귀인이 온다 — 노년의 복이 두텁다.',
+};
+
 function pillarBranches(pillars) {
   return [pillars.year, pillars.month, pillars.day, pillars.time]
     .filter(Boolean).map(p => p.zhi);
+}
+
+// 신살의 표적 지지(zhi)가 실제 어느 기둥(자리)에 앉았는지 찾아, 그 자리의 십성 그룹으로 문맥 문장을 만든다
+function findSalContext(pillars, salName, targetZhi) {
+  const hits = ['year', 'month', 'day', 'time']
+    .map(k => pillars[k] && pillars[k].zhi === targetZhi ? { pos: k, p: pillars[k] } : null)
+    .filter(Boolean);
+  if (!hits.length) return null;
+  const parts = hits.map(({ pos, p }) => {
+    const label = POS_LABEL[pos];
+    if (salName === '천을귀인') return `<b>${label}</b> 자리 — ${CHEONEUL_POS_CTX[pos]}`;
+    const group = TENGOD_GROUP[p.zhiGod];
+    const ctx = group && SAL_GROUP_CTX[salName]?.[group];
+    return ctx ? `<b>${label}</b> 자리(${group}) — ${ctx}` : `<b>${label}</b> 자리에 앉았다.`;
+  });
+  return parts.join(' ');
 }
 
 function currentYearZhi() {
@@ -105,17 +155,22 @@ export function analyzeSinjeom(birth, sajuDetail) {
 
   // 신살 판정 — 일지 기준 삼합국에서 도화/역마/화개, 일간 기준 천을귀인
   const g = groupOf(dayZhi);
-  const sals = [];
+  const sals = [];       // 이름만
+  const salZhi = {};     // 이름 → 표적 지지
   if (g) {
-    if (branches.includes(g.dohwa))  sals.push('도화살');
-    if (branches.includes(g.yeokma)) sals.push('역마살');
-    if (branches.includes(g.hwagae)) sals.push('화개살');
+    if (branches.includes(g.dohwa))  { sals.push('도화살'); salZhi['도화살'] = g.dohwa; }
+    if (branches.includes(g.yeokma)) { sals.push('역마살'); salZhi['역마살'] = g.yeokma; }
+    if (branches.includes(g.hwagae)) { sals.push('화개살'); salZhi['화개살'] = g.hwagae; }
   }
   const cheonList = CHEONEUL[dayGan] || [];
-  const hasCheoneul = branches.some(b => cheonList.includes(b));
-  if (hasCheoneul) sals.push('천을귀인');
+  const matchedCheon = cheonList.find(z => branches.includes(z));
+  const hasCheoneul = !!matchedCheon;
+  if (hasCheoneul) { sals.push('천을귀인'); salZhi['천을귀인'] = matchedCheon; }
 
-  const salList = sals.map(name => ({ name, ...SAL_TEXT[name] }));
+  const salList = sals.map(name => ({
+    name, ...SAL_TEXT[name],
+    context: findSalContext(pillars, name, salZhi[name]),
+  }));
 
   // 삼재 판정 — 출생 년지 삼합국 기준, 올해 년지가 삼재년인가
   const cyZhi = currentYearZhi();

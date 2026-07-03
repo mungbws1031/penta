@@ -256,6 +256,7 @@ function sinjeomBlock(s) {
         <div class="sj-sal">
           <span class="sj-sal-name">${sal.emoji} ${sal.name}</span>
           <span class="sj-sal-text">${sal.text}</span>
+          ${sal.context ? `<span class="sj-sal-ctx">${sal.context}</span>` : ''}
         </div>`).join('')
     : `<p class="sj-none">올해 두드러지는 신살(神煞)은 잡히지 않는다 — 큰 굴곡 없이 평탄하게 흐르는 해다.</p>`;
 

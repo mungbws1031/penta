@@ -686,6 +686,23 @@ function deepConflictAnalysis(conflicts) {
 }
 
 // 사주 내부의 긴장 — 오행 편중 / 십성 모순
+// 지장간 투출 — 천간(겉)엔 없는데 지장간(속)에만 있는 십성 그룹, "겉과 속" 문맥
+const HIDDEN_DESIRE_TEXT = {
+  비겁: '겉으로는 순한 척해도, 속에는 누구보다 강한 자립심과 주도욕이 숨어 있다. 결정적 순간엔 결국 자기 뜻대로 밀어붙인다.',
+  식상: '겉은 얌전하고 절제돼 보여도, 속에는 표현하고 창작하고 싶은 갈증이 늘 끓고 있다. 언젠가 그 재능이 예고 없이 터져 나온다.',
+  재성: '겉으론 초연하고 돈에 무심한 척해도, 속으로는 실속과 현실적 이득에 꽤 예민하게 반응한다. 계산이 빠른 쪽은 오히려 이 사람이다.',
+  관성: '겉은 자유분방하고 매인 것 없어 보여도, 속으로는 인정받고 싶고 책임 있는 자리에 서고 싶은 마음이 크다. 명예 앞에서 의외로 진지해진다.',
+  인성: '겉은 독립적이고 단단해 보여도, 속으로는 기대고 배우고 싶은 마음이 깊다. 믿을 만한 스승이나 손위 사람 앞에서 이 사람의 진짜 얼굴이 나온다.',
+};
+
+function hiddenDesireNarrative(sajuDetail) {
+  const list = sajuDetail?.hiddenDesire;
+  if (!list || !list.length) return '';
+  const parts = list.map(g => `<b class="dc-tension">${g}(지장간)</b> ${HIDDEN_DESIRE_TEXT[g] || ''}`);
+  return `<p class="dc-sub">겉으로 드러난 천간과 속에 숨은 지장간이 다른 곳도 있다.</p>` +
+    parts.map(p => `<p class="dc-row">${p}</p>`).join('');
+}
+
 function sajuInnerTension(sajuDetail) {
   if (!sajuDetail) return '';
   const oh = sajuDetail.ohaeng || {};
@@ -711,8 +728,10 @@ function sajuInnerTension(sajuDetail) {
     out.push(`<p class="dc-row"><b class="dc-tension">받아들임과 내보냄의 긴장</b> 배우고 채우는 힘(인성)은 큰데 꺼내 표현하는 힘(식상)이 약하다. 머릿속엔 가득한데 밖으로 내보내질 못해 안에 고이기 쉽다 — 완벽히 준비되기 전엔 시작을 미루는 패턴을 의식적으로 깨야 한다.</p>`);
   }
 
-  if (!out.length) return '';
-  return `<p class="dc-sub">팔자 안에서도 두 기운이 맞서는 지점이 있다.</p>` + out.join('');
+  const tensionHtml = out.length
+    ? `<p class="dc-sub">팔자 안에서도 두 기운이 맞서는 지점이 있다.</p>` + out.join('')
+    : '';
+  return tensionHtml + hiddenDesireNarrative(sajuDetail);
 }
 
 // 십성 조합 → 수입 역설 서술

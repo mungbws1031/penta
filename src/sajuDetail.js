@@ -1,5 +1,6 @@
 import { Solar, Lunar } from 'lunar-javascript';
 import { tenGod } from './fortune.js';
+import { TENGOD_GROUP } from './strength.js';
 
 // 지지 지장간(藏干) — [정기, 중기, 여기]
 const ZHI_HIDDEN = {
@@ -212,9 +213,30 @@ function enrichPillars(pillars) {
   return pillars;
 }
 
+// 겉과 속 — 천간(드러난 나) vs 지장간(숨은 나). 천간엔 없는데 지장간에만 있는 십성 그룹을 찾는다.
+function getHiddenDesire(pillars) {
+  const dayGan = pillars.dayGan;
+  const visible = new Set();
+  [pillars.year, pillars.month, pillars.time].forEach(p => {
+    if (!p) return;
+    const grp = TENGOD_GROUP[tenGod(dayGan, p.gan)];
+    if (grp) visible.add(grp);
+  });
+  const hidden = new Set();
+  [pillars.year, pillars.month, pillars.day, pillars.time].forEach(p => {
+    if (!p) return;
+    (p.hidden || []).forEach(stem => {
+      const grp = TENGOD_GROUP[tenGod(dayGan, stem)];
+      if (grp) hidden.add(grp);
+    });
+  });
+  return [...hidden].filter(g => !visible.has(g));
+}
+
 export function analyzeSajuDetail(birth, counts) {
   const pillars = enrichPillars(getSajuPillars(birth));
   const ohaeng = getOhaengBalance(pillars);
   const tenGodGroups = getTenGodGroups(counts);
-  return { pillars, ohaeng, tenGodGroups };
+  const hiddenDesire = getHiddenDesire(pillars);
+  return { pillars, ohaeng, tenGodGroups, hiddenDesire };
 }
