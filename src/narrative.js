@@ -785,6 +785,12 @@ export function synthesisSummary(result) {
     html += `<div class="sum-row"><span class="sum-key">핵심 강점</span><span class="sum-vals">${topS.map(s => `<span class="sum-chip gold">${s.name}</span>`).join('')}</span></div>`;
   }
 
+  // 팔자 패턴 (통변)
+  if (result.tongbyeon?.pattern) {
+    const tp = result.tongbyeon.pattern;
+    html += `<div class="sum-row"><span class="sum-key">팔자 패턴</span><span class="sum-vals"><span class="sum-chip gold">${tp.name}(${tp.hanja})</span></span></div>`;
+  }
+
   // 입체(충돌) 요약
   if (conflicts.length) {
     html += `<div class="sum-row"><span class="sum-key">입체성</span><span class="sum-vals sum-text">${conflicts.map(a => a.label).join(' · ')} 영역에서 겉과 속이 갈리는 다면형 — 자세한 풀이는 아래 <b>종합 의견</b>에서.</span></div>`;
@@ -840,6 +846,17 @@ export function synthesisNarrative(result) {
     identLine += `${poleStr} — ${certainty}.`;
   }
   html += `<p>${identLine}</p>`;
+
+  // 팔자 골격 한 줄 (통변 인용)
+  if (result.tongbyeon?.pattern) {
+    const tp = result.tongbyeon.pattern;
+    const tone = tp.quality === '귀' ? '명리에서 귀하게 치는 골격이다'
+      : tp.quality === '길' ? '타고난 골격이 든든한 편이다'
+      : tp.quality === '흉' ? '풀어야 할 매듭을 안고 태어난 골격이다'
+      : tp.quality === '주의' ? '조율이 필요한 매듭을 품은 골격이다'
+      : '무난한 골격이다';
+    html += `<p>사주의 골격은 <b>${tp.name}(${tp.hanja})</b> — ${tone}. 상세 풀이는 위 격국 카드의 <b>종합 통변</b>에서.</p>`;
+  }
 
   // 핵심 강점 (3개 시스템 이상 지목)
   if (topS.length) {
@@ -1191,6 +1208,41 @@ export function gyeokgukNarrative(g) {
     html += `<p class="gk-good"><b>✓ 성격(成格)</b><br>${g.good}</p>`;
   }
   html += `<p class="nv-foot">월지 투출·정기 기준 간략 격국 판정입니다. 변격·종격·잡격까지는 다루지 않았어요.</p>`;
+  return html;
+}
+
+// ===== 종합 통변(通變) — 격국 × 신강신약 × 대운 =====
+export function tongbyeonNarrative(tb) {
+  if (!tb) return '';
+  let html = '';
+  const p = tb.pattern;
+  const qCls = { 귀: 'tb-gwi', 길: 'tb-gil', 보통: 'tb-mid', 주의: 'tb-warn', 흉: 'tb-bad' };
+
+  if (p) {
+    html += `<p class="tb-head"><b class="tb-name">${p.name}(${p.hanja})</b><span class="tb-q ${qCls[p.quality] || 'tb-mid'}">${p.quality}</span></p>`;
+    html += `<p>${p.text}</p>`;
+    if (p.unlock) {
+      const ages = tb.unlockPeriods.map(x => `<b>${x.startAge}세</b>(${x.tenGod})`).join(', ');
+      html += `<p><b>🔓 풀리는 열쇠 — ${p.unlock}운</b><br>${p.unlockWhy}.${ages ? ` 대운으로는 ${ages} 무렵이 그 시기다.` : ''}</p>`;
+    }
+  }
+
+  if (tb.guYing) {
+    const ages = tb.guYing.periods.map(x => `<b>${x.startAge}세</b>(${x.tenGod})`).join(', ');
+    html += `<p class="gk-good"><b>🌅 패중유성(敗中有成) — 파격을 구하는 운</b><br>원국의 깨진 격을 ${tb.guYing.why} <b>${tb.guYing.label}</b>이 구응(救應)이다.${
+      ages
+        ? ` 대운 ${ages}에 이 기운이 들어온다 — 눌려 있던 그릇이 회복되며 크게 풀리는 시기다.`
+        : ' 다만 이번 대운 흐름엔 그 운이 뚜렷하지 않아, 그 기운을 지닌 사람·환경을 스스로 찾아 나서는 것이 답이다.'
+    }</p>`;
+  }
+
+  if (tb.risk) {
+    const ages = tb.risk.periods.map(x => `<b>${x.startAge}세</b>(${x.tenGod})`).join(', ');
+    html += `<p class="gk-warn"><b>⚠ 성중유패(成中有敗) — 격을 흔드는 운</b><br>완성된 격도 운에서 <b>${tb.risk.gods}</b>운을 만나면 흔들린다. 대운 ${ages} 무렵엔 잘 풀리던 흐름이라도 무리한 확장을 한 템포 눌러야 탈이 없다.</p>`;
+  }
+
+  if (!html) return '';
+  html += `<p class="nv-foot">격국과 신강신약을 교차한 고전 통변(通變)입니다. 자평진전의 성패(成敗)·구응(救應) 논리를 간략화했어요.</p>`;
   return html;
 }
 

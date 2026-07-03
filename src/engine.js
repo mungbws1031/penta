@@ -15,6 +15,7 @@ import { analyzeSinjeom } from './sinjeom.js';
 import { analyzeStrength } from './strength.js';
 import { analyzeHapchung } from './hapchung.js';
 import { analyzeGyeokguk } from './gyeokguk.js';
+import { analyzeTongbyeon } from './tongbyeon.js';
 
 const BASE_WEIGHT = { 사주:1.0, MBTI:1.0, 별자리:0.6, 혈액형:0.3 };
 
@@ -56,9 +57,10 @@ export function runEngine(input) {
   const luckCtx = { strength, gyeokguk };
 
   const fortune = analyzeFortune(sajuCounts, birth, luckCtx);
+  const tongbyeon = analyzeTongbyeon({ gyeokguk, strength, sajuDetail, timeline: fortune.timeline });
   const ziwei = analyzeZiwei(birth);
   const hapchung = analyzeHapchung(sajuDetail);
   const yearlyFortune = analyzeYearlyFortune(birth, sajuDetail.pillars?.dayGan, luckCtx);
   const sinjeom = analyzeSinjeom(birth, sajuDetail);
-  return { axes, strengths, sajuTimeUnknown: saju.timeUnknown, sunSign: sign, dayElement, mbti, name: nameAnalysis, digit: digitAnalysis, fortune, sajuDetail, ziwei, strength, hapchung, gyeokguk, yearlyFortune, sinjeom, birthYear: birth.year };
+  return { axes, strengths, sajuTimeUnknown: saju.timeUnknown, sunSign: sign, dayElement, mbti, name: nameAnalysis, digit: digitAnalysis, fortune, sajuDetail, ziwei, strength, hapchung, gyeokguk, tongbyeon, yearlyFortune, sinjeom, birthYear: birth.year };
 }

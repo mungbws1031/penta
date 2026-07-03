@@ -1,7 +1,7 @@
 import { TENGOD_GROUP } from './strength.js';
 
 // 격국별 길운(성격)·흉운(파격) 십신 — gyeokguk.key 기준
-const GYEOK_LUCK = {
+export const GYEOK_LUCK = {
   정관: { good: ['정재', '편재', '정인', '편인'], bad: ['상관'] },        // 재생관·관인상생 / 상관견관
   편관: { good: ['식신', '정인', '편인'], bad: ['편재', '정재'] },        // 식신제살·살인상생 / 재생살
   정재: { good: ['식신', '상관', '정관'], bad: ['비견', '겁재'] },        // 식상생재·재생관 / 군겁쟁재
