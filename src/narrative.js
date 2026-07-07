@@ -1270,16 +1270,16 @@ export function hapchungNarrative(hc) {
   if (!hc || !hc.findings?.length) {
     return `<p>네 지지 사이에 두드러진 합(合)이나 충(沖)이 잡히지 않는다 — 각 자리가 독립적으로 제 역할을 하는, 비교적 담백한 구조다.</p>`;
   }
-  const order = { 삼합:0, 방합:1, 육합:2, 천간합:3, 반합:4, 충:5 };
+  const order = { 삼합:0, 방합:1, 육합:2, 천간합:3, 반합:4, 충:5, 형:6, 파:7, 해:8 };
   const sorted = [...hc.findings].sort((a, b) => (order[a.type] ?? 9) - (order[b.type] ?? 9));
-  let html = `<p>사주 여덟 글자는 따로 놀지 않고 서로 끌어당기거나(합) 부딪힌다(충). 이 사주에서 잡히는 관계는 이렇다.</p>`;
+  let html = `<p>사주 여덟 글자는 따로 놀지 않고 서로 끌어당기거나(합) 부딪힌다(충·형·파·해). 이 사주에서 잡히는 관계는 이렇다.</p>`;
   sorted.forEach(f => {
     html += `<div class="hc-item ${f.kind}">
       <span class="hc-title">${f.kind === 'caution' ? '⚡' : '🔗'} ${f.title}</span>
       <span class="hc-text">${f.text}</span>
     </div>`;
   });
-  html += `<p class="nv-foot">합·충은 사주 해석의 핵심 변수입니다. 형(刑)·파(破)·해(害)와 운(運)에서 들어오는 합충까지 보면 더 정밀해져요.</p>`;
+  html += `<p class="nv-foot">합·충·형·파·해는 사주 해석의 핵심 변수입니다. 운(運)에서 들어오는 합충까지 함께 보면 더 정밀해져요.</p>`;
   return html;
 }
 
