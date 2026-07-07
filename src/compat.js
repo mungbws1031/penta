@@ -1,6 +1,8 @@
 import { sajuSignals } from './saju.js';
 import { analyzeSajuDetail } from './sajuDetail.js';
 import { analyzeStrength } from './strength.js';
+import { analyzeGyeokguk } from './gyeokguk.js';
+import { GYEOK_LUCK } from './luckScore.js';
 import { sunSign, TRAITS_LOOKUP } from './zodiac.js';
 import { tenGod } from './fortune.js';
 
@@ -30,11 +32,13 @@ function profile(p) {
   const counts = sajuSignals(p.birth).counts;
   const sd = analyzeSajuDetail(p.birth, counts);
   const st = analyzeStrength(sd);
+  const gk = analyzeGyeokguk(sd, counts);
   return {
     gender: p.birth.gender, mbti: p.mbti, blood: p.blood,
     dayGan: sd.pillars.dayGan, dayGanEl: sd.pillars.day?.ganEl,
     dayZhi: sd.pillars.day?.zhi, ohaeng: sd.ohaeng || {},
     primaryYong: st?.primaryYong, level: st?.level,
+    gyeokguk: gk,
     sign: sunSign(p.birth.month, p.birth.day),
   };
 }
@@ -124,6 +128,42 @@ function spouseStar(a, b) {
     note: `A 시점 — ${aView}. B 시점 — ${bView}.`, aView, bView };
 }
 
+// ⑤ 격국 상호작용 — 상대가 내 그릇(격국)을 완성해주는가, 흔드는가
+function gyeokgukRel(a, b) {
+  const gkA = a.gyeokguk, gkB = b.gyeokguk;
+  if (!gkA || !gkB) return { name: '격국 상호작용', score: 60, verdict: '중립', note: '격국 정보 부족' };
+
+  const godBtoA = tenGod(a.dayGan, b.dayGan); // B의 일간이 A에게 맺는 관계
+  const godAtoB = tenGod(b.dayGan, a.dayGan); // A의 일간이 B에게 맺는 관계
+  const glA = GYEOK_LUCK[gkA.key], glB = GYEOK_LUCK[gkB.key];
+
+  let score = 62;
+  const notes = [];
+  if (glA) {
+    if (glA.good.includes(godBtoA)) {
+      score += 16;
+      notes.push(`B는 A의 <b>${gkA.name}(${gkA.hanja})</b>을 살리는 ${godBtoA} — 상대가 A라는 그릇을 완성시켜 주는 인연이다`);
+    } else if (glA.bad.includes(godBtoA)) {
+      score -= 13;
+      notes.push(`B는 A의 <b>${gkA.name}</b>을 흔드는 ${godBtoA} — 서로 강하게 자극하지만 그만큼 관리가 필요한 관계다`);
+    }
+  }
+  if (glB) {
+    if (glB.good.includes(godAtoB)) {
+      score += 16;
+      notes.push(`A는 B의 <b>${gkB.name}(${gkB.hanja})</b>을 살리는 ${godAtoB} — A가 B라는 그릇을 완성시켜 주는 인연이다`);
+    } else if (glB.bad.includes(godAtoB)) {
+      score -= 13;
+      notes.push(`A는 B의 <b>${gkB.name}</b>을 흔드는 ${godAtoB} — 서로 강하게 자극하지만 그만큼 관리가 필요한 관계다`);
+    }
+  }
+  score = Math.max(30, Math.min(95, score));
+  const note = notes.length
+    ? notes.join('. ') + '.'
+    : `두 사람의 격국(<b>${gkA.name}</b>·<b>${gkB.name}</b>)이 서로 크게 간섭하지 않는, 각자의 그릇을 지키는 무난한 조합이다.`;
+  return { name: '격국 상호작용', score, verdict: verdictOf(score), note };
+}
+
 // MBTI
 function mbtiCompat(a, b) {
   const valid = /^[EI][NS][TF][JP]$/;
@@ -157,7 +197,7 @@ function bloodCompat(a, b) {
   return { name: '혈액형', score, verdict: verdictOf(score), note: `혈액형 통념상 ${A}·${B} 조합` };
 }
 
-const WEIGHT = { '일간 궁합':0.2, '배우자궁':0.22, '오행 보완':0.2, MBTI:0.18, 별자리:0.13, 혈액형:0.07 };
+const WEIGHT = { '일간 궁합':0.16, '배우자궁':0.18, '오행 보완':0.16, '격국 상호작용':0.16, MBTI:0.16, 별자리:0.11, 혈액형:0.07 };
 
 function domainText(label, s) {
   const m = {
@@ -176,19 +216,20 @@ export function analyzeCompat(personA, personB) {
   const ilji = iljiRel(a, b);
   const ohaeng = ohaengComplement(a, b);
   const star = spouseStar(a, b);
+  const gyeokgukI = gyeokgukRel(a, b);
   const mbti = mbtiCompat(a.mbti, b.mbti);
   const zodiac = zodiacCompat(a.sign, b.sign);
   const blood = bloodCompat(a.blood, b.blood);
 
-  const systems = [ilgan, ilji, ohaeng, mbti, zodiac, blood];
+  const systems = [ilgan, ilji, ohaeng, gyeokgukI, mbti, zodiac, blood];
   const totalPercent = Math.round(systems.reduce((sum, s) => sum + (WEIGHT[s.name] || 0) * s.score, 0));
 
   // 영역별 궁합
   const domains = [
     { label: '연애 케미', icon: '💕', score: Math.round(ilji.score * 0.4 + zodiac.score * 0.3 + mbti.score * 0.3) },
-    { label: '결혼·안정', icon: '💍', score: Math.round(ilgan.score * 0.3 + ohaeng.score * 0.3 + star.score * 0.2 + blood.score * 0.2) },
+    { label: '결혼·안정', icon: '💍', score: Math.round(ilgan.score * 0.25 + ohaeng.score * 0.25 + star.score * 0.2 + gyeokgukI.score * 0.2 + blood.score * 0.1) },
     { label: '대화·소통', icon: '💬', score: Math.round(mbti.score * 0.5 + zodiac.score * 0.25 + ilgan.score * 0.25) },
-    { label: '가치관·방향', icon: '🧭', score: Math.round(ohaeng.score * 0.4 + mbti.score * 0.3 + ilgan.score * 0.3) },
+    { label: '가치관·방향', icon: '🧭', score: Math.round(ohaeng.score * 0.3 + gyeokgukI.score * 0.3 + mbti.score * 0.2 + ilgan.score * 0.2) },
   ].map(d => ({ ...d, text: domainText(d.label, d.score) }));
 
   const goodPoints = systems.filter(s => s.verdict === '합').map(s => `${s.name}: ${s.note}`);
@@ -201,6 +242,7 @@ export function analyzeCompat(personA, personB) {
     `${ilji.note}`,
     `${ohaeng.note}`,
     `<b>배우자성</b> — ${star.note}`,
+    `<b>격국 상호작용</b> — ${gyeokgukI.note}`,
   ];
   const advice = totalPercent >= 82
     ? '타고난 합이 좋은 인연이다. 익숙함에 안주하지 말고 서로에게 계속 새로움을 선물하면 오래도록 빛난다.'
@@ -212,8 +254,9 @@ export function analyzeCompat(personA, personB) {
 
   return {
     totalPercent, grade, systems, domains, goodPoints, frictionPoints,
-    ilgan, ilji, ohaeng, star, narrative, advice,
+    ilgan, ilji, ohaeng, star, gyeokgukI, narrative, advice,
     signA: a.sign, signB: b.sign,
     dayGanA: a.dayGan, dayGanB: b.dayGan,
+    gyeokgukA: a.gyeokguk?.name, gyeokgukB: b.gyeokguk?.name,
   };
 }

@@ -46,7 +46,7 @@ export function renderCompat(result) {
     </div>
 
     <div class="card">
-      <h3>시스템별 합 · 충 <small>6개 렌즈</small></h3>
+      <h3>시스템별 합 · 충 <small>7개 렌즈</small></h3>
       <div class="compat-grid">${systems.map(systemRow).join('')}</div>
     </div>
 
