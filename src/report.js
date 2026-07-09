@@ -68,8 +68,9 @@ function sajuBlock(detail) {
     <tr class="st-god">${cols.map(p => `<td>${p.zhiGod || ''}</td>`).join('')}</tr>
     <tr>${cols.map(p => `<td class="saju-el">${p.zhiEl} · ${p.animal}</td>`).join('')}</tr>
     <tr class="st-hidden">${cols.map(p => `<td>${(p.hidden || []).join('·')}</td>`).join('')}</tr>
+    <tr class="st-stage">${cols.map(p => `<td>${p.stage || ''}</td>`).join('')}</tr>
   </table>
-  <p class="saju-legend">행 순서 — 십성 / 천간(天干) / 오행 · 지지(地支) / 십성 / 오행·동물 / 지장간(藏干). <b>십성(十神)</b>은 일간(나)을 기준으로 각 글자가 맺는 관계(비겁·식상·재성·관성·인성)이고, <b>지장간</b>은 지지 속에 숨은 천간이다.</p>`;
+  <p class="saju-legend">행 순서 — 십성 / 천간(天干) / 오행 · 지지(地支) / 십성 / 오행·동물 / 지장간(藏干) / 12운성(十二運星). <b>십성(十神)</b>은 일간(나)을 기준으로 각 글자가 맺는 관계(비겁·식상·재성·관성·인성)이고, <b>지장간</b>은 지지 속에 숨은 천간, <b>12운성</b>은 그 자리에서 일간이 얼마나 힘을 얻는지(생왕묘절)를 나타낸다.</p>`;
 
   // 오행 균형 막대
   const total = Math.max(1, Object.values(ohaeng).reduce((a, b) => a + b, 0));

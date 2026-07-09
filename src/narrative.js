@@ -1,5 +1,5 @@
 import { zodiacDetail } from './zodiacInfo.js';
-import { DAY_GAN_PROFILE, TENGOD_GROUP_TEXT, OHAENG_CAREER } from './sajuDetail.js';
+import { DAY_GAN_PROFILE, TENGOD_GROUP_TEXT, OHAENG_CAREER, STAGE_MEANING, STAGE_STRENGTH } from './sajuDetail.js';
 
 const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
@@ -279,13 +279,24 @@ export function sajuNarrative(detail) {
     }
   }
 
-  // ⑦ 오행 균형 요약 (강세만)
+  // ⑦ 12운성(十二運星) — 일지·월지의 왕쇠
+  const dayStage = pillars.day?.stage;
+  const monthStage = pillars.month?.stage;
+  if (dayStage) {
+    html += `<p class="nv-head">🌗 12운성(十二運星) — 자리의 왕쇠</p>`;
+    html += `<p>배우자궁(일지)은 <b>${dayStage}(${STAGE_STRENGTH[dayStage]})</b> — ${STAGE_MEANING[dayStage]}</p>`;
+    if (monthStage && monthStage !== dayStage) {
+      html += `<p>월령(월지)은 <b>${monthStage}(${STAGE_STRENGTH[monthStage]})</b> — ${STAGE_MEANING[monthStage]}</p>`;
+    }
+  }
+
+  // ⑧ 오행 균형 요약 (강세만)
   const domEl2 = Object.entries(ohaeng).filter(([,v])=>v>=3).map(([k])=>k);
   if (domEl2.length) {
     html += `<p class="nv-foot">오행 강세 — ${domEl2.map(e=>`${e}(${HANJA[e]}): ${OHAENG_NATURE[e]}`).join('. ')}.</p>`;
   }
 
-  html += `<p class="nv-foot">천간·지지 기반 재미용 풀이입니다. 합충·용신·격국을 포함한 정밀 명리는 반영하지 않았어요.</p>`;
+  html += `<p class="nv-foot">천간·지지·12운성 기반 재미용 풀이입니다. 합충·용신·격국은 아래 별도 카드에서 더 깊게 다룹니다.</p>`;
   return html;
 }
 
