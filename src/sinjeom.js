@@ -1,5 +1,6 @@
 import { Solar } from 'lunar-javascript';
 import { TENGOD_GROUP } from './strength.js';
+import { ZHI_KO } from './ganzhi.js';
 
 // ── 지지 삼합국(三合局) — 신살 계산의 기준 ──
 const GROUPS = {
@@ -20,8 +21,6 @@ const CHEONEUL = {
   '辛':['寅','午'],
   '壬':['巳','卯'], '癸':['巳','卯'],
 };
-
-const ZHI_KO = { '子':'자','丑':'축','寅':'인','卯':'묘','辰':'진','巳':'사','午':'오','未':'미','申':'신','酉':'유','戌':'술','亥':'해' };
 
 // ── 몸주신(수호신령) — 일간 오행별 ──
 const GUARDIAN = {

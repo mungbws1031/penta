@@ -1,5 +1,6 @@
 import { Solar, Lunar } from 'lunar-javascript';
 import { scoreLuck } from './luckScore.js';
+import { SHENG, KE } from './ganzhi.js';
 
 // 천간 → 오행/음양
 const GAN_INFO = {
@@ -7,8 +8,6 @@ const GAN_INFO = {
   戊:{e:'토',yin:false}, 己:{e:'토',yin:true}, 庚:{e:'금',yin:false}, 辛:{e:'금',yin:true},
   壬:{e:'수',yin:false}, 癸:{e:'수',yin:true},
 };
-const SHENG = { 목:'화', 화:'토', 토:'금', 금:'수', 수:'목' };
-const KE = { 목:'토', 토:'수', 수:'화', 화:'금', 금:'목' };
 
 const clamp = (n, lo = 18, hi = 96) => Math.max(lo, Math.min(hi, Math.round(n)));
 

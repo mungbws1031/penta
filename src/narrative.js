@@ -1,5 +1,6 @@
 import { zodiacDetail } from './zodiacInfo.js';
 import { DAY_GAN_PROFILE, TENGOD_GROUP_TEXT, OHAENG_CAREER, STAGE_MEANING, STAGE_STRENGTH } from './sajuDetail.js';
+import { GAN_KO, EL_KO as SB_EL_KO, EL_HANJA } from './ganzhi.js';
 
 const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
@@ -192,7 +193,7 @@ export function fortuneNarrative(f) {
 }
 
 // ===== 사주 상세 풀이 서술 =====
-const HANJA = { 목:'木', 화:'火', 토:'土', 금:'金', 수:'水' };
+const HANJA = EL_HANJA;
 
 const OHAENG_NATURE = {
   목: '성장과 추진의 기운이 강해 새로운 것을 시작하고 위로 뻗으려는 에너지가 크다',
@@ -344,7 +345,6 @@ const CHILD_BY_ELEMENT = {
   수: '영리하고 지혜로운 아이일 가능성이 높다. 머리 회전이 빠르고 공부 머리가 좋으며, 상황 판단과 눈치가 빨라 어디서나 잘 적응한다.',
 };
 
-const EL_HANJA = { 목:'木', 화:'火', 토:'土', 금:'金', 수:'水' };
 
 export function relationNarrative(fortune, sajuDetail) {
   const { relation, gender } = fortune;
@@ -1100,7 +1100,6 @@ export function ziweiNarrative(ziwei) {
 }
 
 // ===== 신강·신약 & 용신 =====
-const SB_EL_KO = { 목:'목(木)', 화:'화(火)', 토:'토(土)', 금:'금(金)', 수:'수(水)' };
 const SB_EL_COLOR = { 목:'청록·초록', 화:'빨강·보라', 토:'노랑·황금', 금:'흰색·은색', 수:'검정·파랑' };
 const SB_EL_DIR = { 목:'동쪽', 화:'남쪽', 토:'중앙', 금:'서쪽', 수:'북쪽' };
 const SB_EL_NATURE = { 목:'성장·추진', 화:'열정·표현', 토:'안정·신뢰', 금:'결단·원칙', 수:'지혜·유연' };
@@ -1224,7 +1223,6 @@ export function evidenceNarrative() {
 // ===== 격국(格局) 풀이 =====
 export function gyeokgukNarrative(g) {
   if (!g) return '';
-  const GAN_KO = { '甲':'갑','乙':'을','丙':'병','丁':'정','戊':'무','己':'기','庚':'경','辛':'신','壬':'임','癸':'계' };
   let html = '';
   const tuchul = g.byTuchul
     ? `월지 지장간 <b>${GAN_KO[g.basisStem]}(${g.basisStem})</b>가 천간에 투출(透出)해 격을 이룬다`

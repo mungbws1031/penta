@@ -1,11 +1,7 @@
 import { Solar } from 'lunar-javascript';
 import { tenGod } from './fortune.js';
 import { scoreLuck } from './luckScore.js';
-
-const ZHI_ANIMAL = { '子':'쥐','丑':'소','寅':'호랑이','卯':'토끼','辰':'용','巳':'뱀','午':'말','未':'양','申':'원숭이','酉':'닭','戌':'개','亥':'돼지' };
-
-const GAN_EL = { '甲':'목','乙':'목','丙':'화','丁':'화','戊':'토','己':'토','庚':'금','辛':'금','壬':'수','癸':'수' };
-const ZHI_EL = { '子':'수','丑':'토','寅':'목','卯':'목','辰':'토','巳':'화','午':'화','未':'토','申':'금','酉':'금','戌':'토','亥':'수' };
+import { GAN_ELEMENT as GAN_EL, ZHI_ELEMENT as ZHI_EL, ZHI_ANIMAL } from './ganzhi.js';
 
 // 오행별 그 해의 '기후' — 한 해 전체에 깔리는 바탕 기운
 const EL_CLIMATE = {

@@ -1,3 +1,5 @@
+import { GAN_ELEMENT } from './ganzhi.js';
+
 const AXIS_MEMBERS = {
   A1: { plus: ['식신','상관','비견','겁재'], minus: ['정인','편인'] },
   A2: { plus: ['정인','편인','편관'],       minus: ['정재','편재','식신'] },
@@ -62,12 +64,6 @@ export function sajuSignals(birth) {
   const { counts, timeUnknown } = tallyTenGods(birth);
   return { signals: clustersToSignals(counts), counts, timeUnknown };
 }
-
-// 천간 → 오행 (궁합용). 갑을=목, 병정=화, 무기=토, 경신=금, 임계=수.
-const GAN_ELEMENT = {
-  '甲':'목','乙':'목','丙':'화','丁':'화','戊':'토','己':'토',
-  '庚':'금','辛':'금','壬':'수','癸':'수',
-};
 
 // 일간(일주 천간)의 오행 — 日主. 궁합 오행 상생상극 계산에 사용.
 export function sajuDayElement(birth) {

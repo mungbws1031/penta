@@ -7,20 +7,17 @@ import { sunSign, TRAITS_LOOKUP } from './zodiac.js';
 import { tenGod } from './fortune.js';
 
 // ===== 오행 상생상극 =====
-const SHENG = { 목:'화', 화:'토', 토:'금', 금:'수', 수:'목' };
-const KE    = { 목:'토', 토:'수', 수:'화', 화:'금', 금:'목' };
-const GAN_EL = { '甲':'목','乙':'목','丙':'화','丁':'화','戊':'토','己':'토','庚':'금','辛':'금','壬':'수','癸':'수' };
-const ZHI_KO = { '子':'자','丑':'축','寅':'인','卯':'묘','辰':'진','巳':'사','午':'오','未':'미','申':'신','酉':'유','戌':'술','亥':'해' };
-const EL_KO = { 목:'목(木)', 화:'화(火)', 토:'토(土)', 금:'금(金)', 수:'수(水)' };
+import { SHENG, KE, GAN_ELEMENT as GAN_EL, ZHI_KO, EL_KO, GANHAP as GANHAP_RAW, YUKHAP, SAMHAP_GROUPS, CHUNG_PAIRS as JICHUNG } from './ganzhi.js';
 
-// 천간합/충
-const GANHAP = { '甲己':'토','己甲':'토','乙庚':'금','庚乙':'금','丙辛':'수','辛丙':'수','丁壬':'목','壬丁':'목','戊癸':'화','癸戊':'화' };
+const GANHAP = Object.fromEntries(
+  Object.entries(GANHAP_RAW).flatMap(([k, v]) => [[k, v], [k[1] + k[0], v]])
+);
+const SAMHAP = SAMHAP_GROUPS.map(g => g.m);
+
+// 천간충
 const GANCHUNG = new Set(['甲庚','庚甲','乙辛','辛乙','丙壬','壬丙','丁癸','癸丁']);
 
 // 지지 관계
-const YUKHAP = { '子丑':'토','寅亥':'목','卯戌':'화','辰酉':'금','巳申':'수','午未':'화' };
-const SAMHAP = [['申','子','辰'], ['寅','午','戌'], ['巳','酉','丑'], ['亥','卯','未']];
-const JICHUNG = [['子','午'],['丑','未'],['寅','申'],['卯','酉'],['辰','戌'],['巳','亥']];
 const WONJIN = [['子','未'],['丑','午'],['寅','酉'],['卯','申'],['辰','亥'],['巳','戌']];
 const HYEONG = [['寅','巳'],['巳','申'],['寅','申'],['丑','戌'],['戌','未'],['丑','未'],['子','卯']];
 
