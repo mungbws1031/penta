@@ -12,7 +12,6 @@ const CHO_ELEMENT = {
   ㅁ:'수', ㅂ:'수', ㅍ:'수', ㅃ:'수',
 };
 
-
 export function choseongOf(ch) {
   const code = ch.charCodeAt(0) - 0xAC00;
   if (code < 0 || code > 11171) return null; // 완성형 한글 음절 아님
