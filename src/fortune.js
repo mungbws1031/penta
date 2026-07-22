@@ -1,6 +1,6 @@
 import { Solar, Lunar } from 'lunar-javascript';
 import { scoreLuck } from './luckScore.js';
-import { SHENG, KE } from './ganzhi.js';
+import { SHENG, KE, ZHI_HIDDEN, CHUNG_PAIRS, YUKHAP, stageOf } from './ganzhi.js';
 
 // 천간 → 오행/음양
 const GAN_INFO = {
@@ -71,6 +71,27 @@ const TENGOD_LABEL = {
   비견: '협력·경쟁', 겁재: '경쟁·지출',
 };
 
+// 대운 지지가 원국의 지지들과 이루는 충(沖)·육합(六合) 관계
+function relationsWithNatal(daeunZhi, natalBranches) {
+  const result = [];
+  CHUNG_PAIRS.forEach(pair => {
+    if (!pair.includes(daeunZhi)) return;
+    const other = pair[0] === daeunZhi ? pair[1] : pair[0];
+    natalBranches.forEach(nb => {
+      if (nb.zhi === other) result.push({ type: '충', pos: nb.pos, zhi: nb.zhi });
+    });
+  });
+  Object.entries(YUKHAP).forEach(([pairStr, el]) => {
+    const [a, b] = [pairStr.charAt(0), pairStr.charAt(1)];
+    if (a !== daeunZhi && b !== daeunZhi) return;
+    const other = a === daeunZhi ? b : a;
+    natalBranches.forEach(nb => {
+      if (nb.zhi === other) result.push({ type: '육합', pos: nb.pos, zhi: nb.zhi, el });
+    });
+  });
+  return result;
+}
+
 // 대운 타임라인. birth: { year, month, day, hour, calendar, gender }
 // ctx: { strength, gyeokguk } — 대운 길흉을 이 사주의 용신·격국 기준으로 평가
 export function lifeTimeline(birth, ctx) {
@@ -85,23 +106,39 @@ export function lifeTimeline(birth, ctx) {
     const yun = ec.getYun(gender === 'female' ? 0 : 1);
     const list = yun.getDaYun() || [];
 
+    const natalBranches = [
+      { pos: '년', zhi: ec.getYearZhi() },
+      { pos: '월', zhi: ec.getMonthZhi() },
+      { pos: '일', zhi: ec.getDayZhi() },
+    ];
+    if (hour != null) natalBranches.push({ pos: '시', zhi: ec.getTimeZhi() });
+
     const periods = [];
     list.forEach(dy => {
       const gz = dy.getGanZhi();
       if (!gz) return; // 기운(起運) 전 구간 제외
       const gan = gz.charAt(0);
+      const zhi = gz.charAt(1);
       const god = tenGod(dayGan, gan);
       if (!god) return;
       // 용신·격국 기준 길흉. ctx 없으면 일반 십신표로 폴백.
       const overall = ctx
         ? scoreLuck(god, 50, ctx).score
         : clamp(50 + (TENGOD_FORTUNE[god] || 0));
+      const hidden = ZHI_HIDDEN[zhi] || [];
+      const zhiGod = hidden.length ? tenGod(dayGan, hidden[0]) : null;
+      const stage = stageOf(dayGan, zhi);
+      const natalRelations = relationsWithNatal(zhi, natalBranches);
       periods.push({
         startAge: dy.getStartAge(),
         ganZhi: gz,
         tenGod: god,
         label: TENGOD_LABEL[god] || '',
         overall,
+        zhi,
+        zhiGod,
+        stage,
+        natalRelations,
       });
     });
     if (periods.length < 2) return { periods: [], lows: [], peak: null };

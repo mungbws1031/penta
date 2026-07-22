@@ -44,3 +44,29 @@ describe('analyzeFortune', () => {
     expect(f.timeline).toHaveProperty('periods');
   });
 });
+
+describe('lifeTimeline — 지지(地支) 보강', () => {
+  const birth = { year:1990, month:5, day:15, hour:10, calendar:'solar', gender:'male' };
+
+  it('zhi는 항상 ganZhi의 두번째 글자와 같다', () => {
+    const t = lifeTimeline(birth);
+    t.periods.forEach(p => {
+      expect(p.zhi).toBe(p.ganZhi.charAt(1));
+    });
+  });
+
+  it('원국(1990-05-15 10시, 男)과의 실제 충·육합이 걸리는 대운을 정확히 잡아낸다', () => {
+    // 원국: 년지 午, 월지 巳, 일지 辰, 시지 巳 (庚辰 일주)
+    const t = lifeTimeline(birth);
+
+    const at48 = t.periods.find(p => p.startAge === 48);
+    expect(at48.ganZhi).toBe('丙戌');
+    expect(at48.stage).toBe('쇠');
+    expect(at48.natalRelations).toContainEqual({ type: '충', pos: '일', zhi: '辰' });
+
+    const at18 = t.periods.find(p => p.startAge === 18);
+    expect(at18.ganZhi).toBe('癸未');
+    expect(at18.stage).toBe('관대');
+    expect(at18.natalRelations).toContainEqual({ type: '육합', pos: '년', zhi: '午', el: '화' });
+  });
+});

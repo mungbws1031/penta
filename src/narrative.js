@@ -1,6 +1,6 @@
 import { zodiacDetail } from './zodiacInfo.js';
 import { DAY_GAN_PROFILE, TENGOD_GROUP_TEXT, OHAENG_CAREER, STAGE_MEANING, STAGE_STRENGTH } from './sajuDetail.js';
-import { GAN_KO, EL_KO as SB_EL_KO, EL_HANJA } from './ganzhi.js';
+import { GAN_KO, ZHI_KO, EL_KO as SB_EL_KO, EL_HANJA } from './ganzhi.js';
 
 const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
@@ -186,7 +186,36 @@ export function fortuneNarrative(f) {
     if (tl.peak != null) html += `<b>${tl.peak}세</b> 무렵 전성기의 기운이 들어오고, `;
     if (tl.lows && tl.lows.length) html += `<b>${tl.lows.join('·')}세</b> 무렵은 인생의 고비로 읽힌다 — 이 시기엔 큰 결정을 서두르기보다 내실을 다지는 편이 낫다.`;
     html += `</p>`;
-    html += `<p class="nv-period">` + tl.periods.map(p => `${p.startAge}세~ <b>${p.label}</b>`).join('　·　') + `</p>`;
+    html += `<p class="nv-period">` + tl.periods.map(p => {
+      const zhiInfo = p.zhi ? ` · ${p.zhi}(${ZHI_KO[p.zhi] || ''})${p.stage ? '·' + p.stage : ''}` : '';
+      return `${p.startAge}세~ <b>${p.label}</b>${zhiInfo}`;
+    }).join('　·　') + `</p>`;
+
+    const spouseChung = tl.periods.find(p => (p.natalRelations || []).some(r => r.type === '충' && r.pos === '일'));
+    if (spouseChung) {
+      html += `<p><b>${spouseChung.startAge}세</b>부터의 대운엔 배우자궁(일지)이 충(沖)을 맞아 이 시기 부부·연애 관계에 유독 긴장이 따르기 쉽다. 관계를 지키려는 의식적인 노력이 필요한 때다.</p>`;
+    }
+
+    const strong = tl.periods.filter(p => p.stage && (STAGE_STRENGTH[p.stage] === '최강' || STAGE_STRENGTH[p.stage] === '강'));
+    const weak = tl.periods.filter(p => p.stage && STAGE_STRENGTH[p.stage] === '최약');
+    if (strong.length && weak.length) {
+      // 대운 간격(보통 10년) 만큼 정확히 붙어 있는 나이만 "X세~Y세" 범위로 묶고,
+      // 사이에 다른 구간이 끼어 끊긴 경우엔 개별 나이를 가운뎃점으로 나열한다.
+      const sorted = [...tl.periods].sort((a, b) => a.startAge - b.startAge);
+      const step = sorted.length > 1 ? sorted[1].startAge - sorted[0].startAge : 10;
+      const groupAgeText = (list) => {
+        const ages = list.map(p => p.startAge).sort((a, b) => a - b);
+        const groups = [];
+        let cur = [ages[0]];
+        for (let i = 1; i < ages.length; i++) {
+          if (ages[i] - cur[cur.length - 1] === step) cur.push(ages[i]);
+          else { groups.push(cur); cur = [ages[i]]; }
+        }
+        groups.push(cur);
+        return groups.map(g => g.length > 1 ? `${g[0]}세~${g[g.length - 1]}세` : `${g[0]}세`).join('·');
+      };
+      html += `<p>12운성으로 보면 <b>${groupAgeText(strong)}</b> 무렵 기운이 가장 강한 시기로, <b>${groupAgeText(weak)}</b> 무렵 가장 약한 시기로 흐른다.</p>`;
+    }
   }
   html += `<p class="nv-foot">대운 흐름은 사주 십성에 기반한 재미용 해석입니다. 정밀 명리(용신·격국)는 반영하지 않았어요.</p>`;
   return html;

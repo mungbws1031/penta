@@ -21,3 +21,21 @@ export const SAMHAP_GROUPS = [
   { m: ['亥','卯','未'], king: '卯', el: '목' },
 ];
 export const CHUNG_PAIRS = [['子','午'],['丑','未'],['寅','申'],['卯','酉'],['辰','戌'],['巳','亥']];
+
+// ── 12운성(포태법) — 일간이 각 지지에서 얼마나 힘을 얻는지(생왕묘절) ──
+const ZHI_ORDER = ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
+const STAGE_NAMES = ['장생','목욕','관대','건록','제왕','쇠','병','사','묘','절','태','양'];
+// 양간은 순행(順行), 음간은 역행(逆行) — 각 일간의 장생 시작 지지
+const JANGSAENG_START = { '甲':'亥','丙':'寅','戊':'寅','庚':'巳','壬':'申', '乙':'午','丁':'酉','己':'酉','辛':'子','癸':'卯' };
+const YANG_GAN = new Set(['甲', '丙', '戊', '庚', '壬']);
+
+export function stageOf(dayGan, zhi) {
+  const start = JANGSAENG_START[dayGan];
+  if (!start || !zhi) return null;
+  const startIdx = ZHI_ORDER.indexOf(start);
+  const zhiIdx = ZHI_ORDER.indexOf(zhi);
+  if (startIdx < 0 || zhiIdx < 0) return null;
+  const forward = YANG_GAN.has(dayGan);
+  const diff = forward ? (zhiIdx - startIdx + 12) % 12 : (startIdx - zhiIdx + 12) % 12;
+  return STAGE_NAMES[diff];
+}

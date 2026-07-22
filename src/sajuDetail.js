@@ -1,16 +1,9 @@
 import { Solar, Lunar } from 'lunar-javascript';
 import { tenGod } from './fortune.js';
 import { TENGOD_GROUP } from './strength.js';
-import { ZHI_HIDDEN, GAN_ELEMENT, ZHI_ELEMENT, GAN_KO, ZHI_KO, ZHI_ANIMAL } from './ganzhi.js';
+import { ZHI_HIDDEN, GAN_ELEMENT, ZHI_ELEMENT, GAN_KO, ZHI_KO, ZHI_ANIMAL, stageOf } from './ganzhi.js';
 
 export const OHAENG_COLOR = { 목:'#4caf50', 화:'#e53935', 토:'#ff9800', 금:'#9e9e9e', 수:'#2196f3' };
-
-// ── 12운성(포태법) — 일간이 각 지지에서 얼마나 힘을 얻는지(생왕묘절) ──
-const ZHI_ORDER = ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
-const STAGE_NAMES = ['장생','목욕','관대','건록','제왕','쇠','병','사','묘','절','태','양'];
-// 양간은 순행(順行), 음간은 역행(逆行) — 각 일간의 장생 시작 지지
-const JANGSAENG_START = { '甲':'亥','丙':'寅','戊':'寅','庚':'巳','壬':'申', '乙':'午','丁':'酉','己':'酉','辛':'子','癸':'卯' };
-const YANG_GAN = new Set(['甲', '丙', '戊', '庚', '壬']);
 
 export const STAGE_MEANING = {
   장생: '생명이 막 태어나는 자리 — 순수하게 시작하는 힘, 배움과 성장의 씨앗이 심긴 곳이다.',
@@ -27,17 +20,6 @@ export const STAGE_MEANING = {
   양: '태내에서 길러지는 자리 — 보호받으며 자라나는, 준비의 곳이다.',
 };
 export const STAGE_STRENGTH = { 장생:'중강', 목욕:'약', 관대:'중강', 건록:'강', 제왕:'최강', 쇠:'중약', 병:'약', 사:'최약', 묘:'약', 절:'최약', 태:'중약', 양:'중약' };
-
-function stageOf(dayGan, zhi) {
-  const start = JANGSAENG_START[dayGan];
-  if (!start || !zhi) return null;
-  const startIdx = ZHI_ORDER.indexOf(start);
-  const zhiIdx = ZHI_ORDER.indexOf(zhi);
-  if (startIdx < 0 || zhiIdx < 0) return null;
-  const forward = YANG_GAN.has(dayGan);
-  const diff = forward ? (zhiIdx - startIdx + 12) % 12 : (startIdx - zhiIdx + 12) % 12;
-  return STAGE_NAMES[diff];
-}
 
 export const DAY_GAN_PROFILE = {
   '甲': {
