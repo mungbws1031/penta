@@ -7,7 +7,7 @@ export const CARD_H = 1350;
 const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 const stars = n => '★'.repeat(n) + '☆'.repeat(Math.max(0, 3 - n));
 
-function frame(inner) {
+function frame(inner, bgHref) {
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${CARD_W} ${CARD_H}" width="${CARD_W}" height="${CARD_H}">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
@@ -19,14 +19,26 @@ function frame(inner) {
       <stop offset="0" stop-color="#fff4cf"/>
       <stop offset="1" stop-color="#f0c75e"/>
     </linearGradient>
+    <linearGradient id="scrim" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0c0920" stop-opacity="0.6"/>
+      <stop offset="0.26" stop-color="#0c0920" stop-opacity="0"/>
+      <stop offset="0.8" stop-color="#0c0920" stop-opacity="0.05"/>
+      <stop offset="1" stop-color="#0c0920" stop-opacity="0.65"/>
+    </linearGradient>
   </defs>
   <rect width="${CARD_W}" height="${CARD_H}" fill="url(#bg)"/>
+  ${bgHref ? `<image href="${esc(bgHref)}" x="0" y="0" width="${CARD_W}" height="${CARD_H}" preserveAspectRatio="xMidYMid slice"/>` : ''}
+  <rect width="${CARD_W}" height="${CARD_H}" fill="url(#scrim)"/>
   <rect x="24" y="24" width="${CARD_W - 48}" height="${CARD_H - 48}" rx="36" fill="none" stroke="rgba(240,199,94,0.35)" stroke-width="2"/>
   <text x="${CARD_W / 2}" y="120" text-anchor="middle" font-family="system-ui, sans-serif" font-size="64" font-weight="800" letter-spacing="14" fill="url(#gold)">PENTA</text>
   ${inner}
   <text x="${CARD_W / 2}" y="${CARD_H - 70}" text-anchor="middle" font-family="system-ui, sans-serif" font-size="26" fill="#a39fc8">재미용 셀프 분석 · penta</text>
 </svg>`;
 }
+
+const BASE = typeof import.meta !== 'undefined' && import.meta.env ? import.meta.env.BASE_URL : '/';
+const PROFILE_BG = `${BASE}profile-card-bg.png`;
+const COMPAT_BG = `${BASE}compat-card-bg.png`;
 
 const FF = `font-family="system-ui, 'Apple SD Gothic Neo', sans-serif"`;
 
@@ -68,7 +80,7 @@ export function buildProfileCardSVG(result, spread) {
     out += `<text x="90" y="${y}" ${FF} font-size="28" fill="#cdc7f0">${esc(line)}</text>`;
   }
 
-  return frame(out);
+  return frame(out, PROFILE_BG);
 }
 
 export function buildCompatCardSVG(result) {
@@ -92,5 +104,5 @@ export function buildCompatCardSVG(result) {
     out += `<text x="${CARD_W - 90}" y="${y}" text-anchor="end" ${FF} font-size="32" fill="#ece9ff">${s.score}점</text>`;
   });
 
-  return frame(out);
+  return frame(out, COMPAT_BG);
 }
