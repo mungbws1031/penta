@@ -49,4 +49,30 @@ describe('renderReport', () => {
     const withBlood = runEngine({ birth:{year:1990,month:5,day:15,hour:10,calendar:'solar',gender:'male'}, mbti:'ENTJ', blood:'O' });
     expect(renderReport(withBlood)).toContain('혈액형 성격 통설');
   });
+  it('그룹 목차(TOC)가 4개 칩을 포함한다', () => {
+    const html = renderReport(result);
+    expect(html).toContain('class="toc"');
+    expect((html.match(/toc-chip/g) || []).length).toBe(4);
+  });
+  it('카드에 고유 id가 부여된다', () => {
+    const html = renderReport(result);
+    expect((html.match(/id="card-/g) || []).length).toBeGreaterThanOrEqual(19);
+  });
+  it('종합 한눈에·종합 의견은 항상 펼쳐진 상태(details 아님)', () => {
+    const html = renderReport(result);
+    expect(html).not.toMatch(/<details[^>]*id="card-summary"/);
+    expect(html).not.toMatch(/<details[^>]*id="card-synthesis"/);
+  });
+  it('성격 렌즈 그룹 카드는 기본 접힘(open 속성 없음)', () => {
+    const html = renderReport(result);
+    const m = html.match(/<details[^>]*id="card-zodiac"[^>]*>/);
+    expect(m).toBeTruthy();
+    expect(m[0]).not.toMatch(/\sopen(\s|>)/);
+  });
+  it('사주 심층 그룹 카드는 기본 펼침(open 속성 있음)', () => {
+    const html = renderReport(result);
+    const m = html.match(/<details[^>]*id="card-saju"[^>]*>/);
+    expect(m).toBeTruthy();
+    expect(m[0]).toMatch(/\sopen(\s|>)/);
+  });
 });

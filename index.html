@@ -72,6 +72,27 @@
       border-radius: 6px; border: 1px solid var(--border); letter-spacing: 0;
     }
 
+    /* ─── TOC ─── */
+    .toc { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin: 14px 0 6px; }
+    .toc-chip {
+      padding: 8px 16px; border-radius: 999px; font-size: .85rem; font-weight: 700;
+      background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--ink);
+      cursor: pointer; transition: all .15s;
+    }
+    .toc-chip:hover { background: rgba(255,255,255,0.09); border-color: var(--gold); }
+    details.card { padding: 0; }
+    details.card > summary {
+      list-style: none; cursor: pointer; padding: 22px 24px; margin: 0;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    details.card > summary::-webkit-details-marker { display: none; }
+    details.card > summary::after {
+      content: '▾'; color: var(--muted); font-size: .8rem; transition: transform .2s; margin-left: 10px; flex-shrink: 0;
+    }
+    details.card[open] > summary::after { transform: rotate(180deg); }
+    details.card > summary h3 { margin: 0; }
+    details.card > .card-body { padding: 0 24px 22px; }
+
     /* ─── FORM ─── */
     legend { font-weight: 800; padding: 0 6px; font-size: .87rem; color: var(--gold); letter-spacing: .04em; }
     fieldset { border: 1px solid var(--border); border-radius: 14px; margin: 0 0 12px; padding: 16px 18px; }

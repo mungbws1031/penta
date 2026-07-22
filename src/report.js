@@ -7,6 +7,15 @@ import { OHAENG_COLOR } from './sajuDetail.js';
 
 const stars = n => '★'.repeat(n) + '☆'.repeat(Math.max(0, 3 - n));
 
+function cardWrap(id, group, headingHtml, bodyHtml, extraClass = '', opts = {}) {
+  const { collapsible = false, open = true } = opts;
+  const cls = `card ${extraClass}`.trim();
+  if (!collapsible) {
+    return `<div class="${cls}" id="${id}" data-group="${group}"><h3>${headingHtml}</h3>${bodyHtml}</div>`;
+  }
+  return `<details class="${cls}" id="${id}" data-group="${group}"${open ? ' open' : ''}><summary><h3>${headingHtml}</h3></summary><div class="card-body">${bodyHtml}</div></details>`;
+}
+
 function catchphrase(axes) {
   // ★★★ = 3개 시스템(렌즈) 일치. 그 축들의 극을 캐치프레이즈로.
   const strong = axes.filter(a => a.stars >= 3 && a.resultPole !== 0);
@@ -93,8 +102,7 @@ function sajuBlock(detail) {
   const timeNote = pillars.timeUnknown
     ? '<p class="note">※ 출생 시간 미입력 — 시주(時柱) 제외</p>' : '';
 
-  return `<div class="card">
-    <h3>사주 풀이 <small>四柱八字 · 日主 분석</small></h3>
+  return cardWrap('card-saju', 'saju', '사주 풀이 <small>四柱八字 · 日主 분석</small>', `
     <h4 class="f-sub">사주 팔자 (四柱八字)</h4>
     ${tableHtml}
     ${timeNote}
@@ -103,7 +111,7 @@ function sajuBlock(detail) {
     <h4 class="f-sub">십성 분포 <small>비겁·식상·재성·관성·인성</small></h4>
     <div class="tg-chips">${tgHtml}</div>
     <div class="narrative" style="margin-top:14px">${sajuNarrative(detail)}</div>
-  </div>`;
+  `, '', { collapsible: true, open: true });
 }
 
 function strengthBlock(strength, hapchung, gyeokguk, tongbyeon) {
@@ -112,50 +120,45 @@ function strengthBlock(strength, hapchung, gyeokguk, tongbyeon) {
   const gk = gyeokgukNarrative(gyeokguk);
   const tb = tongbyeonNarrative(tongbyeon);
   const hc = hapchungNarrative(hapchung);
-  return `<div class="card">
-    <h3>격국·신강신약·용신 <small>格局 · 身强身弱 · 用神</small></h3>
+  return cardWrap('card-gyeokguk', 'saju', '격국·신강신약·용신 <small>格局 · 身强身弱 · 用神</small>', `
     ${gk ? `<h4 class="f-sub">격국(格局) — 사주의 그릇</h4><div class="narrative">${gk}</div><div class="sb-div"></div>` : ''}
     <div class="narrative">${html}</div>
     ${tb ? `<h4 class="f-sub" style="margin-top:18px">종합 통변(通變) <small>격국 × 신강신약 × 대운</small></h4><div class="narrative">${tb}</div>` : ''}
     ${hc ? `<h4 class="f-sub" style="margin-top:18px">지지 관계 · 합충(合沖)</h4><div class="narrative">${hc}</div>` : ''}
-  </div>`;
+  `, '', { collapsible: true, open: true });
 }
 
 function fortuneBlock(f) {
   if (!f) return '';
-  return `<div class="card">
-    <h3>재물 · 성공 · 연애운 <small>+ 인생의 고비</small></h3>
+  return cardWrap('card-fortune', 'fortune', '재물 · 성공 · 연애운 <small>+ 인생의 고비</small>', `
     ${renderFortuneBars(f.natal)}
     <h4 class="f-sub">인생 운세 흐름 <small>10년 단위 대운</small></h4>
     <div class="life-graph">${renderLifeGraph(f.timeline)}</div>
     <div class="narrative">${fortuneNarrative(f)}</div>
-  </div>`;
+  `, '', { collapsible: true, open: false });
 }
 
 function workplaceBlock(sajuDetail) {
   const html = workplaceNarrative(sajuDetail);
   if (!html) return '';
-  return `<div class="card">
-    <h3>직장에서의 평가 <small>조직운 · 십성 기준</small></h3>
+  return cardWrap('card-workplace', 'fortune', '직장에서의 평가 <small>조직운 · 십성 기준</small>', `
     <div class="narrative">${html}</div>
-  </div>`;
+  `, '', { collapsible: true, open: false });
 }
 
 function relationBlock(fortune, sajuDetail) {
   if (!fortune?.relation) return '';
-  return `<div class="card">
-    <h3>가족 인연운 <small>배우자 · 자식 · 부모 · 형제</small></h3>
+  return cardWrap('card-relation', 'fortune', '가족 인연운 <small>배우자 · 자식 · 부모 · 형제</small>', `
     ${renderRelationBars(fortune.relation)}
     <div class="narrative" style="margin-top:14px">${relationNarrative(fortune, sajuDetail)}</div>
-  </div>`;
+  `, '', { collapsible: true, open: false });
 }
 
 function digitBlock(d) {
   if (!d) return '';
-  return `<div class="card">
-    <h3>손가락 비율 <small>2D:4D · 태내 호르몬</small></h3>
+  return cardWrap('card-digit', 'personality', '손가락 비율 <small>2D:4D · 태내 호르몬</small>', `
     <div class="narrative">${digitNarrative(d)}</div>
-  </div>`;
+  `, '', { collapsible: true, open: false });
 }
 
 function ziweiBlock(ziwei) {
@@ -164,15 +167,14 @@ function ziweiBlock(ziwei) {
   const starLabel = profiles.length
     ? profiles.map(p => p.nameKo).join(' · ')
     : '공궁(空宮)';
-  return `<div class="card ziwei-card">
-    <h3>자미두수 명궁 <small>紫微斗數 · 命宮 + 主星</small></h3>
+  return cardWrap('card-ziwei', 'saju', '자미두수 명궁 <small>紫微斗數 · 命宮 + 主星</small>', `
     <div class="zw-meta">
       <span class="zw-pill">명궁 <b>${mingongKo}</b></span>
       <span class="zw-pill">오행국 <b>${bureauKo}</b></span>
       <span class="zw-pill">주성 <b>${starLabel}</b></span>
     </div>
     <div class="narrative" style="margin-top:14px">${ziweiNarrative(ziwei)}</div>
-  </div>`;
+  `, 'ziwei-card', { collapsible: true, open: true });
 }
 
 function yearlyFortuneBlock(yf) {
@@ -229,22 +231,18 @@ function yearlyFortuneBlock(yf) {
   };
 
   const { today, thisYear, nextYear, dayGan } = yf;
-  return `<div class="card yf-card">
-    <h3>오늘 · 올해 · 내년 운세 <small>세운 · 일운 · 일간(${dayGan}) 기준</small></h3>
+  return cardWrap('card-yearly', 'fortune', `오늘 · 올해 · 내년 운세 <small>세운 · 일운 · 일간(${dayGan}) 기준</small>`, `
     ${period('오늘의 운세', `${today.dateStr} · ${today.gan}${today.zhi}일`, today)}
     ${period('올해의 운세', `${thisYear.year}년 ${thisYear.gan}${thisYear.zhi} · ${thisYear.animal}의 해`, thisYear)}
     ${monthsHtml(yf)}
     ${nextYear ? period('내년의 운세', `${nextYear.year}년 ${nextYear.gan}${nextYear.zhi} · ${nextYear.animal}의 해`, nextYear) : ''}
-  </div>`;
+  `, 'yf-card', { collapsible: true, open: false });
 }
 
 function summaryBlock(result) {
   const html = synthesisSummary(result);
   if (!html) return '';
-  return `<div class="card summary-card">
-    <h3>종합 한눈에 <small>핵심만 먼저</small></h3>
-    ${html}
-  </div>`;
+  return cardWrap('card-summary', '', '종합 한눈에 <small>핵심만 먼저</small>', html, 'summary-card', { collapsible: false });
 }
 
 function sinjeomBlock(s) {
@@ -275,9 +273,7 @@ function sinjeomBlock(s) {
        </div>`
     : '';
 
-  return `<div class="card sinjeom-card">
-    <h3>신점 (神占) <small>몸주신 · 신살 · 공수</small></h3>
-
+  return cardWrap('card-sinjeom', 'saju', '신점 (神占) <small>몸주신 · 신살 · 공수</small>', `
     <div class="sj-guardian">
       <div class="sj-g-emoji">${guardian.emoji}</div>
       <div class="sj-g-body">
@@ -321,58 +317,101 @@ function sinjeomBlock(s) {
     </div>
 
     <p class="nv-foot">무속의 신령·신살을 사주 지지(地支)로 풀어낸 재미용 해석입니다. 실제 신점·굿과는 무관해요.</p>
-  </div>`;
+  `, 'sinjeom-card', { collapsible: true, open: true });
 }
 
 function nameBlock(nameAnalysis) {
   if (!nameAnalysis) return '';
-  return `<div class="card">
-    <h3>성명학 <small>소리오행 · 점수 ${nameAnalysis.score}</small></h3>
+  return cardWrap('card-nameology', 'saju', `성명학 <small>소리오행 · 점수 ${nameAnalysis.score}</small>`, `
     <div class="narrative">${nameNarrative(nameAnalysis)}</div>
-  </div>`;
+  `, '', { collapsible: true, open: true });
 }
 
 function mbtiBlock(mbti) {
   const html = mbtiNarrative(mbti);
   if (!html) return '';
   const key = String(mbti || '').trim().toUpperCase();
-  return `<div class="card mbti-card">
-    <h3>MBTI 16유형 상세풀이 <small>${key}</small></h3>
+  return cardWrap('card-mbti', 'personality', `MBTI 16유형 상세풀이 <small>${key}</small>`, `
     <div class="narrative">${html}</div>
-  </div>`;
+  `, 'mbti-card', { collapsible: true, open: false });
 }
 
 function bloodBlock(blood) {
   const html = bloodNarrative(blood);
   if (!html) return '';
   const key = String(blood || '').trim().toUpperCase();
-  return `<div class="card blood-card">
-    <h3>혈액형 성격 통설 <small>${key}형</small></h3>
+  return cardWrap('card-blood', 'personality', `혈액형 성격 통설 <small>${key}형</small>`, `
     <div class="narrative">${html}</div>
-  </div>`;
+  `, 'blood-card', { collapsible: true, open: false });
 }
 
 function zodiacBlock(sunSign) {
   const z = zodiacDetail(sunSign);
   if (!z) return '';
-  return `<div class="card zodiac-card">
-    <h3>별자리 <small>${z.sign}</small></h3>
+  return cardWrap('card-zodiac', 'personality', `별자리 <small>${z.sign}</small>`, `
     <div class="z-meta">
       <span class="z-pill">${z.elementLabel}</span>
       <span class="z-pill">${z.modalityLabel}</span>
       <span class="z-pill">${z.polarity}(陰陽)</span>
     </div>
     <div class="narrative">${zodiacNarrative(sunSign)}</div>
-  </div>`;
+  `, 'zodiac-card', { collapsible: true, open: false });
 }
 
 function tarotBlock(spread) {
   if (!spread || !spread.length) return '';
-  return `<div class="card">
-    <h3>과거 · 현재 · 미래 <small>타로 시간축</small></h3>
+  return cardWrap('card-tarot', 'tarot', '과거 · 현재 · 미래 <small>타로 시간축</small>', `
     <div class="tresult">${spread.map(revealedCard).join('')}</div>
     <div class="narrative">${timeNarrative(spread)}</div>
-  </div>`;
+  `, '', { collapsible: true, open: true });
+}
+
+function radarBlock(axes) {
+  return cardWrap('card-radar', '', '일치도 레이더 <small>5축 성향 · ★ = 시스템 일치 수</small>', `
+    <div class="radar-wrap">${renderRadarSVG(axes)}</div>
+    <div class="narrative" style="margin-top:12px">${radarNarrative(axes)}</div>
+  `, 'radar-card', { collapsible: false });
+}
+
+function axisGridBlock(axes) {
+  return cardWrap('card-axis', 'personality', '성격 5축', `
+    <div class="axis-grid">${axes.map(axisCard).join('')}</div>
+  `, '', { collapsible: true, open: false });
+}
+
+function temperamentBlock(result) {
+  return cardWrap('card-temperament', 'personality', '타고난 기질 풀이', `
+    <div class="narrative">${temperamentNarrative(result, result.dayElement)}</div>
+  `, '', { collapsible: true, open: false });
+}
+
+function strengthsGridBlock(result, strengths) {
+  return cardWrap('card-strengths', 'personality', '강점 <small>(숫자 = 근거 시스템 수)</small>', `
+    <div class="s-grid">${strengthChips(strengths)}</div>
+    <div class="narrative" style="margin-top:14px">${strengthNarrative(result)}</div>
+  `, '', { collapsible: true, open: false });
+}
+
+function synthesisBlock(result) {
+  return cardWrap('card-synthesis', 'tarot', '종합 의견 <small>5개 시스템 통합 분석</small>', `
+    <div class="narrative">${synthesisNarrative(result)}</div>
+  `, 'synthesis-card', { collapsible: false });
+}
+
+function evidenceBlock() {
+  return cardWrap('card-evidence', 'tarot', '🔬 과학적 근거 노트 <small>학술 문헌 기준</small>', `
+    <div class="narrative">${evidenceNarrative()}</div>
+  `, 'evidence-card', { collapsible: true, open: false });
+}
+
+function tocBlock() {
+  const chips = [
+    { group: 'saju', label: '사주 심층' },
+    { group: 'personality', label: '성격 렌즈' },
+    { group: 'fortune', label: '운세' },
+    { group: 'tarot', label: '타로 · 마무리' },
+  ];
+  return `<nav class="toc" aria-label="카드 목차">${chips.map(c => `<button type="button" class="toc-chip" data-group="${c.group}">${c.label}</button>`).join('')}</nav>`;
 }
 
 export function renderReport(result, spread) {
@@ -390,11 +429,9 @@ export function renderReport(result, spread) {
 
     ${summaryBlock(result)}
 
-    <div class="card radar-card">
-      <h3>일치도 레이더 <small>5축 성향 · ★ = 시스템 일치 수</small></h3>
-      <div class="radar-wrap">${renderRadarSVG(axes)}</div>
-      <div class="narrative" style="margin-top:12px">${radarNarrative(axes)}</div>
-    </div>
+    ${tocBlock()}
+
+    ${radarBlock(axes)}
 
     ${sajuBlock(result.sajuDetail)}
 
@@ -406,25 +443,15 @@ export function renderReport(result, spread) {
 
     ${zodiacBlock(sunSign)}
 
-    <div class="card">
-      <h3>성격 5축</h3>
-      <div class="axis-grid">${axes.map(axisCard).join('')}</div>
-    </div>
+    ${axisGridBlock(axes)}
 
     ${mbtiBlock(result.mbti)}
 
-    <div class="card">
-      <h3>타고난 기질 풀이</h3>
-      <div class="narrative">${temperamentNarrative(result, result.dayElement)}</div>
-    </div>
+    ${temperamentBlock(result)}
 
     ${digitBlock(result.digit)}
 
-    <div class="card">
-      <h3>강점 <small>(숫자 = 근거 시스템 수)</small></h3>
-      <div class="s-grid">${strengthChips(strengths)}</div>
-      <div class="narrative" style="margin-top:14px">${strengthNarrative(result)}</div>
-    </div>
+    ${strengthsGridBlock(result, strengths)}
 
     ${bloodBlock(result.blood)}
 
@@ -440,15 +467,9 @@ export function renderReport(result, spread) {
 
     ${tarotBlock(spread)}
 
-    <div class="card synthesis-card">
-      <h3>종합 의견 <small>5개 시스템 통합 분석</small></h3>
-      <div class="narrative">${synthesisNarrative(result)}</div>
-    </div>
+    ${synthesisBlock(result)}
 
-    <div class="card evidence-card">
-      <h3>🔬 과학적 근거 노트 <small>학술 문헌 기준</small></h3>
-      <div class="narrative">${evidenceNarrative()}</div>
-    </div>
+    ${evidenceBlock()}
 
     ${timeNote}
     <p class="disclaimer">이 결과는 <b>재미용 셀프 분석</b>입니다. 과학적·확정적 예측이 아닙니다.</p>

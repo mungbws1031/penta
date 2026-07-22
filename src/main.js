@@ -6,6 +6,7 @@ import { drawThree } from './tarot.js';
 import { renderTarotBoard, revealedCard } from './tarotView.js';
 import { buildProfileCardSVG, buildCompatCardSVG } from './shareCard.js';
 import { downloadSVGAsPNG } from './share.js';
+import { bindReportToc } from './reportToc.js';
 
 function bindShare(btnId, svgString, filename) {
   const btn = document.getElementById(btnId);
@@ -69,6 +70,7 @@ function showProfileResult(input, spread) {
   try {
     const result = runEngine(input);
     resultEl.innerHTML = renderReport(result, spread);
+    bindReportToc(resultEl);
     bindShare('share-btn', buildProfileCardSVG(result, spread), 'penta-profile.png');
     const r = document.getElementById('restart-btn');
     if (r) r.addEventListener('click', () => { resultEl.innerHTML = ''; window.scrollTo({ top: 0, behavior: 'smooth' }); });
