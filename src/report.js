@@ -1,7 +1,7 @@
 import { renderRadarSVG } from './radar.js';
 import { zodiacDetail } from './zodiacInfo.js';
 import { revealedCard } from './tarotView.js';
-import { temperamentNarrative, strengthNarrative, timeNarrative, nameNarrative, digitNarrative, fortuneNarrative, sajuNarrative, radarNarrative, synthesisNarrative, synthesisSummary, relationNarrative, ziweiNarrative, zodiacNarrative, workplaceNarrative, strengthBalanceNarrative, hapchungNarrative, gyeokgukNarrative, tongbyeonNarrative, evidenceNarrative } from './narrative.js';
+import { temperamentNarrative, strengthNarrative, timeNarrative, nameNarrative, digitNarrative, fortuneNarrative, sajuNarrative, radarNarrative, synthesisNarrative, synthesisSummary, relationNarrative, ziweiNarrative, zodiacNarrative, workplaceNarrative, strengthBalanceNarrative, hapchungNarrative, gyeokgukNarrative, tongbyeonNarrative, evidenceNarrative, mbtiNarrative, bloodNarrative } from './narrative.js';
 import { renderFortuneBars, renderLifeGraph, renderRelationBars } from './fortuneGraph.js';
 import { OHAENG_COLOR } from './sajuDetail.js';
 
@@ -332,6 +332,26 @@ function nameBlock(nameAnalysis) {
   </div>`;
 }
 
+function mbtiBlock(mbti) {
+  const html = mbtiNarrative(mbti);
+  if (!html) return '';
+  const key = String(mbti || '').trim().toUpperCase();
+  return `<div class="card mbti-card">
+    <h3>MBTI 16유형 상세풀이 <small>${key}</small></h3>
+    <div class="narrative">${html}</div>
+  </div>`;
+}
+
+function bloodBlock(blood) {
+  const html = bloodNarrative(blood);
+  if (!html) return '';
+  const key = String(blood || '').trim().toUpperCase();
+  return `<div class="card blood-card">
+    <h3>혈액형 성격 통설 <small>${key}형</small></h3>
+    <div class="narrative">${html}</div>
+  </div>`;
+}
+
 function zodiacBlock(sunSign) {
   const z = zodiacDetail(sunSign);
   if (!z) return '';
@@ -391,6 +411,8 @@ export function renderReport(result, spread) {
       <div class="axis-grid">${axes.map(axisCard).join('')}</div>
     </div>
 
+    ${mbtiBlock(result.mbti)}
+
     <div class="card">
       <h3>타고난 기질 풀이</h3>
       <div class="narrative">${temperamentNarrative(result, result.dayElement)}</div>
@@ -403,6 +425,8 @@ export function renderReport(result, spread) {
       <div class="s-grid">${strengthChips(strengths)}</div>
       <div class="narrative" style="margin-top:14px">${strengthNarrative(result)}</div>
     </div>
+
+    ${bloodBlock(result.blood)}
 
     ${fortuneBlock(result.fortune)}
 

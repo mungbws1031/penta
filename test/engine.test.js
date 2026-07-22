@@ -17,6 +17,7 @@ describe('runEngine', () => {
     expect(r.strengths).toHaveLength(12);
     expect(typeof r.sajuTimeUnknown).toBe('boolean');
     expect(['목','화','토','금','수']).toContain(r.dayElement);
+    expect(r.blood).toBe('O');
   });
   it('이름 주면 성명학 분석 포함, 없으면 null', () => {
     expect(runEngine(input).name).not.toBe(null);

@@ -62,5 +62,5 @@ export function runEngine(input) {
   const hapchung = analyzeHapchung(sajuDetail);
   const yearlyFortune = analyzeYearlyFortune(birth, sajuDetail.pillars?.dayGan, luckCtx);
   const sinjeom = analyzeSinjeom(birth, sajuDetail);
-  return { axes, strengths, sajuTimeUnknown: saju.timeUnknown, sunSign: sign, dayElement, mbti, name: nameAnalysis, digit: digitAnalysis, fortune, sajuDetail, ziwei, strength, hapchung, gyeokguk, tongbyeon, yearlyFortune, sinjeom, birthYear: birth.year };
+  return { axes, strengths, sajuTimeUnknown: saju.timeUnknown, sunSign: sign, dayElement, mbti, blood, name: nameAnalysis, digit: digitAnalysis, fortune, sajuDetail, ziwei, strength, hapchung, gyeokguk, tongbyeon, yearlyFortune, sinjeom, birthYear: birth.year };
 }

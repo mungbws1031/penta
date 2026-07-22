@@ -39,4 +39,14 @@ describe('renderReport', () => {
     expect(withTarot).toContain('과거');
     expect(renderReport(result)).not.toContain('타로 시간축');
   });
+  it('MBTI 카드는 유효한 MBTI일 때만 렌더', () => {
+    const withMbti = runEngine({ birth:{year:1990,month:5,day:15,hour:10,calendar:'solar',gender:'male'}, mbti:'ENTJ', blood:'O' });
+    expect(renderReport(withMbti)).toContain('MBTI 16유형');
+    const noMbti = runEngine({ birth:{year:1990,month:5,day:15,hour:10,calendar:'solar',gender:'male'}, mbti:'', blood:'O' });
+    expect(renderReport(noMbti)).not.toContain('MBTI 16유형');
+  });
+  it('혈액형 카드는 유효한 혈액형일 때만 렌더', () => {
+    const withBlood = runEngine({ birth:{year:1990,month:5,day:15,hour:10,calendar:'solar',gender:'male'}, mbti:'ENTJ', blood:'O' });
+    expect(renderReport(withBlood)).toContain('혈액형 성격 통설');
+  });
 });
