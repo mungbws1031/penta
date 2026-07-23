@@ -37,8 +37,8 @@ function frame(inner, bgHref) {
 }
 
 const BASE = typeof import.meta !== 'undefined' && import.meta.env ? import.meta.env.BASE_URL : '/';
-const PROFILE_BG = `${BASE}profile-card-bg.png`;
-const COMPAT_BG = `${BASE}compat-card-bg.png`;
+const PROFILE_BG = `${BASE}profile-card-bg.jpg`;
+const COMPAT_BG = `${BASE}compat-card-bg.jpg`;
 
 const FF = `font-family="system-ui, 'Apple SD Gothic Neo', sans-serif"`;
 
