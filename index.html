@@ -639,6 +639,8 @@
     .note { color: #ffb86a; font-size: .8rem; line-height: 1.55; }
     .disclaimer { color: var(--muted); font-size: .78rem; text-align: center; margin-top: 22px; line-height: 1.65; }
     .actions { text-align: center; margin-top: 22px; }
+    .action-row { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 10px; }
+    .action-row .ghost { padding: 10px 20px; font-size: .85rem; }
     .ghost {
       background: transparent; border: 1px solid var(--border); color: var(--muted);
       padding: 11px 26px; border-radius: 999px; cursor: pointer; font-size: .9rem;
@@ -662,6 +664,15 @@
       .sj-sinki-row { grid-template-columns: 56px 1fr; }
       .sum-row { grid-template-columns: 64px 1fr; gap: 8px; }
       .z-match-row { grid-template-columns: 80px 1fr; }
+    }
+
+    /* ─── PDF/인쇄 ─── */
+    @media print {
+      body { background: #0c0920 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .nav, #penta-form, #compat-form, .actions, .toc { display: none !important; }
+      .wrap { max-width: 100%; padding: 10px; }
+      details.card, .card { break-inside: avoid; }
+      details.card > summary::after { display: none; }
     }
   </style>
 </head>
@@ -756,6 +767,7 @@
       <div id="compat-result"></div>
     </div>
   </div>
+  <script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.4/kakao.min.js"></script>
   <script type="module" src="/src/main.js"></script>
 </body>
 </html>

@@ -42,12 +42,22 @@ const COMPAT_BG = `${BASE}compat-card-bg.jpg`;
 
 const FF = `font-family="system-ui, 'Apple SD Gothic Neo', sans-serif"`;
 
-export function buildProfileCardSVG(result, spread) {
-  const { axes, strengths, sunSign } = result;
+// 성격 5축 중 3개 렌즈 이상 일치하는 축들로 만드는 한 줄 헤드라인.
+// 공유카드(SVG)와 카카오톡 공유 설명문이 같은 문구를 쓰도록 공용 함수로 뺐다.
+export function cardHeadline(axes) {
   const strong = axes.filter(a => a.stars >= 3 && a.resultPole !== 0);
-  const headline = strong.length
+  return strong.length
     ? strong.map(a => a.poleLabel).join(' · ')
     : (axes.some(a => a.conflict) ? '단순하지 않은 입체적인 나' : '5개 렌즈로 비춘 나');
+}
+
+export function compatMood(totalPercent) {
+  return totalPercent >= 75 ? '천생연분 흐름' : totalPercent >= 55 ? '잘 굴러가는 사이' : '서로 노력이 필요한 사이';
+}
+
+export function buildProfileCardSVG(result, spread) {
+  const { axes, strengths, sunSign } = result;
+  const headline = cardHeadline(axes);
 
   let y = 210;
   let out = `<text x="${CARD_W / 2}" y="${y}" text-anchor="middle" ${FF} font-size="34" fill="#cdc7f0">여러 렌즈가 가리키는 너</text>`;
@@ -85,7 +95,7 @@ export function buildProfileCardSVG(result, spread) {
 
 export function buildCompatCardSVG(result) {
   const { totalPercent, systems, signA, signB } = result;
-  const mood = totalPercent >= 75 ? '천생연분 흐름' : totalPercent >= 55 ? '잘 굴러가는 사이' : '서로 노력이 필요한 사이';
+  const mood = compatMood(totalPercent);
 
   let y = 220;
   let out = `<text x="${CARD_W / 2}" y="${y}" text-anchor="middle" ${FF} font-size="34" fill="#cdc7f0">${esc(signA)} ✕ ${esc(signB)}</text>`;

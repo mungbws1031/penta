@@ -476,6 +476,10 @@ export function renderReport(result, spread) {
 
     <div class="actions">
       <button type="button" id="share-btn" class="submit" style="max-width:320px">📸 결과 이미지로 저장</button>
+      <div class="action-row">
+        <button type="button" id="pdf-btn" class="ghost">📄 PDF로 저장</button>
+        <button type="button" id="kakao-btn" class="ghost">💬 카카오톡 공유</button>
+      </div>
       <div style="margin-top:10px"><button type="button" id="restart-btn" class="ghost">다시 하기</button></div>
     </div>
   </section>`;

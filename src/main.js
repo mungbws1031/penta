@@ -4,9 +4,13 @@ import { analyzeCompat } from './compat.js';
 import { renderCompat } from './compatReport.js';
 import { drawThree } from './tarot.js';
 import { renderTarotBoard, revealedCard } from './tarotView.js';
-import { buildProfileCardSVG, buildCompatCardSVG } from './shareCard.js';
+import { buildProfileCardSVG, buildCompatCardSVG, cardHeadline, compatMood } from './shareCard.js';
 import { downloadSVGAsPNG } from './share.js';
 import { bindReportToc } from './reportToc.js';
+import { exportSectionAsPDF } from './pdfExport.js';
+import { initKakao, shareToKakao } from './kakaoShare.js';
+
+initKakao();
 
 function bindShare(btnId, svgString, filename) {
   const btn = document.getElementById(btnId);
@@ -72,6 +76,16 @@ function showProfileResult(input, spread) {
     resultEl.innerHTML = renderReport(result, spread);
     bindReportToc(resultEl);
     bindShare('share-btn', buildProfileCardSVG(result, spread), 'penta-profile.png');
+    document.getElementById('pdf-btn')?.addEventListener('click', () => {
+      exportSectionAsPDF(document.getElementById('report'), `PENTA-프로필-${cardHeadline(result.axes)}`);
+    });
+    document.getElementById('kakao-btn')?.addEventListener('click', () => {
+      shareToKakao({
+        title: 'PENTA — 5중 셀프 분석',
+        description: `${cardHeadline(result.axes)} · ☀ 태양궁 ${result.sunSign}`,
+        imagePath: 'profile-card-bg.jpg',
+      });
+    });
     const r = document.getElementById('restart-btn');
     if (r) r.addEventListener('click', () => { resultEl.innerHTML = ''; window.scrollTo({ top: 0, behavior: 'smooth' }); });
     document.getElementById('report')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -120,6 +134,16 @@ document.getElementById('compat-form').addEventListener('submit', (e) => {
     const result = analyzeCompat(readPerson(blocks[0]), readPerson(blocks[1]));
     compatResultEl.innerHTML = renderCompat(result);
     bindShare('compat-share-btn', buildCompatCardSVG(result), 'penta-compat.png');
+    document.getElementById('compat-pdf-btn')?.addEventListener('click', () => {
+      exportSectionAsPDF(document.getElementById('compat-report'), `PENTA-궁합-${result.totalPercent}%`);
+    });
+    document.getElementById('compat-kakao-btn')?.addEventListener('click', () => {
+      shareToKakao({
+        title: 'PENTA — 궁합 결과',
+        description: `${result.signA} ✕ ${result.signB} · ${result.totalPercent}% · ${compatMood(result.totalPercent)}`,
+        imagePath: 'compat-card-bg.jpg',
+      });
+    });
     const rb = document.getElementById('compat-restart');
     if (rb) rb.addEventListener('click', () => { compatResultEl.innerHTML = ''; window.scrollTo({ top: 0, behavior: 'smooth' }); });
     document.getElementById('compat-report')?.scrollIntoView({ behavior: 'smooth', block: 'start' });

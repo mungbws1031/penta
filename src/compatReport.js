@@ -66,6 +66,10 @@ export function renderCompat(result) {
     <p class="disclaimer">이 결과는 <b>재미용</b>입니다. 관계는 숫자보다 두 사람의 노력으로 만들어집니다.</p>
     <div class="actions">
       <button type="button" id="compat-share-btn" class="submit" style="max-width:320px">📸 궁합 이미지로 저장</button>
+      <div class="action-row">
+        <button type="button" id="compat-pdf-btn" class="ghost">📄 PDF로 저장</button>
+        <button type="button" id="compat-kakao-btn" class="ghost">💬 카카오톡 공유</button>
+      </div>
       <div style="margin-top:10px"><button type="button" id="compat-restart" class="ghost">다시 하기</button></div>
     </div>
   </section>`;
